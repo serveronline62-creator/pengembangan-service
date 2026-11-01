@@ -46,7 +46,7 @@ body {
     color: var(--text-main);
     line-height: 1.5;
     min-height: 100vh;
-    padding-bottom: 60px;
+    /* padding-bottom dihapus karena banner cookie sudah tidak ada */
 }
 
 .sr-only {
@@ -93,8 +93,6 @@ body {
     margin-left: 6px;
     font-weight: 500;
 }
-
-/* (CSS .jt-nav-links dihapus karena elemennya sudah tidak ada) */
 
 .nav-right {
     display: flex;
@@ -362,19 +360,6 @@ tfoot td { padding: 15px 12px; border-top: 2px solid #ddd; }
 .filter-info-banner.active { display: flex; }
 .close-info { margin-left: auto; background: none; border: none; color: var(--jt-red); cursor: pointer; padding: 4px; }
 
-/* =========================================
-   BOTTOM BANNER (Cookie)
-   ========================================= */
-.jt-cookie-banner {
-    position: fixed; bottom: 0; left: 0; width: 100%; background-color: #333;
-    color: #fff; padding: 15px 30px; display: flex; justify-content: space-between;
-    align-items: center; z-index: 1000; font-size: 14px;
-}
-.jt-cookie-banner button {
-    background-color: var(--jt-red); color: white; padding: 8px 25px;
-    border-radius: 4px; font-weight: 500; cursor: pointer;
-}
-
 /* Mobile Adjustments */
 @media (max-width: 768px) {
     .nav-right::before { width: 200px; }
@@ -385,8 +370,6 @@ tfoot td { padding: 15px 12px; border-top: 2px solid #ddd; }
     .tab-button { padding: 10px 15px; font-size: 13px; width: 100%; justify-content: center; border-radius: 4px; }
     .btn-group-info { width: 100%; margin-top: 10px; justify-content: flex-start; }
     .filter-grid { grid-template-columns: 1fr; }
-    .jt-cookie-banner { flex-direction: column; gap: 10px; text-align: center; }
-    body { padding-bottom: 100px; }
 }
 </style>
 </head>
@@ -396,7 +379,6 @@ tfoot td { padding: 15px 12px; border-top: 2px solid #ddd; }
     <header class="jt-navbar">
         <div class="nav-left">
             <div class="jt-logo">POLYTRON<span>KUPANG</span></div>
-            <!-- Bagian Menu Order, Cari, Layanan, Informasi telah DIHAPUS -->
         </div>
         <div class="nav-right">
             <div class="nav-right-links">
@@ -543,11 +525,7 @@ tfoot td { padding: 15px 12px; border-top: 2px solid #ddd; }
     <!-- TOAST CONTAINER -->
     <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
-    <!-- BOTTOM BANNER (Cookie) -->
-    <div class="jt-cookie-banner" id="cookieBanner">
-        <p style="margin:0;">Kami menggunakan cookie untuk meningkatkan pengalaman Anda. Dengan mengklik 'Setuju', Anda menyetujui Kebijakan Cookie.</p>
-        <button id="btnSetuju">Setuju</button>
-    </div>
+    <!-- (Banner Cookie & Teksnya Telah Dihapus Sepenuhnya) -->
 
     <!-- JAVASCRIPT ORIGINAL (TIDAK DIUBAH SAMA SEKALI) -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
@@ -1729,12 +1707,6 @@ tfoot td { padding: 15px 12px; border-top: 2px solid #ddd; }
         }
 
         renderTable1(); renderTable2(); renderTable3(); renderTable4(); renderTable5();
-
-        // Fitur Cookie Banner
-        document.getElementById('btnSetuju').addEventListener('click', function() {
-            document.getElementById('cookieBanner').style.display = 'none';
-            document.body.style.paddingBottom = '0';
-        });
 
     })();
     </script>
