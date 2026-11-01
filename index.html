@@ -1,936 +1,446 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AutoVideo Editor — Client-Side Video Editor</title>
-<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
-<script src="https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0a0c10;--panel:#141820;--panel2:#1c212c;--border:#2a3142;
-  --text:#e8ebf0;--muted:#8a92a6;--accent:#7c5cff;--accent2:#00d4aa;
-  --danger:#ff4d6d;--warn:#f6b73c;--success:#10b981;
-}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;
-  background-image:radial-gradient(ellipse at top, rgba(124,92,255,.08), transparent 50%),
-                   radial-gradient(ellipse at bottom right, rgba(0,212,170,.06), transparent 50%);
-  background-attachment:fixed;}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lacak Paket - J&T Express</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS Reset & Global Variables */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
 
-/* Header */
-header{padding:16px 28px;border-bottom:1px solid var(--border);
-  background:rgba(20,24,32,.85);backdrop-filter:blur(12px);
-  display:flex;justify-content:space-between;align-items:center;
-  flex-wrap:wrap;gap:12px;position:sticky;top:0;z-index:100}
-header h1{font-size:19px;display:flex;align-items:center;gap:12px;font-weight:700}
-.logo{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),var(--accent2));
-  border-radius:10px;display:flex;align-items:center;justify-content:center;
-  font-size:20px;box-shadow:0 4px 12px rgba(124,92,255,.35)}
-.status{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted)}
-.pill{padding:5px 12px;border-radius:999px;background:var(--panel2);
-  border:1px solid var(--border);font-weight:600;font-size:11px}
-.pill.ready{color:var(--accent2);border-color:rgba(0,212,170,.35);
-  background:rgba(0,212,170,.08)}
-.pill.loading{color:var(--warn);border-color:rgba(246,183,60,.35)}
-.pill.error{color:var(--danger);border-color:rgba(255,77,109,.35)}
+        :root {
+            --jt-red: #e3000f;
+            --jt-gray: #d1d3d4;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --bg-light: #f8f9fa;
+        }
 
-/* Layout */
-main{padding:20px;max-width:1500px;margin:0 auto}
-.layout{display:grid;grid-template-columns:1fr 420px;gap:16px}
-@media(max-width:1000px){.layout{grid-template-columns:1fr}}
+        body {
+            background-color: #ffffff;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 60px; /* Space for cookie banner */
+        }
 
-/* Panels */
-.panel{background:var(--panel);border:1px solid var(--border);
-  border-radius:14px;overflow:hidden;
-  box-shadow:0 4px 20px rgba(0,0,0,.15)}
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
 
-/* Dropzone */
-.dropzone{border:2px dashed var(--border);background:linear-gradient(180deg,
-  var(--panel),var(--panel2));padding:60px 24px;text-align:center;cursor:pointer;
-  transition:all .25s;min-height:380px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:14px;border-radius:14px}
-.dropzone:hover,.dropzone.drag{border-color:var(--accent);
-  background:linear-gradient(180deg,var(--panel),rgba(124,92,255,.05));
-  transform:translateY(-2px)}
-.dropzone .ico{font-size:52px;opacity:.7;filter:drop-shadow(0 4px 12px rgba(124,92,255,.4))}
-.dropzone h3{font-size:18px;font-weight:600}
-.dropzone p{color:var(--muted);font-size:13px;max-width:320px}
+        /* HEADER / NAVBAR */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            background-color: var(--jt-gray);
+            position: relative;
+        }
 
-/* Preview */
-.preview{padding:16px;display:flex;flex-direction:column;gap:12px}
-.video-wrap{position:relative;border-radius:10px;overflow:hidden;
-  background:#000;min-height:200px;display:flex;align-items:center;justify-content:center}
-video{width:100%;max-height:440px;display:block}
-.video-meta{display:flex;justify-content:space-between;font-size:12px;
-  color:var(--muted);font-family:'SF Mono',Monaco,monospace;
-  flex-wrap:wrap;gap:8px;padding:10px;background:var(--panel2);
-  border-radius:8px;border:1px solid var(--border)}
+        .nav-left {
+            display: flex;
+            align-items: center;
+            padding-left: 20px;
+            z-index: 2;
+        }
 
-/* Tabs */
-.tabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--border);
-  background:var(--panel2);scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{padding:12px 14px;font-size:12px;background:transparent;border:none;
-  color:var(--muted);cursor:pointer;white-space:nowrap;
-  border-bottom:2px solid transparent;transition:all .15s;font-weight:500;
-  font-family:inherit;display:flex;align-items:center;gap:6px}
-.tab:hover{color:var(--text);background:rgba(255,255,255,.02)}
-.tab.active{color:var(--text);background:var(--panel);border-bottom-color:var(--accent)}
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            background-color: var(--jt-red);
+            padding: 0 15px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            font-style: italic;
+            letter-spacing: -1px;
+            margin-right: 20px;
+        }
+        
+        .logo span {
+            color: white;
+            font-size: 14px;
+            font-style: normal;
+            margin-left: 5px;
+            font-weight: 400;
+        }
 
-.tab-body{padding:18px;max-height:calc(100vh - 300px);overflow-y:auto;
-  display:none;flex-direction:column;gap:16px}
-.tab-body.active{display:flex}
-.tab-body::-webkit-scrollbar{width:6px}
-.tab-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+        }
 
-/* Form */
-label{display:block;font-size:11px;color:var(--muted);font-weight:600;
-  margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px}
-input[type=text],input[type=number],select,input[type=color]{
-  width:100%;background:var(--bg);border:1px solid var(--border);
-  border-radius:9px;padding:10px 12px;color:var(--text);font-size:13px;
-  outline:none;transition:all .15s;font-family:inherit}
-input[type=text]:focus,input[type=number]:focus,select:focus{
-  border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,92,255,.15)}
-select{cursor:pointer}
-input[type=color]{height:42px;padding:4px;cursor:pointer}
-input[type=range]{width:100%;height:6px;accent-color:var(--accent);
-  cursor:pointer;border-radius:3px;background:var(--panel2)}
+        .nav-links li {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
 
-.range-row{display:flex;align-items:center;gap:12px}
-.range-row input[type=range]{flex:1}
-.range-val{font-size:12px;color:var(--accent2);min-width:68px;text-align:right;
-  font-family:'SF Mono',Monaco,monospace;font-weight:600;
-  background:var(--panel2);padding:4px 10px;border-radius:6px}
+        .nav-links li i {
+            font-size: 10px;
+        }
 
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .nav-right {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
 
-/* Presets */
-.preset-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.preset-btn{background:var(--panel2);border:1px solid var(--border);
-  color:var(--text);padding:12px 14px;border-radius:10px;font-size:12px;
-  cursor:pointer;text-align:left;transition:all .2s;
-  display:flex;gap:10px;align-items:center;font-family:inherit;font-weight:500}
-.preset-btn:hover{border-color:var(--accent);background:rgba(124,92,255,.08);
-  transform:translateY(-1px)}
-.preset-btn.active{border-color:var(--accent2);background:rgba(0,212,170,.12);
-  box-shadow:0 0 0 3px rgba(0,212,170,.1)}
-.preset-btn .emoji{font-size:20px;flex-shrink:0}
+        /* Red diagonal background for right side */
+        .nav-right::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 350px;
+            background-color: var(--jt-red);
+            clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%);
+            z-index: -1;
+        }
 
-/* Upload asset */
-.upload-asset{background:var(--bg);border:1.5px dashed var(--border);
-  border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px;
-  font-size:12px;color:var(--muted);transition:all .15s;cursor:pointer}
-.upload-asset:hover{border-color:var(--accent);background:rgba(124,92,255,.05)}
-.upload-asset.uploaded{border-color:var(--accent2);color:var(--accent2);
-  background:rgba(0,212,170,.05)}
-.upload-asset input[type=file]{display:none}
-.upload-asset label{margin:0;cursor:pointer;color:inherit;
-  text-transform:none;font-size:12px;flex:1;font-weight:500}
-.upload-asset .icon{font-size:20px}
+        .nav-right-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: white;
+            font-size: 14px;
+            padding-right: 30px;
+        }
 
-/* Buttons */
-.btn{width:100%;padding:13px 20px;border-radius:10px;border:none;
-  font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;
-  font-family:inherit;display:flex;align-items:center;justify-content:center;
-  gap:8px;letter-spacing:.2px}
-.btn-primary{background:linear-gradient(135deg,var(--accent),#9b7fff);
-  color:#fff;box-shadow:0 4px 14px rgba(124,92,255,.35)}
-.btn-primary:hover:not(:disabled){transform:translateY(-1px);
-  box-shadow:0 6px 20px rgba(124,92,255,.45)}
-.btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none}
-.btn-secondary{background:var(--panel2);border:1px solid var(--border);
-  color:var(--text);width:auto;padding:10px 16px;font-size:13px}
-.btn-secondary:hover{border-color:var(--accent);background:rgba(124,92,255,.08)}
+        .nav-right-links div {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
 
-/* Process section */
-.process{padding:16px;border-top:1px solid var(--border);
-  background:var(--panel2);display:flex;flex-direction:column;gap:12px}
+        /* HERO SECTION */
+        .hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 40px 10%;
+            background-color: #ffffff;
+            min-height: 350px;
+        }
 
-/* Progress */
-.progress{display:none}
-.progress.active{display:block}
-.progress-bar{height:8px;background:var(--bg);border-radius:4px;overflow:hidden;
-  border:1px solid var(--border)}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));
-  width:0%;transition:width .3s ease;box-shadow:0 0 12px rgba(0,212,170,.5)}
-.progress-info{display:flex;justify-content:space-between;font-size:11px;
-  color:var(--muted);margin-top:6px;font-family:'SF Mono',Monaco,monospace}
+        .hero-text h1 {
+            font-size: 64px;
+            color: #444;
+            font-weight: 700;
+        }
 
-/* Log */
-.log{display:none;background:var(--bg);border:1px solid var(--border);
-  border-radius:8px;padding:10px;font-family:'SF Mono',Monaco,monospace;
-  font-size:10px;color:var(--muted);max-height:100px;overflow-y:auto;
-  white-space:pre-wrap;word-break:break-all;line-height:1.5}
-.log.active{display:block}
+        .hero-image {
+            position: relative;
+            width: 400px;
+            height: 300px;
+            /* Placeholder for the mascot */
+            background-image: url('https://via.placeholder.com/400x300?text=Maskot+J%26T+%2B+Kardus');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: right center;
+        }
 
-/* Result */
-.result{display:none;padding:16px;background:linear-gradient(180deg,
-  rgba(0,212,170,.1),rgba(0,212,170,.03));border-top:1px solid rgba(0,212,170,.3);
-  flex-direction:column;gap:12px}
-.result.active{display:flex}
-.result h4{font-size:13px;color:var(--accent2);display:flex;
-  align-items:center;gap:8px;font-weight:600}
-.result video{width:100%;border-radius:8px;background:#000;max-height:260px}
-.result .actions{display:flex;gap:8px;flex-wrap:wrap}
-.btn-download{flex:2;background:linear-gradient(135deg,var(--accent2),#00b894);
-  color:#0a0c10;border:none;padding:12px;border-radius:9px;font-weight:700;
-  cursor:pointer;font-size:13px;text-align:center;text-decoration:none;
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  transition:all .15s}
-.btn-download:hover{transform:translateY(-1px);
-  box-shadow:0 4px 14px rgba(0,212,170,.4)}
-.btn-new{flex:1;background:var(--panel2);border:1px solid var(--border);
-  color:var(--text);padding:12px;border-radius:9px;font-weight:600;
-  cursor:pointer;font-size:13px;font-family:inherit;display:flex;
-  align-items:center;justify-content:center;gap:6px}
-.btn-new:hover{border-color:var(--accent)}
+        /* MAIN CONTENT AREA */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #ffffff;
+        }
 
-/* Toast */
-.toast{position:fixed;bottom:24px;left:50%;
-  transform:translateX(-50%) translateY(120px);
-  background:var(--panel2);border:1px solid var(--border);
-  padding:12px 22px;border-radius:10px;font-size:13px;
-  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
-  z-index:999;box-shadow:0 8px 28px rgba(0,0,0,.5);max-width:90vw;
-  display:flex;align-items:center;gap:8px;font-weight:500}
-.toast.show{transform:translateX(-50%) translateY(0)}
-.toast.error{border-color:var(--danger);color:var(--danger)}
-.toast.success{border-color:var(--accent2);color:var(--accent2)}
+        /* Tabs */
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+        }
 
-.hide{display:none!important}
+        .tab {
+            padding: 12px 40px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background-color: #ececec;
+            color: #333;
+        }
 
-/* Loading overlay */
-.loading-overlay{position:fixed;inset:0;background:rgba(10,12,16,.9);
-  backdrop-filter:blur(8px);z-index:2000;display:none;
-  align-items:center;justify-content:center;flex-direction:column;gap:20px}
-.loading-overlay.active{display:flex}
-.spinner{width:56px;height:56px;border:4px solid var(--border);
-  border-top-color:var(--accent);border-radius:50%;
-  animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-overlay p{color:var(--text);font-size:15px;font-weight:500}
-.loading-overlay .sub{color:var(--muted);font-size:12px}
+        .tab.active {
+            background-color: var(--jt-red);
+            color: white;
+        }
 
-/* Empty */
-.empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:13px}
-</style>
+        .tab:first-child {
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+
+        .tab:last-child {
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+
+        /* Search Input Container */
+        .search-container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border: 1px solid #eee;
+        }
+
+        .resi-tag {
+            display: flex;
+            align-items: center;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 14px;
+            margin-right: 15px;
+            gap: 8px;
+        }
+
+        .resi-tag i {
+            font-size: 12px;
+            color: #888;
+            cursor: pointer;
+        }
+
+        .search-container input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .search-container input::placeholder {
+            color: #999;
+        }
+
+        .search-container .fa-trash-can {
+            color: #999;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+        }
+
+        /* Search Button */
+        .btn-search {
+            background-color: var(--jt-red);
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-search:hover {
+            background-color: #c2000d;
+        }
+
+        /* Result Section (Partial) */
+        .result-header {
+            margin-top: 40px;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .result-header span {
+            color: var(--jt-red);
+            margin-right: 15px;
+            font-weight: 500;
+        }
+
+        .result-dropdown {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            padding: 8px 15px;
+            border-radius: 4px;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .result-dropdown i {
+            color: var(--jt-red);
+            font-size: 12px;
+        }
+
+        /* COOKIE BANNER */
+        .cookie-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333333;
+            color: #ffffff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            font-size: 14px;
+        }
+
+        .cookie-banner .btn-setuju {
+            background-color: var(--jt-red);
+            color: white;
+            border: none;
+            padding: 8px 25px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* CHAT WIDGET (Bottom Right) */
+        .chat-widget {
+            position: fixed;
+            bottom: 80px; /* Above cookie banner */
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .chat-widget img {
+            width: 70px;
+            height: auto;
+            margin-bottom: -10px;
+            /* Placeholder for the CS image */
+            content: url('https://via.placeholder.com/70x80?text=CS');
+        }
+
+        .chat-btn {
+            background-color: var(--jt-red);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 2px solid white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
 </head>
 <body>
 
-<header>
-  <h1><div class="logo">🎬</div>AutoVideo Editor</h1>
-  <div class="status">
-    <span class="pill" id="ffmpegStatus">⚙️ FFmpeg</span>
-    <span class="pill ready">✨ 100% Client-Side</span>
-  </div>
-</header>
-
-<main>
-  <div class="layout">
-    <!-- LEFT: Preview -->
-    <section>
-      <div class="dropzone" id="dropzone">
-        <div class="ico">📹</div>
-        <h3>Seret & lepas video di sini</h3>
-        <p>atau klik untuk pilih file · MP4, MOV, WebM, MKV, AVI · hingga 2GB</p>
-        <button class="btn btn-primary" style="max-width:240px" id="pickBtn">
-          📂 Pilih Video
-        </button>
-        <input type="file" id="fileInput" accept="video/*" hidden>
-      </div>
-
-      <div class="panel hide" id="editorPanel">
-        <div class="preview">
-          <div class="video-wrap">
-            <video id="preview" controls playsinline></video>
-          </div>
-          <div class="video-meta">
-            <span id="fileName">-</span>
-            <span id="fileMeta">-</span>
-          </div>
+    <!-- HEADER -->
+    <header class="navbar">
+        <div class="nav-left">
+            <div class="logo">J&T<span>EXPRESS</span></div>
+            <ul class="nav-links">
+                <li><i class="fa-solid fa-box"></i> Order <i class="fa-solid fa-chevron-down"></i></li>
+                <li><i class="fa-solid fa-magnifying-glass"></i> Cari <i class="fa-solid fa-chevron-down"></i></li>
+                <li><i class="fa-solid fa-earth-asia"></i> International <i class="fa-solid fa-chevron-down"></i></li>
+                <li><i class="fa-solid fa-truck-fast"></i> Layanan <i class="fa-solid fa-chevron-down"></i></li>
+                <li><i class="fa-solid fa-circle-info"></i> Informasi <i class="fa-solid fa-chevron-down"></i></li>
+                <li><i class="fa-solid fa-users"></i> Tentang Kami <i class="fa-solid fa-chevron-down"></i></li>
+                <li><i class="fa-regular fa-gem"></i> Become a VIP</li>
+            </ul>
         </div>
-      </div>
-
-      <div class="result" id="resultSection" style="margin-top:16px;border-radius:14px">
-        <h4>✅ Video Selesai Diproses</h4>
-        <video id="resultVideo" controls playsinline></video>
-        <div class="actions">
-          <a class="btn-download" id="downloadBtn" download>
-            ⬇️ Download Hasil
-          </a>
-          <button class="btn-new" id="newBtn">↺ Baru</button>
+        <div class="nav-right">
+            <div class="nav-right-links">
+                <div><i class="fa-regular fa-user"></i> Masuk/Daftar</div>
+                <div><i class="fa-solid fa-globe"></i> Indonesia <i class="fa-solid fa-chevron-down"></i></div>
+            </div>
         </div>
-      </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-text">
+            <h1>Search</h1>
+        </div>
+        <div class="hero-image">
+            <!-- Gambar Maskot & Kardus asli diletakkan di background-image CSS .hero-image -->
+        </div>
     </section>
 
-    <!-- RIGHT: Tools -->
-    <section class="panel" id="toolsPanel">
-      <div class="tabs">
-        <button class="tab active" data-tab="preset">✨ Preset</button>
-        <button class="tab" data-tab="trim">✂️ Potong</button>
-        <button class="tab" data-tab="scale">📐 Resolusi</button>
-        <button class="tab" data-tab="speed">⚡ Speed</button>
-        <button class="tab" data-tab="filter">🎨 Filter</button>
-        <button class="tab" data-tab="text">🅣 Teks</button>
-        <button class="tab" data-tab="audio">🔊 Audio</button>
-        <button class="tab" data-tab="format">🔄 Format</button>
-      </div>
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active">Lacak Paket</button>
+            <button class="tab">Cek Tarif</button>
+            <button class="tab">Cari Drop Point</button>
+        </div>
 
-      <!-- Preset -->
-      <div class="tab-body active" data-body="preset">
-        <p style="font-size:12px;color:var(--muted)">
-          Klik preset untuk mengisi konfigurasi otomatis.
-        </p>
-        <div class="preset-grid" id="presetGrid"></div>
-      </div>
+        <!-- Search Input -->
+        <div class="search-container">
+            <div class="resi-tag">
+                JD0600673041 <i class="fa-solid fa-xmark"></i>
+            </div>
+            <input type="text" placeholder="Silakan masukkan nomor resi">
+            <i class="fa-regular fa-trash-can"></i>
+        </div>
 
-      <!-- Trim -->
-      <div class="tab-body" data-body="trim">
-        <div>
-          <label>Mulai: <span class="range-val" id="tsVal" style="display:inline-block;
-            margin-left:8px;padding:2px 8px">0.0s</span></label>
-          <input type="range" id="trimStart" min="0" max="100" step="0.1" value="0">
-        </div>
-        <div>
-          <label>Selesai: <span class="range-val" id="teVal" style="display:inline-block;
-            margin-left:8px;padding:2px 8px">100.0s</span></label>
-          <input type="range" id="trimEnd" min="0" max="100" step="0.1" value="100">
-        </div>
-        <p style="font-size:11px;color:var(--muted)">
-          Geser untuk memotong bagian awal/akhir video.
-        </p>
-      </div>
+        <!-- Search Button -->
+        <button class="btn-search">Cari</button>
 
-      <!-- Scale -->
-      <div class="tab-body" data-body="scale">
-        <div>
-          <label>Preset Resolusi</label>
-          <select id="resolution">
-            <option value="">Asli (tidak diubah)</option>
-            <option value="1920:1080">Full HD 1920×1080 (16:9)</option>
-            <option value="1280:720">HD 1280×720 (16:9)</option>
-            <option value="854:480">SD 854×480 (16:9)</option>
-            <option value="1080:1080">Square 1080×1080 (1:1)</option>
-            <option value="1080:1920">Story 1080×1920 (9:16)</option>
-            <option value="640:640">Mini 640×640</option>
-          </select>
+        <!-- Result Section (Partial) -->
+        <div class="result-header">
+            <span>Resi</span>
+            <div class="result-dropdown">
+                JD0600673041 <i class="fa-solid fa-chevron-down"></i>
+            </div>
         </div>
-        <div class="grid-2">
-          <div><label>Lebar</label>
-            <input type="number" id="customW" placeholder="1280"></div>
-          <div><label>Tinggi</label>
-            <input type="number" id="customH" placeholder="720"></div>
-        </div>
-        <p style="font-size:11px;color:var(--muted)">
-          Biarkan kosong untuk mempertahankan resolusi asli.
-        </p>
-      </div>
+    </main>
 
-      <!-- Speed -->
-      <div class="tab-body" data-body="speed">
-        <div>
-          <label>Kecepatan Video</label>
-          <div class="range-row">
-            <input type="range" id="speed" min="0.25" max="4" step="0.25" value="1">
-            <span class="range-val" id="speedVal">1.00x</span>
-          </div>
-        </div>
-        <p style="font-size:11px;color:var(--muted)">
-          0.5x = lambat 2x · 2x = cepat 2x · Audio otomatis disesuaikan
-        </p>
-      </div>
-
-      <!-- Filter -->
-      <div class="tab-body" data-body="filter">
-        <div>
-          <label>Filter Warna (live preview)</label>
-          <select id="filter">
-            <option value="">Tanpa Filter</option>
-            <option value="grayscale">Hitam Putih</option>
-            <option value="sepia">Sepia (Vintage)</option>
-            <option value="invert">Invert (Negatif)</option>
-            <option value="brightness">Terang</option>
-            <option value="contrast">Kontras Tinggi</option>
-            <option value="saturation">Vivid (Saturasi Tinggi)</option>
-            <option value="desaturate">Pudar (Desaturasi)</option>
-            <option value="hflip">Flip Horizontal (Mirror)</option>
-            <option value="vflip">Flip Vertikal</option>
-            <option value="blur">Blur</option>
-            <option value="sharpen">Tajam (Sharpen)</option>
-          </select>
-        </div>
-        <p style="font-size:11px;color:var(--muted)">
-          Preview di video kiri akan berubah saat filter dipilih.
-        </p>
-      </div>
-
-      <!-- Text -->
-      <div class="tab-body" data-body="text">
-        <div>
-          <label>Teks Watermark</label>
-          <input type="text" id="wmText" placeholder="© Nama Anda 2025">
-        </div>
-        <div>
-          <label>Ukuran Font</label>
-          <div class="range-row">
-            <input type="range" id="wmSize" min="12" max="120" value="36">
-            <span class="range-val" id="wmSizeVal">36px</span>
-          </div>
-        </div>
-        <div class="grid-2">
-          <div><label>Warna</label>
-            <input type="color" id="wmColor" value="#ffffff"></div>
-          <div>
-            <label>Posisi</label>
-            <select id="wmPos">
-              <option value="top-left">Kiri Atas</option>
-              <option value="top-right">Kanan Atas</option>
-              <option value="bottom-left">Kiri Bawah</option>
-              <option value="bottom-right" selected>Kanan Bawah</option>
-              <option value="center">Tengah</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- Audio -->
-      <div class="tab-body" data-body="audio">
-        <div>
-          <label>Volume Audio</label>
-          <div class="range-row">
-            <input type="range" id="volume" min="0" max="2" step="0.1" value="1">
-            <span class="range-val" id="volumeVal">100%</span>
-          </div>
-        </div>
-        <div>
-          <label>Mode Audio</label>
-          <select id="audioMode">
-            <option value="keep">Pertahankan Audio</option>
-            <option value="mute">Hapus Audio (Mute)</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Format -->
-      <div class="tab-body" data-body="format">
-        <div>
-          <label>Format Output</label>
-          <select id="format">
-            <option value="mp4">MP4 (H.264) — paling kompatibel</option>
-            <option value="webm">WebM (VP9) — ringan untuk web</option>
-            <option value="gif">GIF — animasi tanpa audio</option>
-          </select>
-        </div>
-        <p style="font-size:11px;color:var(--muted)">
-          Konversi GIF memerlukan waktu lebih lama pada video panjang.
-        </p>
-      </div>
-
-      <!-- Process -->
-      <div class="process">
-        <div class="progress" id="progressBox">
-          <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-          </div>
-          <div class="progress-info">
-            <span id="progressLabel">Memproses...</span>
-            <span id="progressPct">0%</span>
-          </div>
-        </div>
-        <div class="log" id="logBox"></div>
-        <button class="btn btn-primary" id="processBtn" disabled>
-          🚀 Proses Video
+    <!-- CHAT WIDGET -->
+    <div class="chat-widget">
+        <img src="" alt="Customer Service">
+        <button class="chat-btn">
+            <i class="fa-solid fa-comments"></i> CHAT WITH US
         </button>
-      </div>
-    </section>
-  </div>
-</main>
+    </div>
 
-<!-- Loading overlay -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-  <p id="loadingText">Memuat FFmpeg...</p>
-  <p class="sub" id="loadingSub">Pertama kali butuh ~30 detik</p>
-</div>
+    <!-- COOKIE BANNER -->
+    <div class="cookie-banner">
+        <p>Kami menggunakan cookie untuk meningkatkan pengalaman Anda. Dengan mengklik 'Setuju', Anda menyetujui Kebijakan Cookie.</p>
+        <button class="btn-setuju">Setuju</button>
+    </div>
 
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<script>
-/* ============================================================
-   AutoVideo Editor - Complete Client-Side
-   ============================================================ */
-const $ = id => document.getElementById(id);
-const { FFmpeg } = FFmpegWASM;
-const { fetchFile } = FFmpegUtil;
-
-const state = {
-  ffmpeg: null,
-  ffmpegReady: false,
-  file: null,
-  duration: 0,
-  processing: false,
-  resultBlob: null,
-  resultUrl: null,
-};
-
-/* ========== TOAST ========== */
-function toast(msg, type = '') {
-  const t = $('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + type;
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.className = 'toast ' + type, 3500);
-}
-
-/* ========== HELPERS ========== */
-const fmtBytes = b => {
-  if (!b) return '0 B';
-  const u = ['B','KB','MB','GB'];
-  const i = Math.floor(Math.log(b) / Math.log(1024));
-  return (b / Math.pow(1024, i)).toFixed(2) + ' ' + u[i];
-};
-const fmtDur = s => {
-  const m = Math.floor(s / 60), sec = Math.round(s % 60);
-  return m + ':' + String(sec).padStart(2, '0');
-};
-
-/* ========== LOAD FFMPEG ========== */
-async function loadFFmpeg() {
-  if (state.ffmpegReady) return;
-  $('loadingOverlay').classList.add('active');
-  $('loadingText').textContent = 'Memuat FFmpeg...';
-  $('loadingSub').textContent = 'Pertama kali butuh ~30 detik (30MB download)';
-  $('ffmpegStatus').textContent = '⏳ Loading...';
-  $('ffmpegStatus').className = 'pill loading';
-
-  try {
-    const ffmpeg = new FFmpeg();
-    ffmpeg.on('log', ({ message }) => {
-      if (message && (
-        message.includes('frame=') ||
-        message.includes('time=') ||
-        message.includes('Stream #') ||
-        message.includes('Output #')
-      )) {
-        logLine(message);
-      }
-      // Parse progress from time=
-      const m = message.match(/time=(\d+):(\d+):(\d+\.\d+)/);
-      if (m && state.duration > 0) {
-        const h = parseInt(m[1]), mn = parseInt(m[2]), s = parseFloat(m[3]);
-        const sec = h * 3600 + mn * 60 + s;
-        const pct = Math.min(99, Math.round(sec / state.duration * 100));
-        setProgress(pct);
-      }
-    });
-
-    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
-    await ffmpeg.load({
-      coreURL: `${baseURL}/ffmpeg-core.js`,
-      wasmURL: `${baseURL}/ffmpeg-core.wasm`,
-    });
-
-    state.ffmpeg = ffmpeg;
-    state.ffmpegReady = true;
-    $('loadingOverlay').classList.remove('active');
-    $('ffmpegStatus').textContent = '✅ FFmpeg Siap';
-    $('ffmpegStatus').className = 'pill ready';
-    toast('✅ Mesin edit siap digunakan', 'success');
-  } catch (err) {
-    console.error(err);
-    $('loadingOverlay').classList.remove('active');
-    $('ffmpegStatus').textContent = '❌ Gagal Load';
-    $('ffmpegStatus').className = 'pill error';
-    toast('❌ Gagal memuat FFmpeg: ' + err.message, 'error');
-  }
-}
-
-/* ========== LOG & PROGRESS ========== */
-function logLine(msg) {
-  const el = $('logBox');
-  el.classList.add('active');
-  el.textContent += msg + '\n';
-  el.scrollTop = el.scrollHeight;
-  // Batasi 30 baris terakhir
-  const lines = el.textContent.split('\n');
-  if (lines.length > 30) {
-    el.textContent = lines.slice(-30).join('\n');
-  }
-}
-
-function setProgress(pct) {
-  $('progressBox').classList.add('active');
-  $('progressFill').style.width = pct + '%';
-  $('progressPct').textContent = pct + '%';
-  if (pct < 20) $('progressLabel').textContent = 'Menyiapkan...';
-  else if (pct < 90) $('progressLabel').textContent = 'Memproses video...';
-  else $('progressLabel').textContent = 'Menyelesaikan...';
-}
-
-function resetProgress() {
-  $('progressBox').classList.remove('active');
-  $('progressFill').style.width = '0%';
-  $('progressPct').textContent = '0%';
-  $('logBox').classList.remove('active');
-  $('logBox').textContent = '';
-}
-
-/* ========== TABS ========== */
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.onclick = () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-body').forEach(b => b.classList.remove('active'));
-    tab.classList.add('active');
-    document.querySelector(`[data-body="${tab.dataset.tab}"]`).classList.add('active');
-  };
-});
-
-/* ========== SLIDERS ========== */
-$('trimStart').oninput = e => {
-  $('tsVal').textContent = parseFloat(e.target.value).toFixed(1) + 's';
-  // Pastikan start < end
-  if (parseFloat(e.target.value) >= parseFloat($('trimEnd').value)) {
-    $('trimEnd').value = e.target.value;
-    $('teVal').textContent = parseFloat(e.target.value).toFixed(1) + 's';
-  }
-};
-$('trimEnd').oninput = e => {
-  $('teVal').textContent = parseFloat(e.target.value).toFixed(1) + 's';
-  if (parseFloat(e.target.value) <= parseFloat($('trimStart').value)) {
-    $('trimStart').value = e.target.value;
-    $('tsVal').textContent = parseFloat(e.target.value).toFixed(1) + 's';
-  }
-};
-$('speed').oninput = e => $('speedVal').textContent = parseFloat(e.target.value).toFixed(2) + 'x';
-$('wmSize').oninput = e => $('wmSizeVal').textContent = e.target.value + 'px';
-$('volume').oninput = e => $('volumeVal').textContent = Math.round(e.target.value * 100) + '%';
-
-/* ========== LIVE FILTER PREVIEW ========== */
-$('filter').onchange = () => {
-  const map = {
-    'grayscale': 'grayscale(1)',
-    'sepia': 'sepia(1)',
-    'invert': 'invert(1)',
-    'brightness': 'brightness(1.4)',
-    'contrast': 'contrast(1.5)',
-    'saturation': 'saturate(2)',
-    'desaturate': 'saturate(0.3)',
-    'hflip': 'scaleX(-1)',
-    'vflip': 'scaleY(-1)',
-    'blur': 'blur(4px)',
-    'sharpen': 'contrast(1.15) saturate(1.2)',
-  };
-  $('preview').style.filter = map[$('filter').value] || 'none';
-};
-
-/* ========== PRESETS ========== */
-const PRESETS = {
-  tiktok: { label: 'TikTok', emoji: '📱', cfg: { resolution: '1080:1920' } },
-  youtube: { label: 'YouTube HD', emoji: '▶️', cfg: { resolution: '1920:1080' } },
-  square: { label: 'Instagram', emoji: '🟦', cfg: { resolution: '1080:1080' } },
-  gif: { label: 'GIF Meme', emoji: '🎞️', cfg: { format: 'gif' } },
-  cinematic: { label: 'Cinematic', emoji: '🎬', cfg: { filter: 'contrast' } },
-  vintage: { label: 'Vintage', emoji: '📷', cfg: { filter: 'sepia' } },
-};
-
-$('presetGrid').innerHTML = Object.entries(PRESETS).map(([k, p]) =>
-  `<button class="preset-btn" data-preset="${k}">
-    <span class="emoji">${p.emoji}</span><span>${p.label}</span>
-  </button>`
-).join('');
-
-document.querySelectorAll('.preset-btn').forEach(btn => {
-  btn.onclick = () => {
-    const p = PRESETS[btn.dataset.preset];
-    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    // Reset dulu
-    $('resolution').value = '';
-    $('customW').value = '';
-    $('customH').value = '';
-    $('filter').value = '';
-    $('preview').style.filter = 'none';
-
-    // Apply
-    if (p.cfg.resolution) $('resolution').value = p.cfg.resolution;
-    if (p.cfg.format) $('format').value = p.cfg.format;
-    if (p.cfg.filter) {
-      $('filter').value = p.cfg.filter;
-      $('filter').onchange();
-    }
-    toast(`✨ Preset ${p.label} diterapkan`, 'success');
-  };
-});
-
-/* ========== FILE UPLOAD ========== */
-$('dropzone').onclick = () => $('fileInput').click();
-$('pickBtn').onclick = e => { e.stopPropagation(); $('fileInput').click(); };
-['dragenter', 'dragover'].forEach(ev =>
-  $('dropzone').addEventListener(ev, e => {
-    e.preventDefault();
-    $('dropzone').classList.add('drag');
-  })
-);
-['dragleave', 'drop'].forEach(ev =>
-  $('dropzone').addEventListener(ev, e => {
-    e.preventDefault();
-    $('dropzone').classList.remove('drag');
-  })
-);
-$('dropzone').ondrop = e => {
-  const f = e.dataTransfer.files[0];
-  if (f) loadFile(f);
-};
-$('fileInput').onchange = e => {
-  const f = e.target.files[0];
-  if (f) loadFile(f);
-};
-
-function loadFile(file) {
-  if (!file.type.startsWith('video/')) {
-    return toast('❌ File harus berupa video', 'error');
-  }
-  state.file = file;
-  const url = URL.createObjectURL(file);
-  $('preview').src = url;
-  $('fileName').textContent = file.name;
-  $('fileMeta').textContent = fmtBytes(file.size);
-
-  $('preview').onloadedmetadata = () => {
-    state.duration = $('preview').duration;
-    $('fileMeta').textContent = `${fmtBytes(file.size)} · ${fmtDuration(file)}`;
-    const ts = $('trimStart'), te = $('trimEnd');
-    ts.max = te.max = state.duration;
-    ts.value = 0;
-    te.value = state.duration;
-    $('tsVal').textContent = '0.0s';
-    $('teVal').textContent = state.duration.toFixed(1) + 's';
-  };
-
-  $('dropzone').classList.add('hide');
-  $('editorPanel').classList.remove('hide');
-  $('processBtn').disabled = false;
-  $('resultSection').classList.remove('active');
-  resetProgress();
-
-  toast('✅ Video berhasil dimuat', 'success');
-  loadFFmpeg();
-}
-
-function fmtDuration(file) {
-  const v = $('preview');
-  return v.duration ? fmtDur(v.duration) : '-';
-}
-
-$('newBtn').onclick = () => {
-  state.file = null;
-  if (state.resultUrl) {
-    URL.revokeObjectURL(state.resultUrl);
-    state.resultUrl = null;
-  }
-  state.resultBlob = null;
-  $('preview').src = '';
-  $('resultVideo').src = '';
-  $('dropzone').classList.remove('hide');
-  $('editorPanel').classList.add('hide');
-  $('resultSection').classList.remove('active');
-  $('processBtn').disabled = true;
-  $('fileInput').value = '';
-  $('preview').style.filter = 'none';
-  resetProgress();
-  toast('↺ Siap menerima video baru');
-};
-
-/* ========== BUILD FFMPEG COMMAND ========== */
-function buildArgs(inputName, outputName) {
-  const args = [];
-
-  // Trim (fast seek before -i)
-  const tStart = parseFloat($('trimStart').value) || 0;
-  const tEnd = parseFloat($('trimEnd').value) || state.duration;
-  if (tStart > 0) args.push('-ss', tStart.toFixed(2));
-  if (tEnd < state.duration - 0.05) {
-    args.push('-t', (tEnd - tStart).toFixed(2));
-  }
-
-  // Input
-  args.push('-i', inputName);
-
-  // Build video filters
-  const vf = [];
-  const filter = $('filter').value;
-  const filterMap = {
-    'grayscale': 'hue=s=0',
-    'sepia': 'colorchannelmixer=.393:.769:.189:0:.349:.686:.168:0:.272:.534:.131',
-    'invert': 'negate',
-    'brightness': 'eq=brightness=0.15',
-    'contrast': 'eq=contrast=1.4',
-    'saturation': 'eq=saturation=2',
-    'desaturate': 'eq=saturation=0.3',
-    'hflip': 'hflip',
-    'vflip': 'vflip',
-    'blur': 'gblur=sigma=5',
-    'sharpen': 'unsharp=5:5:1.5',
-  };
-  if (filter && filterMap[filter]) {
-    vf.push(filterMap[filter]);
-  }
-
-  // Resolution
-  let res = $('resolution').value;
-  if (!res && $('customW').value && $('customH').value) {
-    res = `${$('customW').value}:${$('customH').value}`;
-  }
-  if (res) {
-    vf.push(`scale=${res}:force_original_aspect_ratio=decrease`);
-    vf.push(`pad=${res}:(ow-iw)/2:(oh-ih)/2:color=black`);
-  }
-
-  // Speed
-  const spd = parseFloat($('speed').value);
-  if (spd !== 1) {
-    vf.push(`setpts=${(1 / spd).toFixed(4)}*PTS`);
-  }
-
-  // Text watermark (built after other filters)
-  const wmText = $('wmText').value.trim();
-  if (wmText) {
-    const posMap = {
-      'top-left': 'x=20:y=20',
-      'top-right': 'x=w-tw-20:y=20',
-      'bottom-left': 'x=20:y=h-th-20',
-      'bottom-right': 'x=w-tw-20:y=h-th-20',
-      'center': 'x=(w-tw)/2:y=(h-th)/2',
-    };
-    const pos = posMap[$('wmPos').value] || posMap['bottom-right'];
-    const color = $('wmColor').value.replace('#', '0x');
-    const size = $('wmSize').value;
-    const escaped = wmText.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/:/g, '\\:').replace(/,/g, '\\,');
-    vf.push(`drawtext=text='${escaped}':fontsize=${size}:fontcolor=${color}:${pos}:box=1:boxcolor=black@0.4:boxborderw=8`);
-  }
-
-  if (vf.length) {
-    args.push('-vf', vf.join(','));
-  }
-
-  // Audio filters
-  const af = [];
-  if (spd !== 1) {
-    let s = spd;
-    while (s > 2.0) { af.push('atempo=2.0'); s /= 2.0; }
-    while (s < 0.5) { af.push('atempo=0.5'); s *= 2.0; }
-    af.push(`atempo=${s.toFixed(4)}`);
-  }
-  const vol = parseFloat($('volume').value);
-  if (vol !== 1 && vol > 0) {
-    af.push(`volume=${vol.toFixed(2)}`);
-  }
-  if (af.length) args.push('-af', af.join(','));
-
-  // Audio mode
-  const fmt = $('format').value;
-  if ($('audioMode').value === 'mute' || fmt === 'gif') {
-    args.push('-an');
-  }
-
-  // Codec
-  if (fmt === 'gif') {
-    args.push('-loop', '0');
-  } else if (fmt === 'webm') {
-    args.push('-c:v', 'libvpx-vp9', '-b:v', '2M', '-c:a', 'libopus');
-  } else {
-    args.push('-c:v', 'libx264', '-preset', 'fast', '-crf', '23', '-c:a', 'aac', '-b:a', '128k');
-  }
-
-  args.push(outputName);
-  return args;
-}
-
-/* ========== PROCESS ========== */
-$('processBtn').onclick = async () => {
-  if (!state.file) return toast('Upload video dulu', 'error');
-  if (!state.ffmpegReady) return toast('FFmpeg belum siap, tunggu sebentar...', 'error');
-  if (state.processing) return;
-
-  state.processing = true;
-  $('processBtn').disabled = true;
-  $('processBtn').textContent = '⏳ Memproses...';
-  $('resultSection').classList.remove('active');
-  resetProgress();
-  setProgress(0);
-
-  const fmt = $('format').value;
-  const inputName = 'input.' + (state.file.name.split('.').pop() || 'mp4');
-  const outputName = 'output.' + fmt;
-
-  try {
-    const ffmpeg = state.ffmpeg;
-
-    // 1. Write input
-    logLine('Membaca file input...');
-    setProgress(5);
-    await ffmpeg.writeFile(inputName, await fetchFile(state.file));
-    setProgress(10);
-
-    // 2. Build & run
-    const args = buildArgs(inputName, outputName);
-    logLine('Menjalankan FFmpeg: ' + args.slice(0, 6).join(' ') + ' ...');
-    setProgress(15);
-
-    await ffmpeg.exec(args);
-    setProgress(95);
-
-    // 3. Read output
-    logLine('Membaca hasil...');
-    const data = await ffmpeg.readFile(outputName);
-    const mime = fmt === 'gif' ? 'image/gif' : fmt === 'webm' ? 'video/webm' : 'video/mp4';
-    const blob = new Blob([data.buffer], { type: mime });
-
-    state.resultBlob = blob;
-
-    // 4. Show result
-    if (state.resultUrl) URL.revokeObjectURL(state.resultUrl);
-    state.resultUrl = URL.createObjectURL(blob);
-    $('resultVideo').src = state.resultUrl;
-    $('resultSection').classList.add('active');
-
-    const baseName = state.file.name.replace(/\.[^.]+$/, '');
-    $('downloadBtn').href = state.resultUrl;
-    $('downloadBtn').download = `${baseName}_edited.${fmt}`;
-    $('downloadBtn').textContent = `⬇️ Download (${fmtBytes(blob.size)})`;
-
-    setProgress(100);
-    logLine(`✅ Selesai! Ukuran: ${fmtBytes(blob.size)}`);
-    toast('✅ Video berhasil diproses!', 'success');
-
-    // Cleanup FFmpeg FS
-    try { await ffmpeg.deleteFile(inputName); } catch (e) {}
-    try { await ffmpeg.deleteFile(outputName); } catch (e) {}
-  } catch (err) {
-    console.error(err);
-    logLine('❌ Error: ' + err.message);
-    toast('❌ Gagal: ' + err.message.slice(0, 100), 'error');
-  } finally {
-    state.processing = false;
-    $('processBtn').disabled = false;
-    $('processBtn').textContent = '🚀 Proses Video';
-    setTimeout(() => {
-      if (!state.processing) {
-        $('progressBox').classList.remove('active');
-      }
-    }, 2000);
-  }
-};
-
-/* ========== INIT ========== */
-console.log('%c🎬 AutoVideo Editor', 'color:#7c5cff;font-size:20px;font-weight:bold');
-console.log('%c100% Client-Side · No upload to server · Video stays in your browser',
-  'color:#00d4aa;font-size:12px');
-</script>
 </body>
 </html>
