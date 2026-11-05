@@ -5,153 +5,523 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Layar Tampilan — Video Input</title>
 <style>
-  :root{
-    --bg:#0a0b0e;
-    --panel:rgba(18,20,26,.75);
-    --border:rgba(255,255,255,.10);
-    --text:#e9edf5;
-    --muted:#8b93a7;
-    --accent:#4f8cff;
-    --danger:#ff4f6d;
-    --ok:#2fd07a;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;background:#000;color:var(--text);
-    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    overflow:hidden;user-select:none;-webkit-tap-highlight-color:transparent;
+  :root {
+    --accent-1: #6366f1;
+    --accent-2: #8b5cf6;
+    --accent-3: #a855f7;
+    --success: #34d399;
+    --danger: #f87171;
+    --text: #f4f4f6;
+    --muted: #9ca3af;
+    --glass: rgba(15, 15, 25, 0.7);
+    --border: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.18);
   }
 
-  /* ===== Panggung video ===== */
-  .stage{position:fixed;inset:0;background:#000;display:grid;place-items:center}
-  #video{
-    width:100%;height:100%;object-fit:contain;background:#000;
-    display:block;transition:opacity .35s ease;
-  }
-  #video.fit-cover{object-fit:cover}
-  #video.mirror{transform:scaleX(-1)}
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
 
-  /* ===== Placeholder ===== */
-  .placeholder{
-    position:absolute;inset:0;display:grid;place-content:center;justify-items:center;
-    gap:14px;text-align:center;padding:32px;
-    background:radial-gradient(ellipse at 50% 40%,#141924 0%,#07080b 75%);
-    transition:opacity .35s ease,visibility .35s;
-  }
-  .placeholder.gone{opacity:0;visibility:hidden}
-  .ph-icon{
-    width:76px;height:76px;border-radius:50%;
-    display:grid;place-items:center;font-size:26px;color:#9fbaff;
-    background:rgba(79,140,255,.12);border:1px solid rgba(79,140,255,.35);
-    box-shadow:0 0 40px rgba(79,140,255,.18);
-  }
-  .placeholder h1{font-size:clamp(18px,2.4vw,26px);margin:0;font-weight:650;letter-spacing:.2px}
-  .placeholder p{margin:0;max-width:460px;color:var(--muted);font-size:14.5px;line-height:1.65}
-  .placeholder b{color:#cfe0ff}
-
-  /* ===== UI overlay ===== */
-  .ui{
-    position:fixed;inset:0;pointer-events:none;
-    display:flex;flex-direction:column;justify-content:space-between;
-    transition:opacity .3s ease;
-  }
-  .ui.hide{opacity:0}
-  .ui > *{pointer-events:auto}
-
-  .bar{
-    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-    padding:14px 16px;
-    background:linear-gradient(to bottom,rgba(8,9,12,.9),rgba(8,9,12,0));
-  }
-  .bar.bottom{
-    justify-content:center;
-    padding:26px 16px 18px;
-    background:linear-gradient(to top,rgba(8,9,12,.92),rgba(8,9,12,0));
-  }
-  .group{display:flex;align-items:center;gap:8px}
-
-  .dot{
-    width:9px;height:9px;border-radius:50%;background:#5a6072;flex:none;
-    transition:background .25s,box-shadow .25s;
-  }
-  .dot.on{background:var(--ok);box-shadow:0 0 10px var(--ok);animation:pulse 2s infinite}
-  @keyframes pulse{50%{opacity:.45}}
-
-  .select{
-    appearance:none;background:var(--panel);color:var(--text);
-    border:1px solid var(--border);border-radius:10px;
-    padding:9px 34px 9px 13px;font-size:13.5px;max-width:min(56vw,320px);
-    cursor:pointer;backdrop-filter:blur(12px);outline:none;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238b93a7'><path d='M2 4l4 4 4-4'/></svg>");
-    background-repeat:no-repeat;background-position:right 12px center;
-  }
-  .select:focus-visible{border-color:var(--accent)}
-
-  .badge{
-    font-size:12.5px;color:var(--muted);padding:7px 12px;border-radius:999px;
-    background:var(--panel);border:1px solid var(--border);backdrop-filter:blur(12px);
-    font-variant-numeric:tabular-nums;white-space:nowrap;max-width:52vw;
-    overflow:hidden;text-overflow:ellipsis;
+  body {
+    margin: 0;
+    background: #050507;
+    color: var(--text);
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    overflow: hidden;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  .btn{
-    appearance:none;border:1px solid var(--border);border-radius:11px;
-    background:var(--panel);color:var(--text);
-    padding:11px 17px;font-size:13.5px;font-weight:560;cursor:pointer;
-    backdrop-filter:blur(14px);transition:transform .12s,background .2s,border-color .2s;
-    white-space:nowrap;
+  /* ================= STAGE ================= */
+  .stage {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: grid;
+    place-items: center;
+    z-index: 0;
   }
-  .btn:hover{background:rgba(38,43,56,.85);border-color:rgba(255,255,255,.2)}
-  .btn:active{transform:scale(.96)}
-  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .btn.primary{background:var(--accent);border-color:transparent;color:#fff;font-weight:640}
-  .btn.primary:hover{background:#3f7bf0}
-  .btn.primary.stop{background:var(--danger)}
-  .btn.primary.stop:hover{background:#e63e5c}
-  .btn.active{border-color:var(--accent);color:#a9c6ff;background:rgba(79,140,255,.16)}
+  #video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+    display: block;
+    transition: opacity .35s ease;
+  }
+  #video.fit-cover { object-fit: cover; }
+  #video.mirror { transform: scaleX(-1); }
 
-  @media (max-width:620px){
-    .btn{padding:10px 13px;font-size:12.5px}
-    .bar{gap:8px;padding:12px}
-    .bar.bottom{gap:8px}
+  .stage::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%);
+    z-index: 1;
+    opacity: 0;
+    transition: opacity .5s;
+  }
+  body.has-video .stage::after { opacity: 1; }
+
+  /* ================= PLACEHOLDER ================= */
+  .placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 24px;
+    text-align: center;
+    padding: 40px;
+    background: radial-gradient(ellipse at 50% 40%, #0d0d16 0%, #050507 70%);
+    transition: opacity .4s ease, visibility .4s;
+    z-index: 2;
+  }
+  .placeholder.gone { opacity: 0; visibility: hidden; }
+
+  .ph-icon-wrap {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 8px;
+  }
+  .ph-icon-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -30px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.45) 0%, transparent 65%);
+    filter: blur(20px);
+    animation: pulseGlow 3.5s ease-in-out infinite;
+  }
+  .ph-icon {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(139, 92, 246, 0.25));
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    display: grid;
+    place-items: center;
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 8px 32px rgba(99, 102, 241, 0.3);
+    color: #c4b5fd;
+  }
+  .ph-icon svg { width: 34px; height: 34px; margin-left: 4px; }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.08); }
+  }
+
+  .placeholder h1 {
+    font-size: clamp(22px, 2.6vw, 30px);
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #fff 0%, #c4b5fd 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .placeholder p {
+    margin: 0;
+    max-width: 480px;
+    color: var(--muted);
+    font-size: 14.5px;
+    line-height: 1.7;
+  }
+  .placeholder b { color: #c4b5fd; font-weight: 600; }
+
+  /* ================= TICKER ================= */
+  .ticker {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 60px;
+    display: none;
+    align-items: center;
+    overflow: hidden;
+    background: linear-gradient(90deg,
+      rgba(10, 10, 18, 0.92) 0%,
+      rgba(28, 20, 48, 0.92) 50%,
+      rgba(10, 10, 18, 0.92) 100%);
+    border-top: 1px solid rgba(139, 92, 246, 0.35);
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(139, 92, 246, 0.15);
+    backdrop-filter: blur(20px);
+    z-index: 4;
+  }
+  .ticker::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.8), transparent);
+  }
+  .ticker-track {
+    display: flex;
+    width: max-content;
+    white-space: nowrap;
+    will-change: transform;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #ede9fe;
+    text-shadow: 0 2px 12px rgba(139, 92, 246, 0.4);
+  }
+  .ticker-track span {
+    flex: 0 0 auto;
+    padding: 0 3rem;
+    display: block;
+  }
+
+  /* ================= TOP BAR ================= */
+  .top-bar {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 20px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    transition: opacity .35s ease, transform .35s ease;
+  }
+
+  .status-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #4b5563;
+    flex: none;
+    transition: all .3s;
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4);
+  }
+  .dot.on {
+    background: var(--success);
+    box-shadow: 0 0 12px var(--success), 0 0 0 4px rgba(52, 211, 153, 0.15);
+    animation: pulseDot 2s infinite;
+  }
+  @keyframes pulseDot {
+    50% { box-shadow: 0 0 16px var(--success), 0 0 0 6px rgba(52, 211, 153, 0.08); }
+  }
+
+  .select {
+    appearance: none;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text);
+    border: 1px solid transparent;
+    border-radius: 12px;
+    padding: 9px 36px 9px 14px;
+    font-size: 13.5px;
+    font-weight: 500;
+    font-family: inherit;
+    max-width: min(56vw, 340px);
+    cursor: pointer;
+    outline: none;
+    transition: all .2s;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12'><path d='M2 4l4 4 4-4' stroke='%239ca3af' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+  }
+  .select:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: var(--border);
+  }
+  .select:focus-visible {
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  }
+
+  .badge {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 6px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    max-width: 40vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+  }
+
+  /* ================= BOTTOM DOCK ================= */
+  .bottom-dock {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: calc(100vw - 40px);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 24px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    z-index: 10;
+    transition: bottom .4s cubic-bezier(0.4, 0, 0.2, 1), opacity .35s ease, transform .35s ease;
+  }
+  body.ticker-on .bottom-dock { bottom: 88px; }
+
+  .dock-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+  .dock-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 2px 8px;
+  }
+
+  .text-input {
+    flex: 1 1 240px;
+    min-width: 160px;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    padding: 10px 14px;
+    font-size: 13.5px;
+    font-weight: 500;
+    font-family: inherit;
+    outline: none;
+    transition: all .2s;
+  }
+  .text-input::placeholder { color: #6b7280; }
+  .text-input:hover { background: rgba(255, 255, 255, 0.06); }
+  .text-input:focus {
+    border-color: rgba(139, 92, 246, 0.5);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    outline: none;
+  }
+  .btn svg { width: 16px; height: 16px; flex: none; }
+  .btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+  }
+  .btn:active { transform: translateY(0) scale(0.97); }
+  .btn:focus-visible { box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3); }
+
+  .btn.primary {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    border-color: transparent;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+  .btn.primary:hover {
+    box-shadow: 0 8px 28px rgba(99, 102, 241, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+  }
+  .btn.primary.stop {
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+    box-shadow: 0 4px 20px rgba(248, 113, 113, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  .btn.primary.stop:hover {
+    box-shadow: 0 8px 28px rgba(248, 113, 113, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+
+  .btn.active {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.45);
+    color: #c4b5fd;
+  }
+
+  /* ================= UI WRAPPER ================= */
+  .ui {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+    transition: opacity .35s ease;
+  }
+  .ui > * { pointer-events: auto; }
+  .ui.hide { opacity: 0; }
+  .ui.hide > * { pointer-events: none; }
+
+  /* ================= MOBILE ================= */
+  @media (max-width: 640px) {
+    .top-bar {
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      padding: 8px 10px;
+      border-radius: 16px;
+    }
+    .bottom-dock {
+      left: 12px;
+      right: 12px;
+      transform: none;
+      max-width: none;
+      bottom: 12px;
+      padding: 10px;
+      border-radius: 20px;
+    }
+    body.ticker-on .bottom-dock { bottom: 74px; }
+    .ticker { height: 50px; }
+    .ticker-track { font-size: 17px; }
+    .ticker-track span { padding: 0 2rem; }
+    .btn { padding: 9px 12px; font-size: 12px; gap: 6px; }
+    .btn svg { width: 14px; height: 14px; }
+    .text-input { flex-basis: 100%; }
+    .badge { display: none; }
+    .placeholder h1 { font-size: 20px; }
+    .placeholder p { font-size: 13.5px; }
+    .ph-icon-wrap { width: 80px; height: 80px; }
+    .ph-icon { width: 72px; height: 72px; }
+    .ph-icon svg { width: 28px; height: 28px; }
+  }
+
+  @media (max-width: 400px) {
+    .btn .label { display: none; }
+    .btn { padding: 10px; }
   }
 </style>
 </head>
 <body>
 
-<!-- ====== PANGGUNG ====== -->
+<!-- ================= STAGE ================= -->
 <div class="stage" id="stage">
   <video id="video" autoplay playsinline muted></video>
 
   <div class="placeholder" id="placeholder">
-    <div class="ph-icon">▶</div>
+    <div class="ph-icon-wrap">
+      <div class="ph-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </div>
+    </div>
     <h1>Layar Tampilan Video Input</h1>
     <p id="phMsg">Pilih perangkat input, lalu tekan <b>Mulai</b> untuk menampilkan video kamera / capture card.</p>
   </div>
+
+  <div class="ticker" id="ticker" aria-live="off">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
 </div>
 
-<!-- ====== UI ====== -->
+<!-- ================= UI ================= -->
 <div class="ui" id="ui">
-  <header class="bar">
-    <div class="group">
+
+  <header class="top-bar">
+    <div class="status-group">
       <span class="dot" id="dot"></span>
       <select class="select" id="deviceSelect" title="Pilih perangkat input video">
         <option value="">Memuat perangkat…</option>
       </select>
     </div>
-    <div class="group" style="margin-left:auto">
-      <span class="badge" id="info">—</span>
-    </div>
+    <span class="badge" id="info">—</span>
   </header>
 
-  <footer class="bar bottom">
-    <button class="btn primary" id="btnStart">Mulai</button>
-    <button class="btn" id="btnMirror" title="Cermin (M)">Mirror</button>
-    <button class="btn" id="btnFit" title="Mode penyesuaian">Contain</button>
-    <button class="btn" id="btnShot" title="Simpan gambar (S)">Screenshot</button>
-    <button class="btn" id="btnFull" title="Layar penuh (F)">Fullscreen</button>
+  <footer class="bottom-dock">
+
+    <div class="dock-row">
+      <input class="text-input" id="tickerInput" type="text"
+             value="Selamat datang 👋 — Silakan ubah teks berjalan di sini"
+             placeholder="Tulis teks berjalan…" aria-label="Teks berjalan" />
+      <select class="select" id="tickerSpeed" title="Kecepatan teks berjalan">
+        <option value="40">Lambat</option>
+        <option value="80" selected>Normal</option>
+        <option value="140">Cepat</option>
+        <option value="220">Sangat Cepat</option>
+      </select>
+      <button class="btn" id="btnTicker" title="Tampilkan / sembunyikan teks berjalan (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 7h16M4 12h10M4 17h16"/>
+        </svg>
+        <span class="label">Ticker</span>
+      </button>
+    </div>
+
+    <div class="dock-divider"></div>
+
+    <div class="dock-row">
+      <button class="btn primary" id="btnStart">
+        <svg viewBox="0 0 24 24" fill="currentColor" id="startIcon">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+        <span class="label" id="startLabel">Mulai</span>
+      </button>
+      <button class="btn" id="btnMirror" title="Cermin (M)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v20"/>
+          <path d="M6 8L2 12l4 4"/>
+          <path d="M18 8l4 4-4 4"/>
+        </svg>
+        <span class="label">Mirror</span>
+      </button>
+      <button class="btn" id="btnFit" title="Mode penyesuaian">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/>
+        </svg>
+        <span class="label" id="fitLabel">Contain</span>
+      </button>
+      <button class="btn" id="btnShot" title="Simpan gambar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+        <span class="label">Screenshot</span>
+      </button>
+      <button class="btn" id="btnFull" title="Layar penuh (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/>
+        </svg>
+        <span class="label">Fullscreen</span>
+      </button>
+    </div>
+
   </footer>
+
 </div>
 
 <script>
@@ -168,27 +538,99 @@
   const info        = $("#info");
   const deviceSelect= $("#deviceSelect");
   const btnStart    = $("#btnStart");
+  const startIcon   = $("#startIcon");
+  const startLabel  = $("#startLabel");
   const btnMirror   = $("#btnMirror");
   const btnFit      = $("#btnFit");
+  const fitLabel    = $("#fitLabel");
   const btnShot     = $("#btnShot");
   const btnFull     = $("#btnFull");
+
+  const ticker       = $("#ticker");
+  const tickerTrack  = $("#tickerTrack");
+  const tickerInput  = $("#tickerInput");
+  const tickerSpeed  = $("#tickerSpeed");
+  const btnTicker    = $("#btnTicker");
 
   let stream  = null;
   let running = false;
 
-  /* ---------- Cek dukungan browser ---------- */
+  const ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
+  const ICON_STOP = '<rect x="6" y="6" width="12" height="12" rx="2"/>';
+
+  /* ================= TICKER ================= */
+  let tickerEnabled = true;
+  let tickerVisible = false;
+  let tickerAnim    = null;
+
+  function renderTicker() {
+    if (!tickerVisible) return;
+    if (tickerAnim) { tickerAnim.cancel(); tickerAnim = null; }
+
+    const text = (tickerInput.value || "").trim() || "Teks berjalan…";
+    tickerTrack.innerHTML = "";
+    for (let i = 0; i < 2; i++) {
+      const span = document.createElement("span");
+      span.textContent = text;
+      tickerTrack.appendChild(span);
+    }
+
+    requestAnimationFrame(() => {
+      const halfWidth = tickerTrack.scrollWidth / 2;
+      if (!halfWidth) return;
+      const speed = Number(tickerSpeed.value) || 80;
+      const duration = (halfWidth / speed) * 1000;
+      tickerAnim = tickerTrack.animate(
+        [{ transform: "translateX(0)" }, { transform: "translateX(-50%)" }],
+        { duration, iterations: Infinity, easing: "linear" }
+      );
+    });
+  }
+
+  function updateTickerVisibility() {
+    const show = tickerEnabled && running;
+    if (show === tickerVisible) {
+      if (show) renderTicker();
+      return;
+    }
+    tickerVisible = show;
+    ticker.style.display = show ? "flex" : "none";
+    document.body.classList.toggle("ticker-on", show);
+    btnTicker.classList.toggle("active", tickerEnabled);
+    if (show) requestAnimationFrame(renderTicker);
+    else if (tickerAnim) { tickerAnim.cancel(); tickerAnim = null; }
+  }
+
+  let inputDebounce = null;
+  tickerInput.addEventListener("input", () => {
+    clearTimeout(inputDebounce);
+    inputDebounce = setTimeout(renderTicker, 120);
+  });
+  tickerSpeed.addEventListener("change", renderTicker);
+  btnTicker.addEventListener("click", () => {
+    tickerEnabled = !tickerEnabled;
+    updateTickerVisibility();
+    revealUI();
+  });
+
+  let resizeTimer = null;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => { if (tickerVisible) renderTicker(); }, 200);
+  });
+
+  /* ================= SUPPORT ================= */
   if (!navigator.mediaDevices?.getUserMedia) {
     phMsg.innerHTML = "Browser ini tidak mendukung akses kamera, atau halaman tidak dijalankan melalui <b>HTTPS / localhost</b>.";
     btnStart.disabled = true;
   }
 
-  /* ---------- Daftar perangkat ---------- */
+  /* ================= DEVICES ================= */
   async function refreshDevices() {
     try {
       const all = await navigator.mediaDevices.enumerateDevices();
       const cams = all.filter(d => d.kind === "videoinput");
       const prev = deviceSelect.value;
-
       deviceSelect.innerHTML = "";
       if (!cams.length) {
         deviceSelect.innerHTML = '<option value="">Tidak ada input video</option>';
@@ -206,11 +648,10 @@
     }
   }
 
-  /* ---------- Mulai ---------- */
+  /* ================= START ================= */
   async function start(deviceId) {
     if (!navigator.mediaDevices?.getUserMedia) return;
-
-    stop(true); // bersihkan tanpa mengubah tampilan placeholder
+    stop(true);
 
     const videoConstraints = deviceId
       ? { deviceId: { exact: deviceId }, width: { ideal: 1920 }, height: { ideal: 1080 } }
@@ -223,23 +664,25 @@
 
       running = true;
       placeholder.classList.add("gone");
+      document.body.classList.add("has-video");
       dot.classList.add("on");
-      btnStart.textContent = "Stop";
+      startIcon.innerHTML = ICON_STOP;
+      startLabel.textContent = "Stop";
       btnStart.classList.add("stop");
 
       await refreshDevices();
-
       const settings = stream.getVideoTracks()[0].getSettings();
       if (settings.deviceId && !deviceSelect.value) deviceSelect.value = settings.deviceId;
 
       updateInfo();
+      updateTickerVisibility();
       revealUI();
     } catch (err) {
       handleError(err);
     }
   }
 
-  /* ---------- Stop ---------- */
+  /* ================= STOP ================= */
   function stop(silent = false) {
     if (stream) {
       stream.getTracks().forEach(t => t.stop());
@@ -248,9 +691,12 @@
     video.srcObject = null;
     running = false;
     dot.classList.remove("on");
-    btnStart.textContent = "Mulai";
+    document.body.classList.remove("has-video");
+    startIcon.innerHTML = ICON_PLAY;
+    startLabel.textContent = "Mulai";
     btnStart.classList.remove("stop");
     info.textContent = "—";
+    updateTickerVisibility();
 
     if (!silent) {
       placeholder.classList.remove("gone");
@@ -259,7 +705,7 @@
     }
   }
 
-  /* ---------- Info resolusi ---------- */
+  /* ================= INFO ================= */
   function updateInfo() {
     if (!running) return;
     const w = video.videoWidth || 0;
@@ -274,11 +720,10 @@
   video.addEventListener("loadedmetadata", updateInfo);
   video.addEventListener("resize", updateInfo);
 
-  /* ---------- Penanganan error ---------- */
+  /* ================= ERROR ================= */
   function handleError(err) {
     const name = err?.name || "";
     let msg = "Gagal mengakses input video.";
-
     if (name === "NotAllowedError" || name === "SecurityError") {
       msg = "Izin akses kamera ditolak. Aktifkan izin kamera pada ikon 🔒 di address bar, lalu muat ulang halaman.";
     } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
@@ -297,20 +742,18 @@
     revealUI();
   }
 
-  /* ---------- Screenshot ---------- */
+  /* ================= SCREENSHOT ================= */
   function screenshot() {
     if (!running || !video.videoWidth) return;
     const c = document.createElement("canvas");
     c.width  = video.videoWidth;
     c.height = video.videoHeight;
-
     const ctx = c.getContext("2d");
     if (video.classList.contains("mirror")) {
       ctx.translate(c.width, 0);
       ctx.scale(-1, 1);
     }
     ctx.drawImage(video, 0, 0, c.width, c.height);
-
     const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
     const a = document.createElement("a");
     a.download = `video-input-${ts}.png`;
@@ -318,7 +761,7 @@
     a.click();
   }
 
-  /* ---------- Fullscreen ---------- */
+  /* ================= FULLSCREEN ================= */
   function toggleFullscreen() {
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
       const req = stage.requestFullscreen || stage.webkitRequestFullscreen;
@@ -328,25 +771,25 @@
     }
   }
 
-  /* ---------- Auto-hide UI ---------- */
+  /* ================= AUTO-HIDE ================= */
   let hideTimer = null;
   function revealUI() {
     ui.classList.remove("hide");
     clearTimeout(hideTimer);
     hideTimer = setTimeout(() => {
-      if (running) ui.classList.add("hide");
-    }, 3200);
+      if (!running) return;
+      const ae = document.activeElement;
+      if (ae && ["INPUT", "SELECT", "TEXTAREA"].includes(ae.tagName)) return;
+      ui.classList.add("hide");
+    }, 3500);
   }
   ["mousemove", "mousedown", "touchstart", "keydown"].forEach(ev =>
     window.addEventListener(ev, revealUI, { passive: true })
   );
 
-  /* ---------- Event listener ---------- */
+  /* ================= EVENTS ================= */
   btnStart.addEventListener("click", () => running ? stop() : start(deviceSelect.value || undefined));
-
-  deviceSelect.addEventListener("change", () => {
-    if (running) start(deviceSelect.value);
-  });
+  deviceSelect.addEventListener("change", () => { if (running) start(deviceSelect.value); });
 
   btnMirror.addEventListener("click", () => {
     video.classList.toggle("mirror");
@@ -356,7 +799,7 @@
 
   btnFit.addEventListener("click", () => {
     const cover = video.classList.toggle("fit-cover");
-    btnFit.textContent = cover ? "Cover" : "Contain";
+    fitLabel.textContent = cover ? "Cover" : "Contain";
     btnFit.classList.toggle("active", cover);
     revealUI();
   });
@@ -364,20 +807,20 @@
   btnShot.addEventListener("click", () => { screenshot(); revealUI(); });
   btnFull.addEventListener("click", () => { toggleFullscreen(); revealUI(); });
 
-  /* ---------- Shortcut keyboard ---------- */
+  /* ================= SHORTCUTS ================= */
   window.addEventListener("keydown", (e) => {
-    if (e.target.tagName === "SELECT" || e.target.tagName === "INPUT") return;
+    const tag = e.target.tagName;
+    if (tag === "SELECT" || tag === "INPUT" || tag === "TEXTAREA") return;
     const k = e.key.toLowerCase();
     if (k === "f") { e.preventDefault(); toggleFullscreen(); }
     else if (k === "m") { e.preventDefault(); btnMirror.click(); }
     else if (k === "s") { e.preventDefault(); screenshot(); }
+    else if (k === "t") { e.preventDefault(); btnTicker.click(); }
     else if (k === " ") { e.preventDefault(); btnStart.click(); }
   });
 
-  /* ---------- Deteksi perubahan perangkat ---------- */
+  /* ================= INIT ================= */
   navigator.mediaDevices?.addEventListener?.("devicechange", refreshDevices);
-
-  /* ---------- Inisialisasi ---------- */
   refreshDevices();
   revealUI();
 })();
