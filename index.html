@@ -3,12 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Layar Tampilan — Video Input</title>
+<title>Layar Tampilan — Video Input (HDMI / Capture)</title>
 <style>
   :root {
     --accent-1: #6366f1;
     --accent-2: #8b5cf6;
-    --accent-3: #a855f7;
     --success: #34d399;
     --danger: #f87171;
     --text: #f4f4f6;
@@ -17,394 +16,327 @@
     --border: rgba(255, 255, 255, 0.08);
     --border-hover: rgba(255, 255, 255, 0.18);
   }
-
   * { box-sizing: border-box; }
   html, body { height: 100%; }
-
   body {
-    margin: 0;
-    background: #050507;
-    color: var(--text);
+    margin: 0; background: #050507; color: var(--text);
     font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    overflow: hidden;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden; user-select: none; -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
   }
 
   /* ================= STAGE ================= */
-  .stage {
-    position: fixed;
-    inset: 0;
-    background: #000;
-    display: grid;
-    place-items: center;
-    z-index: 0;
-  }
-  #video {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    background: #000;
-    display: block;
-    transition: opacity .35s ease;
-  }
+  .stage { position: fixed; inset: 0; background: #000; display: grid; place-items: center; z-index: 0; }
+  #video { width: 100%; height: 100%; object-fit: contain; background: #000; display: block; transition: opacity .35s ease; }
   #video.fit-cover { object-fit: cover; }
   #video.mirror { transform: scaleX(-1); }
-
   .stage::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
+    content: ''; position: absolute; inset: 0; pointer-events: none;
     background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%);
-    z-index: 1;
-    opacity: 0;
-    transition: opacity .5s;
+    z-index: 1; opacity: 0; transition: opacity .5s;
   }
   body.has-video .stage::after { opacity: 1; }
 
   /* ================= PLACEHOLDER ================= */
   .placeholder {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-content: center;
-    justify-items: center;
-    gap: 24px;
-    text-align: center;
-    padding: 40px;
+    position: absolute; inset: 0; display: grid; place-content: center; justify-items: center;
+    gap: 24px; text-align: center; padding: 40px;
     background: radial-gradient(ellipse at 50% 40%, #0d0d16 0%, #050507 70%);
-    transition: opacity .4s ease, visibility .4s;
-    z-index: 2;
+    transition: opacity .4s ease, visibility .4s; z-index: 2;
   }
   .placeholder.gone { opacity: 0; visibility: hidden; }
-
-  .ph-icon-wrap {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    display: grid;
-    place-items: center;
-    margin-bottom: 8px;
-  }
+  .ph-icon-wrap { position: relative; width: 100px; height: 100px; display: grid; place-items: center; margin-bottom: 8px; }
   .ph-icon-wrap::before {
-    content: '';
-    position: absolute;
-    inset: -30px;
-    border-radius: 50%;
+    content: ''; position: absolute; inset: -30px; border-radius: 50%;
     background: radial-gradient(circle, rgba(139, 92, 246, 0.45) 0%, transparent 65%);
-    filter: blur(20px);
-    animation: pulseGlow 3.5s ease-in-out infinite;
+    filter: blur(20px); animation: pulseGlow 3.5s ease-in-out infinite;
   }
   .ph-icon {
-    position: relative;
-    width: 88px;
-    height: 88px;
-    border-radius: 50%;
+    position: relative; width: 88px; height: 88px; border-radius: 50%;
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(139, 92, 246, 0.25));
-    border: 1px solid rgba(139, 92, 246, 0.4);
-    display: grid;
-    place-items: center;
-    backdrop-filter: blur(10px);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 8px 32px rgba(99, 102, 241, 0.3);
+    border: 1px solid rgba(139, 92, 246, 0.4); display: grid; place-items: center;
+    backdrop-filter: blur(10px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 8px 32px rgba(99, 102, 241, 0.3);
     color: #c4b5fd;
   }
   .ph-icon svg { width: 34px; height: 34px; margin-left: 4px; }
-
   @keyframes pulseGlow {
     0%, 100% { opacity: 0.6; transform: scale(1); }
     50% { opacity: 1; transform: scale(1.08); }
   }
-
   .placeholder h1 {
-    font-size: clamp(22px, 2.6vw, 30px);
-    margin: 0;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-size: clamp(22px, 2.6vw, 30px); margin: 0; font-weight: 700; letter-spacing: -0.02em;
     background: linear-gradient(135deg, #fff 0%, #c4b5fd 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   }
-  .placeholder p {
-    margin: 0;
-    max-width: 480px;
-    color: var(--muted);
-    font-size: 14.5px;
-    line-height: 1.7;
-  }
+  .placeholder p { margin: 0; max-width: 480px; color: var(--muted); font-size: 14.5px; line-height: 1.7; }
   .placeholder b { color: #c4b5fd; font-weight: 600; }
+
+  /* ================= LOGO OVERLAY ================= */
+  .logo-overlay {
+    position: absolute; z-index: 5; pointer-events: none;
+    transition: top .25s ease, left .25s ease, right .25s ease, bottom .25s ease;
+  }
+  .logo-overlay img {
+    width: var(--logo-size, 80px); height: auto; display: block;
+    opacity: var(--logo-opacity, 0.9);
+    filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.6));
+    transition: opacity .2s, width .2s;
+  }
+  .logo-overlay.hidden { display: none; }
+
+  /* Posisi */
+  .logo-overlay.pos-tl { top: 24px; left: 24px; }
+  .logo-overlay.pos-tc { top: 24px; left: 50%; transform: translateX(-50%); }
+  .logo-overlay.pos-tr { top: 24px; right: 24px; }
+  .logo-overlay.pos-ml { top: 50%; left: 24px; transform: translateY(-50%); }
+  .logo-overlay.pos-mc { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+  .logo-overlay.pos-mr { top: 50%; right: 24px; transform: translateY(-50%); }
+  .logo-overlay.pos-bl { bottom: 24px; left: 24px; }
+  .logo-overlay.pos-bc { bottom: 24px; left: 50%; transform: translateX(-50%); }
+  .logo-overlay.pos-br { bottom: 24px; right: 24px; }
+
+  /* Bottom positions shift up when ticker is on */
+  body.ticker-on .logo-overlay.pos-bl,
+  body.ticker-on .logo-overlay.pos-bc,
+  body.ticker-on .logo-overlay.pos-br { bottom: 84px; }
 
   /* ================= TICKER ================= */
   .ticker {
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    height: 60px;
-    display: none;
-    align-items: center;
-    overflow: hidden;
-    background: linear-gradient(90deg,
-      rgba(10, 10, 18, 0.92) 0%,
-      rgba(28, 20, 48, 0.92) 50%,
-      rgba(10, 10, 18, 0.92) 100%);
+    position: absolute; left: 0; right: 0; bottom: 0; height: 60px;
+    display: none; align-items: center; overflow: hidden;
+    background: linear-gradient(90deg, rgba(10, 10, 18, 0.92) 0%, rgba(28, 20, 48, 0.92) 50%, rgba(10, 10, 18, 0.92) 100%);
     border-top: 1px solid rgba(139, 92, 246, 0.35);
     box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(139, 92, 246, 0.15);
-    backdrop-filter: blur(20px);
-    z-index: 4;
+    backdrop-filter: blur(20px); z-index: 4;
   }
   .ticker::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
     background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.8), transparent);
   }
   .ticker-track {
-    display: flex;
-    width: max-content;
-    white-space: nowrap;
-    will-change: transform;
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    color: #ede9fe;
+    display: flex; width: max-content; white-space: nowrap; will-change: transform;
+    font-size: 22px; font-weight: 700; letter-spacing: 0.02em; color: #ede9fe;
     text-shadow: 0 2px 12px rgba(139, 92, 246, 0.4);
   }
-  .ticker-track span {
-    flex: 0 0 auto;
-    padding: 0 3rem;
-    display: block;
-  }
+  .ticker-track span { flex: 0 0 auto; padding: 0 3rem; display: block; }
 
   /* ================= TOP BAR ================= */
   .top-bar {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    right: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    border-radius: 20px;
-    background: var(--glass);
-    border: 1px solid var(--border);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-    z-index: 10;
+    position: fixed; top: 20px; left: 20px; right: 20px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding: 10px 14px; border-radius: 20px;
+    background: var(--glass); border: 1px solid var(--border);
+    backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); z-index: 10;
     transition: opacity .35s ease, transform .35s ease;
   }
-
-  .status-group {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
-    min-width: 0;
-  }
+  .status-group { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
   .dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #4b5563;
-    flex: none;
-    transition: all .3s;
-    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4);
+    width: 10px; height: 10px; border-radius: 50%; background: #4b5563; flex: none;
+    transition: all .3s; box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4);
   }
   .dot.on {
     background: var(--success);
     box-shadow: 0 0 12px var(--success), 0 0 0 4px rgba(52, 211, 153, 0.15);
     animation: pulseDot 2s infinite;
   }
+  .dot.warn { background: #fbbf24; box-shadow: 0 0 12px #fbbf24, 0 0 0 4px rgba(251, 191, 36, 0.15); }
   @keyframes pulseDot {
     50% { box-shadow: 0 0 16px var(--success), 0 0 0 6px rgba(52, 211, 153, 0.08); }
   }
-
   .select {
-    appearance: none;
-    background: rgba(255, 255, 255, 0.03);
-    color: var(--text);
-    border: 1px solid transparent;
-    border-radius: 12px;
-    padding: 9px 36px 9px 14px;
-    font-size: 13.5px;
-    font-weight: 500;
-    font-family: inherit;
-    max-width: min(56vw, 340px);
-    cursor: pointer;
-    outline: none;
-    transition: all .2s;
+    appearance: none; background: rgba(255, 255, 255, 0.03); color: var(--text);
+    border: 1px solid transparent; border-radius: 12px;
+    padding: 9px 36px 9px 14px; font-size: 13.5px; font-weight: 500; font-family: inherit;
+    max-width: min(56vw, 340px); cursor: pointer; outline: none; transition: all .2s;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12'><path d='M2 4l4 4 4-4' stroke='%239ca3af' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
+    background-repeat: no-repeat; background-position: right 14px center;
   }
-  .select:hover {
-    background-color: rgba(255, 255, 255, 0.06);
-    border-color: var(--border);
-  }
-  .select:focus-visible {
-    border-color: rgba(139, 92, 246, 0.5);
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
-  }
-
+  .select:hover { background-color: rgba(255, 255, 255, 0.06); border-color: var(--border); }
+  .select:focus-visible { border-color: rgba(139, 92, 246, 0.5); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15); }
+  .select.panel-select { width: 100%; max-width: none; }
   .badge {
-    font-size: 12px;
-    color: var(--muted);
-    padding: 6px 12px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-    max-width: 40vw;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-weight: 500;
+    font-size: 12px; color: var(--muted); padding: 6px 12px; border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border);
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+    max-width: 40vw; overflow: hidden; text-overflow: ellipsis; font-weight: 500;
   }
 
   /* ================= BOTTOM DOCK ================= */
   .bottom-dock {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    max-width: calc(100vw - 40px);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 12px;
-    border-radius: 24px;
-    background: var(--glass);
-    border: 1px solid var(--border);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    max-width: calc(100vw - 40px); display: flex; flex-direction: column; gap: 10px;
+    padding: 12px; border-radius: 24px;
+    background: var(--glass); border: 1px solid var(--border);
+    backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
     box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    z-index: 10;
-    transition: bottom .4s cubic-bezier(0.4, 0, 0.2, 1), opacity .35s ease, transform .35s ease;
+    z-index: 10; transition: bottom .4s cubic-bezier(0.4, 0, 0.2, 1), opacity .35s ease, transform .35s ease;
   }
   body.ticker-on .bottom-dock { bottom: 88px; }
-
-  .dock-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-  }
-  .dock-divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border), transparent);
-    margin: 2px 8px;
-  }
+  .dock-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; align-items: center; }
+  .dock-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 2px 8px; }
 
   .text-input {
-    flex: 1 1 240px;
-    min-width: 160px;
-    max-width: 400px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    color: var(--text);
-    padding: 10px 14px;
-    font-size: 13.5px;
-    font-weight: 500;
-    font-family: inherit;
-    outline: none;
-    transition: all .2s;
+    flex: 1 1 200px; min-width: 140px; max-width: 380px;
+    background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 12px;
+    color: var(--text); padding: 10px 14px; font-size: 13.5px; font-weight: 500; font-family: inherit;
+    outline: none; transition: all .2s;
   }
   .text-input::placeholder { color: #6b7280; }
   .text-input:hover { background: rgba(255, 255, 255, 0.06); }
   .text-input:focus {
-    border-color: rgba(139, 92, 246, 0.5);
-    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(139, 92, 246, 0.5); background: rgba(255, 255, 255, 0.06);
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
   }
 
   .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.03);
-    color: var(--text);
-    font-size: 13px;
-    font-weight: 600;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
-    white-space: nowrap;
-    outline: none;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 16px; border-radius: 12px; border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03); color: var(--text);
+    font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer;
+    transition: all .2s cubic-bezier(0.4, 0, 0.2, 1); white-space: nowrap; outline: none;
   }
   .btn svg { width: 16px; height: 16px; flex: none; }
-  .btn:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: var(--border-hover);
-    transform: translateY(-1px);
-  }
+  .btn:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--border-hover); transform: translateY(-1px); }
   .btn:active { transform: translateY(0) scale(0.97); }
   .btn:focus-visible { box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3); }
-
   .btn.primary {
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     border-color: transparent;
     box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     color: #fff;
   }
-  .btn.primary:hover {
-    box-shadow: 0 8px 28px rgba(99, 102, 241, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    transform: translateY(-1px);
-  }
+  .btn.primary:hover { box-shadow: 0 8px 28px rgba(99, 102, 241, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25); transform: translateY(-1px); }
   .btn.primary.stop {
     background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
     box-shadow: 0 4px 20px rgba(248, 113, 113, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
-  .btn.primary.stop:hover {
-    box-shadow: 0 8px 28px rgba(248, 113, 113, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  .btn.primary.stop:hover { box-shadow: 0 8px 28px rgba(248, 113, 113, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+  .btn.active { background: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.45); color: #c4b5fd; }
+  .btn.small { padding: 9px 12px; font-size: 12.5px; }
+  .btn.icon-only { padding: 9px; }
+  .btn.icon-only svg { width: 16px; height: 16px; }
+  .btn.spinning svg { animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ================= PANELS ================= */
+  .logo-panel {
+    position: absolute; bottom: calc(100% + 12px); right: 0;
+    width: 300px; max-width: calc(100vw - 40px); max-height: calc(100vh - 220px);
+    padding: 16px; border-radius: 20px;
+    background: rgba(15, 15, 25, 0.95);
+    backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    display: none; flex-direction: column; gap: 14px;
+    z-index: 20; overflow-y: auto; scrollbar-width: thin;
+  }
+  .logo-panel.open { display: flex; animation: panelSlide .25s cubic-bezier(0.4, 0, 0.2, 1); }
+  @keyframes panelSlide {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .panel-header { display: flex; align-items: center; justify-content: space-between; }
+  .panel-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; }
+  .panel-title svg { width: 18px; height: 18px; color: #c4b5fd; }
+  .panel-close {
+    width: 28px; height: 28px; display: grid; place-items: center;
+    background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--muted); cursor: pointer; transition: all .15s;
+  }
+  .panel-close:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+  .panel-close svg { width: 14px; height: 14px; }
+
+  .panel-section { display: flex; flex-direction: column; gap: 8px; }
+  .panel-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .panel-label-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .panel-value { font-size: 12px; color: #c4b5fd; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .panel-value.trunc { max-width: 165px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .panel-row { display: flex; gap: 8px; }
+  .panel-hint { margin: 0; font-size: 11.5px; line-height: 1.6; color: var(--muted); }
+  .panel-hint b { color: #c4b5fd; }
+
+  /* Position Grid */
+  .position-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
+    gap: 4px; padding: 6px; border-radius: 12px;
+    background: rgba(0, 0, 0, 0.3); height: 120px;
+  }
+  .position-grid button {
+    position: relative; border: 1px solid transparent;
+    background: rgba(255, 255, 255, 0.04); border-radius: 8px;
+    cursor: pointer; transition: all .15s; outline: none; padding: 0;
+  }
+  .position-grid button::after {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    transition: all .2s;
+  }
+  .position-grid button:hover { background: rgba(255, 255, 255, 0.1); }
+  .position-grid button:hover::after { background: rgba(255, 255, 255, 0.4); width: 14px; height: 14px; }
+  .position-grid button:focus-visible { box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.5); }
+  .position-grid button.active {
+    background: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.5);
+  }
+  .position-grid button.active::after {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    width: 16px; height: 16px;
+    box-shadow: 0 0 14px rgba(139, 92, 246, 0.8);
   }
 
-  .btn.active {
-    background: rgba(139, 92, 246, 0.15);
-    border-color: rgba(139, 92, 246, 0.45);
-    color: #c4b5fd;
+  /* Range slider */
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 6px;
+    border-radius: 999px; background: rgba(255, 255, 255, 0.1);
+    outline: none; cursor: pointer; margin: 4px 0;
   }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border: 2px solid #14141c;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25), 0 2px 8px rgba(99, 102, 241, 0.5);
+    cursor: pointer; transition: transform .15s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border: 2px solid #14141c;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25), 0 2px 8px rgba(99, 102, 241, 0.5);
+    cursor: pointer;
+  }
+
+  /* Toggle switch */
+  .toggle-btn {
+    width: 100%; justify-content: flex-start; padding: 10px 14px;
+  }
+  .toggle-switch {
+    position: relative; width: 34px; height: 18px;
+    background: rgba(255, 255, 255, 0.12); border-radius: 999px;
+    transition: background .2s; flex: none;
+  }
+  .toggle-switch::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 14px; height: 14px; border-radius: 50%; background: #fff;
+    transition: transform .25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  }
+  .toggle-btn.active .toggle-switch { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+  .toggle-btn.active .toggle-switch::after { transform: translateX(16px); }
 
   /* ================= UI WRAPPER ================= */
-  .ui {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 10;
-    transition: opacity .35s ease;
-  }
+  .ui { position: fixed; inset: 0; pointer-events: none; z-index: 10; transition: opacity .35s ease; }
   .ui > * { pointer-events: auto; }
   .ui.hide { opacity: 0; }
   .ui.hide > * { pointer-events: none; }
 
   /* ================= MOBILE ================= */
   @media (max-width: 640px) {
-    .top-bar {
-      top: 12px;
-      left: 12px;
-      right: 12px;
-      padding: 8px 10px;
-      border-radius: 16px;
-    }
-    .bottom-dock {
-      left: 12px;
-      right: 12px;
-      transform: none;
-      max-width: none;
-      bottom: 12px;
-      padding: 10px;
-      border-radius: 20px;
-    }
+    .top-bar { top: 12px; left: 12px; right: 12px; padding: 8px 10px; border-radius: 16px; }
+    .bottom-dock { left: 12px; right: 12px; transform: none; max-width: none; bottom: 12px; padding: 10px; border-radius: 20px; }
     body.ticker-on .bottom-dock { bottom: 74px; }
     .ticker { height: 50px; }
     .ticker-track { font-size: 17px; }
@@ -418,6 +350,15 @@
     .ph-icon-wrap { width: 80px; height: 80px; }
     .ph-icon { width: 72px; height: 72px; }
     .ph-icon svg { width: 28px; height: 28px; }
+    .logo-panel { right: -10px; width: 280px; }
+    .logo-overlay.pos-tl { top: 88px; left: 16px; }
+    .logo-overlay.pos-tr { top: 88px; right: 16px; }
+    .logo-overlay.pos-bl { bottom: 160px; left: 16px; }
+    .logo-overlay.pos-br { bottom: 160px; right: 16px; }
+    body.ticker-on .logo-overlay.pos-bl,
+    body.ticker-on .logo-overlay.pos-bc,
+    body.ticker-on .logo-overlay.pos-br { bottom: 220px; }
+    .select { max-width: 42vw; }
   }
 
   @media (max-width: 400px) {
@@ -435,17 +376,20 @@
   <div class="placeholder" id="placeholder">
     <div class="ph-icon-wrap">
       <div class="ph-icon">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M8 5v14l11-7z"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
       </div>
     </div>
     <h1>Layar Tampilan Video Input</h1>
-    <p id="phMsg">Pilih perangkat input, lalu tekan <b>Mulai</b> untuk menampilkan video kamera / capture card.</p>
+    <p id="phMsg">Pilih perangkat input (kamera / capture card HDMI), lalu tekan <b>Mulai</b>.</p>
   </div>
 
   <div class="ticker" id="ticker" aria-live="off">
     <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+
+  <!-- LOGO OVERLAY -->
+  <div class="logo-overlay pos-tr" id="logoOverlay">
+    <img id="logoImg" alt="Logo">
   </div>
 </div>
 
@@ -455,9 +399,14 @@
   <header class="top-bar">
     <div class="status-group">
       <span class="dot" id="dot"></span>
-      <select class="select" id="deviceSelect" title="Pilih perangkat input video">
+      <select class="select" id="deviceSelect" title="Pilih perangkat input video (HDMI capture / kamera)">
         <option value="">Memuat perangkat…</option>
       </select>
+      <button class="btn icon-only" id="btnScan" title="Scan ulang perangkat input (R)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>
+        </svg>
+      </button>
     </div>
     <span class="badge" id="info">—</span>
   </header>
@@ -480,22 +429,33 @@
         </svg>
         <span class="label">Ticker</span>
       </button>
+      <button class="btn" id="btnLogo" title="Atur logo / icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="3"/>
+          <circle cx="9" cy="9" r="2"/>
+          <path d="m21 15-5-5L5 21"/>
+        </svg>
+        <span class="label">Logo</span>
+      </button>
+      <button class="btn" id="btnSource" title="Pengaturan sumber HDMI">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="6" width="20" height="12" rx="2"/>
+          <path d="M6 10v4M10 10v4M14 10v4M18 10v4"/>
+        </svg>
+        <span class="label">Sumber</span>
+      </button>
     </div>
 
     <div class="dock-divider"></div>
 
     <div class="dock-row">
       <button class="btn primary" id="btnStart">
-        <svg viewBox="0 0 24 24" fill="currentColor" id="startIcon">
-          <path d="M8 5v14l11-7z"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" id="startIcon"><path d="M8 5v14l11-7z"/></svg>
         <span class="label" id="startLabel">Mulai</span>
       </button>
       <button class="btn" id="btnMirror" title="Cermin (M)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2v20"/>
-          <path d="M6 8L2 12l4 4"/>
-          <path d="M18 8l4 4-4 4"/>
+          <path d="M12 2v20"/><path d="M6 8L2 12l4 4"/><path d="M18 8l4 4-4 4"/>
         </svg>
         <span class="label">Mirror</span>
       </button>
@@ -518,6 +478,165 @@
         </svg>
         <span class="label">Fullscreen</span>
       </button>
+    </div>
+
+    <!-- ============ PANEL: SUMBER INPUT ============ -->
+    <div class="logo-panel" id="sourcePanel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="6" width="20" height="12" rx="2"/>
+            <path d="M6 10v4M10 10v4M14 10v4M18 10v4"/>
+          </svg>
+          <span>Sumber Input</span>
+        </div>
+        <button class="panel-close" id="sourcePanelClose" aria-label="Tutup">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-label-row">
+          <label class="panel-label">Perangkat Aktif</label>
+          <span class="panel-value trunc" id="activeDeviceName">—</span>
+        </div>
+        <button class="btn small" id="btnScanPanel" style="width:100%">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>
+          </svg>
+          <span>Scan Ulang Perangkat</span>
+        </button>
+      </div>
+
+      <div class="panel-section">
+        <label class="panel-label" for="resolutionSelect">Resolusi (HDMI)</label>
+        <select class="select panel-select" id="resolutionSelect">
+          <option value="auto" selected>Auto — native perangkat</option>
+          <option value="3840x2160">3840 × 2160 · 4K UHD</option>
+          <option value="2560x1440">2560 × 1440 · QHD</option>
+          <option value="1920x1080">1920 × 1080 · Full HD</option>
+          <option value="1600x900">1600 × 900</option>
+          <option value="1280x720">1280 × 720 · HD</option>
+          <option value="1024x768">1024 × 768</option>
+          <option value="720x576">720 × 576 · PAL</option>
+          <option value="720x480">720 × 480 · NTSC</option>
+        </select>
+      </div>
+
+      <div class="panel-section">
+        <label class="panel-label" for="fpsSelect">Frame Rate</label>
+        <select class="select panel-select" id="fpsSelect">
+          <option value="auto" selected>Auto</option>
+          <option value="60">60 fps</option>
+          <option value="50">50 fps</option>
+          <option value="30">30 fps</option>
+          <option value="25">25 fps</option>
+          <option value="24">24 fps</option>
+        </select>
+      </div>
+
+      <div class="panel-section">
+        <button class="btn toggle-btn" id="audioEnableBtn">
+          <span class="toggle-switch"></span>
+          <span id="audioEnableLabel">Audio HDMI</span>
+        </button>
+        <div class="panel-label-row">
+          <label class="panel-label" for="volumeRange">Volume</label>
+          <span class="panel-value" id="volumeValue">100%</span>
+        </div>
+        <input type="range" min="0" max="100" step="1" value="100" id="volumeRange">
+      </div>
+
+      <div class="panel-section">
+        <button class="btn toggle-btn active" id="autoReconnectBtn">
+          <span class="toggle-switch"></span>
+          <span>Auto-reconnect</span>
+        </button>
+      </div>
+
+      <p class="panel-hint">
+        Colok <b>capture card HDMI / USB</b> ke perangkat, lalu tekan <b>Scan Ulang</b>.
+        Beberapa capture card baru muncul setelah dicolok ulang. Ubah resolusi di atas
+        jika gambar tidak muncul (mis. pilih <b>1920×1080</b>).
+      </p>
+    </div>
+
+    <!-- ============ PANEL: LOGO ============ -->
+    <div class="logo-panel" id="logoPanel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="3"/>
+            <circle cx="9" cy="9" r="2"/>
+            <path d="m21 15-5-5L5 21"/>
+          </svg>
+          <span>Logo / Icon</span>
+        </div>
+        <button class="panel-close" id="logoPanelClose" aria-label="Tutup">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="panel-section">
+        <label class="panel-label">Gambar</label>
+        <div class="panel-row">
+          <button class="btn small" id="logoUploadBtn" style="flex:1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+            </svg>
+            <span>Upload</span>
+          </button>
+          <button class="btn small" id="logoResetBtn" style="flex:1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>
+            </svg>
+            <span>Reset</span>
+          </button>
+          <input type="file" id="logoFile" accept="image/*" hidden>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <label class="panel-label">Posisi</label>
+        <div class="position-grid" id="positionGrid">
+          <button data-pos="tl" aria-label="Kiri atas"></button>
+          <button data-pos="tc" aria-label="Tengah atas"></button>
+          <button data-pos="tr" aria-label="Kanan atas" class="active"></button>
+          <button data-pos="ml" aria-label="Kiri tengah"></button>
+          <button data-pos="mc" aria-label="Tengah"></button>
+          <button data-pos="mr" aria-label="Kanan tengah"></button>
+          <button data-pos="bl" aria-label="Kiri bawah"></button>
+          <button data-pos="bc" aria-label="Tengah bawah"></button>
+          <button data-pos="br" aria-label="Kanan bawah"></button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-label-row">
+          <label class="panel-label">Ukuran</label>
+          <span class="panel-value" id="logoSizeValue">80 px</span>
+        </div>
+        <input type="range" min="30" max="300" step="5" value="80" id="logoSizeRange">
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-label-row">
+          <label class="panel-label">Opacity</label>
+          <span class="panel-value" id="logoOpacityValue">90%</span>
+        </div>
+        <input type="range" min="10" max="100" step="5" value="90" id="logoOpacityRange">
+      </div>
+
+      <div class="panel-section">
+        <button class="btn toggle-btn active" id="logoEnableBtn">
+          <span class="toggle-switch"></span>
+          <span id="logoEnableLabel">Tampilkan Logo</span>
+        </button>
+      </div>
     </div>
 
   </footer>
@@ -545,6 +664,7 @@
   const fitLabel    = $("#fitLabel");
   const btnShot     = $("#btnShot");
   const btnFull     = $("#btnFull");
+  const btnScan     = $("#btnScan");
 
   const ticker       = $("#ticker");
   const tickerTrack  = $("#tickerTrack");
@@ -552,11 +672,149 @@
   const tickerSpeed  = $("#tickerSpeed");
   const btnTicker    = $("#btnTicker");
 
+  const logoOverlay  = $("#logoOverlay");
+  const logoImg      = $("#logoImg");
+  const btnLogo      = $("#btnLogo");
+  const logoPanel    = $("#logoPanel");
+  const logoPanelClose = $("#logoPanelClose");
+  const logoUploadBtn= $("#logoUploadBtn");
+  const logoResetBtn = $("#logoResetBtn");
+  const logoFile     = $("#logoFile");
+  const positionGrid = $("#positionGrid");
+  const logoSizeRange= $("#logoSizeRange");
+  const logoOpacityRange = $("#logoOpacityRange");
+  const logoSizeValue= $("#logoSizeValue");
+  const logoOpacityValue = $("#logoOpacityValue");
+  const logoEnableBtn= $("#logoEnableBtn");
+  const logoEnableLabel = $("#logoEnableLabel");
+
+  /* ---- SOURCE PANEL ---- */
+  const btnSource          = $("#btnSource");
+  const sourcePanel        = $("#sourcePanel");
+  const sourcePanelClose   = $("#sourcePanelClose");
+  const btnScanPanel       = $("#btnScanPanel");
+  const resolutionSelect   = $("#resolutionSelect");
+  const fpsSelect          = $("#fpsSelect");
+  const audioEnableBtn     = $("#audioEnableBtn");
+  const audioEnableLabel   = $("#audioEnableLabel");
+  const volumeRange        = $("#volumeRange");
+  const volumeValue        = $("#volumeValue");
+  const autoReconnectBtn   = $("#autoReconnectBtn");
+  const activeDeviceName   = $("#activeDeviceName");
+
   let stream  = null;
   let running = false;
 
   const ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
   const ICON_STOP = '<rect x="6" y="6" width="12" height="12" rx="2"/>';
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  /* ================= LOGO STATE ================= */
+  const DEFAULT_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs><circle cx="50" cy="50" r="44" fill="url(#g)"/><circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"/><path d="M42 35 L68 50 L42 65 Z" fill="white"/></svg>`;
+  const DEFAULT_LOGO = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(DEFAULT_LOGO_SVG);
+
+  const logoState = {
+    enabled: true,
+    position: 'tr',
+    size: 80,
+    opacity: 0.9
+  };
+  let currentBlobUrl = null;
+
+  function applyLogoState() {
+    logoOverlay.className = 'logo-overlay pos-' + logoState.position;
+    if (!logoState.enabled) logoOverlay.classList.add('hidden');
+
+    logoOverlay.style.setProperty('--logo-size', logoState.size + 'px');
+    logoOverlay.style.setProperty('--logo-opacity', logoState.opacity);
+
+    logoSizeRange.value = logoState.size;
+    logoSizeValue.textContent = logoState.size + ' px';
+    logoOpacityRange.value = Math.round(logoState.opacity * 100);
+    logoOpacityValue.textContent = Math.round(logoState.opacity * 100) + '%';
+
+    positionGrid.querySelectorAll('button').forEach(b => {
+      b.classList.toggle('active', b.dataset.pos === logoState.position);
+    });
+
+    logoEnableBtn.classList.toggle('active', logoState.enabled);
+    logoEnableLabel.textContent = logoState.enabled ? 'Tampilkan Logo' : 'Sembunyikan Logo';
+  }
+
+  logoImg.src = DEFAULT_LOGO;
+  applyLogoState();
+
+  /* ================= PANEL HELPERS ================= */
+  function closeAllPanels(except) {
+    if (except !== logoPanel)   { logoPanel.classList.remove('open');   btnLogo.classList.remove('active'); }
+    if (except !== sourcePanel) { sourcePanel.classList.remove('open'); btnSource.classList.remove('active'); }
+  }
+  function openLogoPanel()   { closeAllPanels(logoPanel);   logoPanel.classList.add('open');   btnLogo.classList.add('active'); }
+  function closeLogoPanel()  { logoPanel.classList.remove('open');   btnLogo.classList.remove('active'); }
+  function openSourcePanel() { closeAllPanels(sourcePanel); sourcePanel.classList.add('open'); btnSource.classList.add('active'); }
+  function closeSourcePanel(){ sourcePanel.classList.remove('open'); btnSource.classList.remove('active'); }
+
+  btnLogo.addEventListener('click', (e) => {
+    e.stopPropagation();
+    logoPanel.classList.contains('open') ? closeLogoPanel() : openLogoPanel();
+    revealUI();
+  });
+  logoPanelClose.addEventListener('click', closeLogoPanel);
+
+  btnSource.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sourcePanel.classList.contains('open') ? closeSourcePanel() : openSourcePanel();
+    revealUI();
+  });
+  sourcePanelClose.addEventListener('click', closeSourcePanel);
+
+  document.addEventListener('click', (e) => {
+    if (logoPanel.classList.contains('open') && !logoPanel.contains(e.target) && !btnLogo.contains(e.target)) closeLogoPanel();
+    if (sourcePanel.classList.contains('open') && !sourcePanel.contains(e.target) && !btnSource.contains(e.target)) closeSourcePanel();
+  });
+
+  /* ================= LOGO CONTROLS ================= */
+  logoUploadBtn.addEventListener('click', () => logoFile.click());
+  logoFile.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
+    currentBlobUrl = URL.createObjectURL(file);
+    logoImg.src = currentBlobUrl;
+    e.target.value = '';
+  });
+
+  logoResetBtn.addEventListener('click', () => {
+    if (currentBlobUrl) { URL.revokeObjectURL(currentBlobUrl); currentBlobUrl = null; }
+    logoImg.src = DEFAULT_LOGO;
+    logoState.position = 'tr';
+    logoState.size = 80;
+    logoState.opacity = 0.9;
+    applyLogoState();
+  });
+
+  positionGrid.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    logoState.position = btn.dataset.pos;
+    applyLogoState();
+  });
+
+  logoSizeRange.addEventListener('input', () => {
+    logoState.size = Number(logoSizeRange.value);
+    applyLogoState();
+  });
+
+  logoOpacityRange.addEventListener('input', () => {
+    logoState.opacity = Number(logoOpacityRange.value) / 100;
+    applyLogoState();
+  });
+
+  logoEnableBtn.addEventListener('click', () => {
+    logoState.enabled = !logoState.enabled;
+    applyLogoState();
+  });
 
   /* ================= TICKER ================= */
   let tickerEnabled = true;
@@ -625,116 +883,331 @@
     btnStart.disabled = true;
   }
 
-  /* ================= DEVICES ================= */
+  /* ================= DEVICE DETECTION ================= */
+  // Kata kunci umum untuk capture card / HDMI grabber
+  const CAPTURE_HINTS = /capture|hdmi|usb\s*video|usb3|elgato|cam\s*link|avermedia|magewell|blackmagic|intensity|decklink|game\s*capture|grabber|ezcap|ugreen|dazzle|hauppauge|video\s*input|av\s*to\s*usb/i;
+
+  function isCaptureDevice(label) {
+    return CAPTURE_HINTS.test(label || "");
+  }
+
+  let scanBusy = false;
+
   async function refreshDevices() {
+    if (!navigator.mediaDevices?.enumerateDevices) return;
     try {
-      const all = await navigator.mediaDevices.enumerateDevices();
+      const all  = await navigator.mediaDevices.enumerateDevices();
       const cams = all.filter(d => d.kind === "videoinput");
       const prev = deviceSelect.value;
+
       deviceSelect.innerHTML = "";
+
       if (!cams.length) {
-        deviceSelect.innerHTML = '<option value="">Tidak ada input video</option>';
+        const o = document.createElement("option");
+        o.value = "";
+        o.textContent = "Tidak ada input video";
+        deviceSelect.appendChild(o);
         return;
       }
+
       cams.forEach((d, i) => {
         const o = document.createElement("option");
         o.value = d.deviceId;
-        o.textContent = d.label || `Kamera ${i + 1}`;
+        const name = d.label || `Input video ${i + 1}`;
+        o.textContent = isCaptureDevice(name) ? `📺 ${name}` : `🎥 ${name}`;
         deviceSelect.appendChild(o);
       });
-      if (prev && cams.some(d => d.deviceId === prev)) deviceSelect.value = prev;
+
+      // Pertahankan pilihan sebelumnya, atau pilih perangkat yang sedang aktif
+      const target = currentDeviceId || prev;
+      if (target && cams.some(d => d.deviceId === target)) {
+        deviceSelect.value = target;
+      }
     } catch (e) {
       console.warn("enumerateDevices gagal:", e);
     }
   }
 
-  /* ================= START ================= */
-  async function start(deviceId) {
-    if (!navigator.mediaDevices?.getUserMedia) return;
-    stop(true);
+  function deviceExists(id) {
+    return !!id && [...deviceSelect.options].some(o => o.value === id);
+  }
 
-    const videoConstraints = deviceId
-      ? { deviceId: { exact: deviceId }, width: { ideal: 1920 }, height: { ideal: 1080 } }
-      : { width: { ideal: 1920 }, height: { ideal: 1080 } };
+  async function scanDevices() {
+    if (!navigator.mediaDevices || scanBusy) return;
+    scanBusy = true;
+    btnScan.classList.add("spinning");
+    btnScanPanel.classList.add("spinning");
+
+    // Minta izin sekali (saat belum streaming) agar label perangkat muncul
+    if (!running) {
+      try {
+        const tmp = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        tmp.getTracks().forEach(t => t.stop());
+      } catch (e) {
+        console.warn("Izin perangkat belum diberikan:", e);
+      }
+    }
+    await refreshDevices();
+
+    scanBusy = false;
+    btnScan.classList.remove("spinning");
+    btnScanPanel.classList.remove("spinning");
+    revealUI();
+  }
+
+  /* ================= SOURCE SETTINGS ================= */
+  let audioEnabled  = false;
+  let autoReconnect = true;
+  let currentDeviceId = "";
+  let reconnecting  = false;
+  let intentionalStop = false;
+
+  function buildVideoConstraints(deviceId) {
+    const c = {};
+    if (deviceId) c.deviceId = { exact: deviceId };
+
+    const res = resolutionSelect.value;
+    if (res && res !== "auto") {
+      const [w, h] = res.split("x").map(Number);
+      // gunakan `ideal` agar tidak memicu OverconstrainedError pada capture card
+      c.width  = { ideal: w };
+      c.height = { ideal: h };
+    }
+
+    const fps = fpsSelect.value;
+    if (fps && fps !== "auto") {
+      c.frameRate = { ideal: Number(fps) };
+    }
+    return c;
+  }
+
+  // Cari audio input yang satu grup dengan video (audio HDMI capture card)
+  async function resolveAudioConstraints(videoDeviceId) {
+    const base = { echoCancellation: false, noiseSuppression: false, autoGainControl: false };
+    try {
+      const all = await navigator.mediaDevices.enumerateDevices();
+      const v = all.find(d => d.kind === "videoinput" && d.deviceId === videoDeviceId);
+      if (v && v.groupId) {
+        const a = all.find(d => d.kind === "audioinput" && d.groupId === v.groupId);
+        if (a && a.deviceId) base.deviceId = { exact: a.deviceId };
+      }
+    } catch (_) { /* abaikan */ }
+    return base;
+  }
+
+  async function getStream(deviceId) {
+    const attempts = [];
+    const vc = buildVideoConstraints(deviceId);
+
+    if (audioEnabled) {
+      const ac = await resolveAudioConstraints(deviceId);
+      attempts.push({ audio: ac, video: vc });
+    }
+    attempts.push({ audio: false, video: vc });   // tanpa audio (cadangan)
+    attempts.push({ audio: false, video: true }); // paling longgar
+
+    let lastErr = null;
+    for (const constraints of attempts) {
+      try {
+        return await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (err) {
+        lastErr = err;
+        // Tidak ada gunanya mencoba lagi kalau izin ditolak
+        if (err.name === "NotAllowedError" || err.name === "SecurityError") throw err;
+      }
+    }
+    throw lastErr || new Error("Gagal membuka stream");
+  }
+
+  function releaseStream() {
+    intentionalStop = true;
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    stream = null;
+    video.srcObject = null;
+    setTimeout(() => { intentionalStop = false; }, 0);
+  }
+
+  /* ================= START ================= */
+  async function start(deviceId, silentFail = false) {
+    if (!navigator.mediaDevices?.getUserMedia) return false;
+
+    releaseStream();
+    dot.classList.remove("warn");
+
+    let newStream;
+    try {
+      newStream = await getStream(deviceId);
+    } catch (err) {
+      if (!silentFail) handleError(err);
+      return false;
+    }
+
+    stream = newStream;
+    video.srcObject = stream;
+
+    // Audio (HDMI)
+    const hasAudio = stream.getAudioTracks().length > 0;
+    video.muted = !(audioEnabled && hasAudio);
+    video.volume = Number(volumeRange.value) / 100;
 
     try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: videoConstraints });
-      video.srcObject = stream;
-      await video.play().catch(() => {});
-
-      running = true;
-      placeholder.classList.add("gone");
-      document.body.classList.add("has-video");
-      dot.classList.add("on");
-      startIcon.innerHTML = ICON_STOP;
-      startLabel.textContent = "Stop";
-      btnStart.classList.add("stop");
-
-      await refreshDevices();
-      const settings = stream.getVideoTracks()[0].getSettings();
-      if (settings.deviceId && !deviceSelect.value) deviceSelect.value = settings.deviceId;
-
-      updateInfo();
-      updateTickerVisibility();
-      revealUI();
-    } catch (err) {
-      handleError(err);
+      await video.play();
+    } catch (_) {
+      // Autoplay dengan audio bisa diblokir → coba lagi dalam mode mute
+      video.muted = true;
+      try { await video.play(); } catch (_) {}
     }
+
+    // Simpan perangkat aktif
+    const track = stream.getVideoTracks()[0];
+    currentDeviceId = track?.getSettings?.().deviceId || deviceId || "";
+
+    attachTrackListeners(track);
+
+    running = true;
+    placeholder.classList.add("gone");
+    document.body.classList.add("has-video");
+    dot.classList.add("on");
+    startIcon.innerHTML = ICON_STOP;
+    startLabel.textContent = "Stop";
+    btnStart.classList.add("stop");
+
+    await refreshDevices();
+    if (currentDeviceId && deviceExists(currentDeviceId)) deviceSelect.value = currentDeviceId;
+
+    updateInfo();
+    updateTickerVisibility();
+    revealUI();
+    return true;
   }
 
   /* ================= STOP ================= */
   function stop(silent = false) {
-    if (stream) {
-      stream.getTracks().forEach(t => t.stop());
-      stream = null;
-    }
-    video.srcObject = null;
+    reconnecting = false;
+    releaseStream();
     running = false;
-    dot.classList.remove("on");
+    dot.classList.remove("on", "warn");
     document.body.classList.remove("has-video");
     startIcon.innerHTML = ICON_PLAY;
     startLabel.textContent = "Mulai";
     btnStart.classList.remove("stop");
     info.textContent = "—";
+    activeDeviceName.textContent = "—";
     updateTickerVisibility();
 
     if (!silent) {
       placeholder.classList.remove("gone");
-      phMsg.innerHTML = 'Pilih perangkat input, lalu tekan <b>Mulai</b> untuk menampilkan video kamera / capture card.';
+      phMsg.innerHTML = 'Pilih perangkat input (kamera / capture card HDMI), lalu tekan <b>Mulai</b>.';
       revealUI();
     }
   }
 
   /* ================= INFO ================= */
   function updateInfo() {
-    if (!running) return;
+    if (!running || !stream) return;
     const w = video.videoWidth || 0;
     const h = video.videoHeight || 0;
-    const track = stream?.getVideoTracks()[0];
+    const track = stream.getVideoTracks()[0];
+    const settings = track?.getSettings?.() || {};
     const label = track?.label || "";
-    info.textContent = w && h
-      ? `${w}×${h}${label ? " · " + label : ""}`
-      : (label || "—");
+    const hasAudio = stream.getAudioTracks().length > 0;
+
+    const parts = [];
+    if (w && h) parts.push(`${w}×${h}`);
+    if (settings.frameRate) parts.push(`${Math.round(settings.frameRate)}fps`);
+    if (hasAudio) parts.push("🔊");
+    if (isCaptureDevice(label)) parts.push("HDMI");
+    if (label) parts.push(label.length > 26 ? label.slice(0, 26) + "…" : label);
+
+    info.textContent = parts.join(" · ") || "—";
     info.title = label;
+    activeDeviceName.textContent = label || "—";
+    activeDeviceName.title = label || "";
   }
   video.addEventListener("loadedmetadata", updateInfo);
   video.addEventListener("resize", updateInfo);
+
+  /* ================= TRACK EVENTS / RECONNECT ================= */
+  function attachTrackListeners(track) {
+    if (!track) return;
+    track.addEventListener("ended", onSourceLost);
+    track.addEventListener("mute", () => {
+      if (!running) return;
+      dot.classList.remove("on");
+      dot.classList.add("warn");
+    });
+    track.addEventListener("unmute", () => {
+      if (!running) return;
+      dot.classList.add("on");
+      dot.classList.remove("warn");
+    });
+  }
+
+  function onSourceLost() {
+    if (!running || reconnecting || intentionalStop) return;
+    if (!autoReconnect) {
+      stop();
+      placeholder.classList.remove("gone");
+      phMsg.textContent = "Sumber video terputus. Sambungkan kembali kabel HDMI, lalu tekan Mulai.";
+      return;
+    }
+    attemptReconnect();
+  }
+
+  async function attemptReconnect() {
+    if (reconnecting) return;
+    reconnecting = true;
+
+    dot.classList.remove("on");
+    dot.classList.add("warn");
+    placeholder.classList.remove("gone");
+    phMsg.innerHTML = "Sumber video terputus — <b>menghubungkan ulang…</b>";
+
+    const targetId = currentDeviceId;
+
+    for (let i = 0; i < 10; i++) {
+      await sleep(900);
+      if (!reconnecting || !autoReconnect) break;
+
+      await refreshDevices();
+
+      let id = targetId;
+      if (!deviceExists(id)) {
+        // Perangkat hilang → coba input video pertama yang tersedia
+        const first = [...deviceSelect.options].find(o => o.value);
+        id = first ? first.value : undefined;
+      }
+
+      const ok = await start(id, true);
+      if (ok) {
+        reconnecting = false;
+        return;
+      }
+    }
+
+    reconnecting = false;
+    stop();
+    placeholder.classList.remove("gone");
+    phMsg.textContent = "Sumber video terputus. Sambungkan kembali kabel HDMI / capture card, lalu tekan Mulai.";
+  }
 
   /* ================= ERROR ================= */
   function handleError(err) {
     const name = err?.name || "";
     let msg = "Gagal mengakses input video.";
+
     if (name === "NotAllowedError" || name === "SecurityError") {
       msg = "Izin akses kamera ditolak. Aktifkan izin kamera pada ikon 🔒 di address bar, lalu muat ulang halaman.";
     } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
-      msg = "Tidak ada perangkat input video yang terdeteksi. Pastikan kamera / capture card terhubung.";
+      msg = "Tidak ada perangkat input video yang terdeteksi. Pastikan capture card HDMI / kamera sudah terhubung, lalu tekan Scan Ulang.";
     } else if (name === "NotReadableError" || name === "TrackStartError") {
-      msg = "Perangkat sedang dipakai aplikasi lain. Tutup aplikasi tersebut (Zoom, OBS, dll.) lalu coba lagi.";
+      msg = "Perangkat sedang dipakai aplikasi lain (OBS, Zoom, dll). Tutup aplikasi tersebut lalu coba lagi.";
     } else if (name === "OverconstrainedError") {
-      msg = "Resolusi atau perangkat yang diminta tidak didukung. Coba pilih perangkat lain.";
+      msg = "Resolusi / frame rate yang diminta tidak didukung capture card. Buka panel Sumber dan pilih Resolusi Auto.";
     } else if (name === "AbortError") {
       msg = "Proses dibatalkan oleh sistem. Coba tekan Mulai sekali lagi.";
     }
+
     console.error(err);
     stop(true);
     placeholder.classList.remove("gone");
@@ -742,18 +1215,50 @@
     revealUI();
   }
 
-  /* ================= SCREENSHOT ================= */
+  /* ================= SCREENSHOT (dengan logo) ================= */
   function screenshot() {
     if (!running || !video.videoWidth) return;
+
     const c = document.createElement("canvas");
     c.width  = video.videoWidth;
     c.height = video.videoHeight;
     const ctx = c.getContext("2d");
-    if (video.classList.contains("mirror")) {
+
+    const mirrored = video.classList.contains("mirror");
+
+    if (mirrored) {
+      ctx.save();
       ctx.translate(c.width, 0);
       ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0, c.width, c.height);
+      ctx.restore();
+    } else {
+      ctx.drawImage(video, 0, 0, c.width, c.height);
     }
-    ctx.drawImage(video, 0, 0, c.width, c.height);
+
+    if (logoState.enabled && logoImg.complete && logoImg.naturalWidth && logoImg.naturalHeight) {
+      const stageH = stage.clientHeight || 1;
+      const scale = c.height / stageH;
+      const lw = logoState.size * scale;
+      const lh = lw * (logoImg.naturalHeight / logoImg.naturalWidth);
+      const margin = 24 * scale;
+
+      const pos = logoState.position;
+      let lx, ly;
+      if (pos[1] === 'l') lx = margin;
+      else if (pos[1] === 'r') lx = c.width - lw - margin;
+      else lx = (c.width - lw) / 2;
+
+      if (pos[0] === 't') ly = margin;
+      else if (pos[0] === 'b') ly = c.height - lh - margin;
+      else ly = (c.height - lh) / 2;
+
+      ctx.save();
+      ctx.globalAlpha = logoState.opacity;
+      ctx.drawImage(logoImg, lx, ly, lw, lh);
+      ctx.restore();
+    }
+
     const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
     const a = document.createElement("a");
     a.download = `video-input-${ts}.png`;
@@ -778,6 +1283,7 @@
     clearTimeout(hideTimer);
     hideTimer = setTimeout(() => {
       if (!running) return;
+      if (logoPanel.classList.contains("open") || sourcePanel.classList.contains("open")) return;
       const ae = document.activeElement;
       if (ae && ["INPUT", "SELECT", "TEXTAREA"].includes(ae.tagName)) return;
       ui.classList.add("hide");
@@ -787,9 +1293,42 @@
     window.addEventListener(ev, revealUI, { passive: true })
   );
 
+  /* ================= SOURCE CONTROLS ================= */
+  btnScan.addEventListener("click", scanDevices);
+  btnScanPanel.addEventListener("click", scanDevices);
+
+  resolutionSelect.addEventListener("change", () => { if (running) start(currentDeviceId || deviceSelect.value || undefined); });
+  fpsSelect.addEventListener("change", () => { if (running) start(currentDeviceId || deviceSelect.value || undefined); });
+
+  audioEnableBtn.addEventListener("click", () => {
+    audioEnabled = !audioEnabled;
+    audioEnableBtn.classList.toggle("active", audioEnabled);
+    audioEnableLabel.textContent = audioEnabled ? "Audio HDMI (aktif)" : "Audio HDMI";
+    if (running) start(currentDeviceId || deviceSelect.value || undefined);
+  });
+
+  volumeRange.addEventListener("input", () => {
+    const v = Number(volumeRange.value);
+    volumeValue.textContent = v + "%";
+    video.volume = v / 100;
+    if (v > 0 && video.muted && stream?.getAudioTracks().length) video.muted = false;
+  });
+
+  autoReconnectBtn.addEventListener("click", () => {
+    autoReconnect = !autoReconnect;
+    autoReconnectBtn.classList.toggle("active", autoReconnect);
+  });
+
   /* ================= EVENTS ================= */
-  btnStart.addEventListener("click", () => running ? stop() : start(deviceSelect.value || undefined));
-  deviceSelect.addEventListener("change", () => { if (running) start(deviceSelect.value); });
+  btnStart.addEventListener("click", () => {
+    if (running) stop();
+    else start(deviceSelect.value || undefined);
+  });
+
+  deviceSelect.addEventListener("change", () => {
+    if (running) start(deviceSelect.value);
+    else revealUI();
+  });
 
   btnMirror.addEventListener("click", () => {
     video.classList.toggle("mirror");
@@ -807,6 +1346,15 @@
   btnShot.addEventListener("click", () => { screenshot(); revealUI(); });
   btnFull.addEventListener("click", () => { toggleFullscreen(); revealUI(); });
 
+  /* ================= HOTPLUG / DEVICE CHANGE ================= */
+  navigator.mediaDevices?.addEventListener?.("devicechange", async () => {
+    await refreshDevices();
+    if (running && stream) {
+      const t = stream.getVideoTracks()[0];
+      if (!t || t.readyState === "ended") onSourceLost();
+    }
+  });
+
   /* ================= SHORTCUTS ================= */
   window.addEventListener("keydown", (e) => {
     const tag = e.target.tagName;
@@ -816,11 +1364,13 @@
     else if (k === "m") { e.preventDefault(); btnMirror.click(); }
     else if (k === "s") { e.preventDefault(); screenshot(); }
     else if (k === "t") { e.preventDefault(); btnTicker.click(); }
+    else if (k === "l") { e.preventDefault(); logoEnableBtn.click(); }
+    else if (k === "i") { e.preventDefault(); btnSource.click(); }
+    else if (k === "r") { e.preventDefault(); scanDevices(); }
     else if (k === " ") { e.preventDefault(); btnStart.click(); }
   });
 
   /* ================= INIT ================= */
-  navigator.mediaDevices?.addEventListener?.("devicechange", refreshDevices);
   refreshDevices();
   revealUI();
 })();
