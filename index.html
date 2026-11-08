@@ -98,7 +98,7 @@ button{font-family:inherit;font-size:inherit;color:inherit;background:none;borde
 .center{flex:1;display:flex;flex-direction:column;min-width:0;background:#181818}
 .preview-area{
   flex:1;display:flex;align-items:center;justify-content:center;gap:10px;
-  padding:10px;min-height:0;background:
+  padding:10px;min-height:0;position:relative;background:
     repeating-conic-gradient(#1c1c1c 0% 25%, #202020 0% 50%) 50%/22px 22px;
 }
 .canvas-wrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;min-height:0;max-width:100%;max-height:100%}
@@ -125,6 +125,7 @@ button{font-family:inherit;font-size:inherit;color:inherit;background:none;borde
   font-size:9.5px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
   color:#8a8a8a; margin:0 3px 0 2px;
 }
+.fit-toolbar .sep{width:1px;height:18px;background:#4d4d4d;margin:0 2px}
 .fit-toolbar button{
   padding:4px 10px; border-radius:4px; font-size:11px; font-weight:700;
   background:#3a3a3a; border:1px solid #4d4d4d; color:#cfcfcf; transition:.12s;
@@ -134,6 +135,21 @@ button{font-family:inherit;font-size:inherit;color:inherit;background:none;borde
   background:var(--accent); border-color:var(--accent); color:#fff;
   box-shadow:0 0 10px rgba(60,141,216,.55);
 }
+.fit-toolbar button.reset{
+  background:#4a2c2c;border-color:#6a3c3c;color:#e8b0a8;
+}
+.fit-toolbar button.reset:hover{background:var(--danger);border-color:var(--danger);color:#fff}
+
+/* Hint overlay saat framed media dipilih */
+.frame-hint{
+  position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
+  padding:6px 14px; border-radius:16px;
+  background:rgba(20,20,20,.88); border:1px solid var(--accent2);
+  color:var(--accent2); font-size:11px; font-weight:700; letter-spacing:.4px;
+  box-shadow:0 4px 14px rgba(0,0,0,.6); backdrop-filter:blur(4px);
+  pointer-events:none; z-index:24; display:none; white-space:nowrap;
+}
+.frame-hint.show{display:block}
 
 .transition-bar{
   height:38px;background:#252525;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
@@ -240,6 +256,12 @@ select:focus,input:focus{border-color:var(--accent)}
   width:100%;height:30px;background:#1c1c1c;border:1px solid #444;border-radius:3px;padding:2px;cursor:pointer;
 }
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.zoom-row{display:flex;align-items:center;gap:8px}
+.zoom-row input[type=range]{flex:1;background:#1c1c1c;height:4px;-webkit-appearance:none;border-radius:2px;outline:none}
+.zoom-row input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent2);cursor:pointer;border:1px solid #333;
+}
+.zoom-row .z-val{font-variant-numeric:tabular-nums;font-size:12px;color:var(--accent2);font-weight:700;min-width:44px;text-align:right}
 
 .add-menu{
   position:fixed;background:#2f2f2f;border:1px solid #111;border-radius:4px;padding:4px;
@@ -283,6 +305,8 @@ select:focus,input:focus{border-color:var(--accent)}
         <div class="sep"></div>
         <button data-act="center-source">Pusatkan Sumber</button>
         <button data-act="fill-source">Isi Penuh Layar</button>
+        <div class="sep"></div>
+        <button data-act="reset-pan">Reset Pan/Zoom <kbd>0</kbd></button>
       </div>
     </div>
     <div class="menu-item" data-menu>View
@@ -342,23 +366,28 @@ select:focus,input:focus{border-color:var(--accent)}
         <div class="canvas-wrap" id="wrapProgram">
           <canvas id="programCanvas" width="1280" height="720"></canvas>
           <div class="fit-toolbar">
-            <span class="lbl">Ukuran</span>
-            <button data-fit="native" title="Rasio asli video (tidak terpotong)">Asli</button>
-            <button data-fit="16:9" title="Rasio 16:9 — landscape / YouTube">16:9</button>
-            <button data-fit="9:16" title="Rasio 9:16 — vertikal / Reels & TikTok">9:16</button>
+            <span class="lbl">Frame</span>
+            <button data-fit="native" title="Frame rasio asli video/gambar">Asli</button>
+            <button data-fit="16:9" title="Frame 16:9 landscape">16:9</button>
+            <button data-fit="9:16" title="Frame 9:16 vertikal">9:16</button>
+            <span class="sep"></span>
+            <button data-reset class="reset" title="Reset pan & zoom ke tengah (0)">⟲ Reset</button>
           </div>
           <div class="canvas-label" id="labelProgram">Pratinjau</div>
         </div>
         <div class="canvas-wrap live" id="wrapPreview" style="display:none">
           <canvas id="previewCanvas" width="1280" height="720"></canvas>
           <div class="fit-toolbar">
-            <span class="lbl">Ukuran</span>
-            <button data-fit="native" title="Rasio asli video (tidak terpotong)">Asli</button>
-            <button data-fit="16:9" title="Rasio 16:9 — landscape / YouTube">16:9</button>
-            <button data-fit="9:16" title="Rasio 9:16 — vertikal / Reels & TikTok">9:16</button>
+            <span class="lbl">Frame</span>
+            <button data-fit="native" title="Frame rasio asli video/gambar">Asli</button>
+            <button data-fit="16:9" title="Frame 16:9 landscape">16:9</button>
+            <button data-fit="9:16" title="Frame 9:16 vertikal">9:16</button>
+            <span class="sep"></span>
+            <button data-reset class="reset" title="Reset pan & zoom ke tengah (0)">⟲ Reset</button>
           </div>
           <div class="canvas-label">Pratinjau (Edit)</div>
         </div>
+        <div class="frame-hint" id="frameHint">🖱 Drag = geser video · Scroll = zoom</div>
       </div>
 
       <div class="transition-bar">
@@ -406,6 +435,8 @@ select:focus,input:focus{border-color:var(--accent)}
         <div class="stat-row"><span>Drop</span><b id="statDrop">0.0%</b></div>
         <div class="stat-row"><span>Resolusi</span><b>1280×720</b></div>
         <div class="stat-row"><span>Render</span><b id="statRender">1.2 ms</b></div>
+        <div class="stat-row"><span>Format</span><b id="statFormat">—</b></div>
+        <div class="stat-row"><span>Zoom</span><b id="statZoom">1.00×</b></div>
       </div>
     </aside>
   </div>
@@ -486,8 +517,9 @@ select:focus,input:focus{border-color:var(--accent)}
 
 <script>
 /* =========================================================
-   OBS STUDIO PRO — WEB EDITION + MP4 SOURCE
-   + FIT TOOLBAR (Asli / 16:9 / 9:16) + FRAME DI DISPLAY
+   OBS STUDIO PRO — WEB EDITION
+   - FRAME tetap (Asli / 16:9 / 9:16)
+   - Video/gambar di dalam frame bisa DIGESER (pan) & DI-ZOOM
    ========================================================= */
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -515,13 +547,17 @@ const state = {
   fade: 0,
   fading: false,
   frame: null,
-  settings: { bitrate: 6000 }
+  settings: { bitrate: 6000 },
+  currentFormat: null
 };
 
 const programCanvas = $('#programCanvas');
 const previewCanvas = $('#previewCanvas');
 const pctx = programCanvas.getContext('2d');
 const vctx = previewCanvas.getContext('2d');
+
+/* Flag render — dipakai untuk menggambar ghost (di luar frame) hanya di editor */
+let _editing = false;
 
 /* ---------------------------------------------------------
    SOURCE FACTORY
@@ -532,15 +568,17 @@ function makeSource(type, overrides = {}) {
     x: 0, y: 0, w: BASE_W, h: BASE_H,
     visible: true, locked: false,
     volume: 100, muted: false, hasAudio: false,
-    _bbox: null
+    _bbox: null, _fitMode: null, _pendingFormat: null,
+    // ==== KONTROL VIDEO DI DALAM FRAME ====
+    _offsetX: 0, _offsetY: 0, _zoom: 1
   };
   const map = {
     text:   { x: 90, y: 90, w: 620, h: 120, text: 'Teks Baru', fontSize: 76, color: '#ffffff', bg: 'transparent', font: 'Inter, Segoe UI, sans-serif', weight: 700 },
     color:  { x: 0, y: 0, w: BASE_W, h: BASE_H, color: '#1b3a5c' },
-    image:  { x: 340, y: 160, w: 600, h: 400 },
+    image:  { x: 340, y: 160, w: 600, h: 400, fit: 'cover' },
     media:  { x: 320, y: 180, w: 640, h: 360, hasAudio: true, loop: true, playing: true, fit: 'cover' },
-    camera: { x: 740, y: 380, w: 480, h: 300, hasAudio: true },
-    screen: { x: 0, y: 0, w: BASE_W, h: BASE_H, hasAudio: true },
+    camera: { x: 740, y: 380, w: 480, h: 300, hasAudio: true, fit: 'cover' },
+    screen: { x: 0, y: 0, w: BASE_W, h: BASE_H, hasAudio: true, fit: 'cover' },
     audio:  { x: 0, y: 0, w: 0, h: 0, hasAudio: true }
   };
   return Object.assign(base, map[type] || {}, overrides);
@@ -548,6 +586,11 @@ function makeSource(type, overrides = {}) {
 
 function defaultName(type) {
   return { text: 'Teks', color: 'Warna', image: 'Gambar', media: 'Media', camera: 'Kamera', screen: 'Layar', audio: 'Audio' }[type] || type;
+}
+
+/* Cek apakah sumber sedang dalam mode "framed" (punya frame terkunci) */
+function isFramed(s) {
+  return !!(s && s._fitMode && ['media', 'image', 'camera', 'screen'].includes(s.type));
 }
 
 /* ---------------------------------------------------------
@@ -587,6 +630,14 @@ function addSourceTo(scene, src, silent) {
   scene.sources.unshift(src);
   if (!silent) {
     state.selectedId = src.id;
+
+    if (state.currentFormat && ['camera', 'screen', 'color'].includes(src.type)) {
+      applyFormatToSource(src, state.currentFormat);
+    }
+    if (state.currentFormat && (src.type === 'image' || src.type === 'media')) {
+      src._pendingFormat = state.currentFormat;
+    }
+
     renderSourceList(); refreshMixer();
     if (src.type === 'camera' || src.type === 'screen' || src.type === 'audio') attachMedia(src);
   }
@@ -623,7 +674,7 @@ function duplicateSource() {
   const copy = JSON.parse(JSON.stringify({
     ...src,
     _video: null, _img: null, _bbox: null,
-    _mediaNode: null, _stream: null
+    _mediaNode: null, _stream: null, _imgLoading: false
   }));
   copy.id = uid(); copy.name = src.name + ' (copy)';
   copy.x += 30; copy.y += 30;
@@ -654,7 +705,7 @@ function loadMediaSource(src, url) {
   video.autoplay = true;
 
   video.addEventListener('loadedmetadata', () => {
-    if (video.videoWidth && video.videoHeight) {
+    if (!src._fitMode && video.videoWidth && video.videoHeight) {
       const ar = video.videoWidth / video.videoHeight;
       if (src.w === 640 && src.h === 360) {
         src.h = 360;
@@ -663,6 +714,10 @@ function loadMediaSource(src, url) {
         src.y = Math.round((BASE_H - src.h) / 2);
       }
     }
+    const fmt = src._pendingFormat || (!src._fitMode ? state.currentFormat : null);
+    src._pendingFormat = null;
+    if (fmt) applyFormatToSource(src, fmt);
+
     src.hasAudio = true;
     refreshMixer(); renderSourceList();
   });
@@ -694,6 +749,7 @@ mediaFileInput.addEventListener('change', () => {
   const baseName = file.name.replace(/\.[^.]+$/, '');
   const src = makeSource('media', { name: baseName });
   src._blobUrl = URL.createObjectURL(file);
+  if (state.currentFormat) src._pendingFormat = state.currentFormat;
   loadMediaSource(src, src._blobUrl);
   addSourceTo(targetScene, src);
 
@@ -722,6 +778,11 @@ async function attachMedia(src) {
     src._video = video;
     await video.play().catch(() => {});
     src.hasAudio = stream.getAudioTracks().length > 0;
+
+    if (state.currentFormat && ['camera', 'screen'].includes(src.type)) {
+      applyFormatToSource(src, state.currentFormat);
+    }
+
     stream.getVideoTracks().forEach(t => {
       t.onended = () => { src.visible = false; renderSourceList(); };
     });
@@ -753,6 +814,10 @@ function loop(now) {
     $('#statRender').textContent = (0.8 + Math.random() * 1.6).toFixed(1) + ' ms';
     $('#statBit').textContent = state.streaming ? Math.round(state.settings.bitrate * 0.97) + ' kb/s' : '0 kb/s';
     $('#statDrop').textContent = state.streaming ? (Math.random() * 0.4).toFixed(1) + '%' : '0.0%';
+
+    const sel = selectedSource();
+    $('#statFormat').textContent = (sel && sel._fitMode) || state.currentFormat || '—';
+    $('#statZoom').textContent = (sel && isFramed(sel)) ? (sel._zoom || 1).toFixed(2) + '×' : '—';
   }
 
   if (state.fading) {
@@ -763,10 +828,14 @@ function loop(now) {
   }
 
   if (state.studio) {
+    _editing = true;
     renderScene(vctx, previewScene(), true);
+    _editing = false;
     renderScene(pctx, liveScene(), false);
   } else {
+    _editing = true;
     renderScene(pctx, liveScene(), true);
+    _editing = false;
   }
 
   updateTimers();
@@ -826,51 +895,58 @@ function drawSource(ctx, s) {
     }
 
     case 'image': {
-      if (!s._img && s.dataUrl) {
+      if (!s._img && s.dataUrl && !s._imgLoading) {
+        s._imgLoading = true;
         const img = new Image();
-        img.onload = () => { s._img = img; };
+        img.onload = () => {
+          s._img = img;
+          s._imgLoading = false;
+          const fmt = s._pendingFormat || (!s._fitMode ? state.currentFormat : null);
+          s._pendingFormat = null;
+          if (fmt) {
+            applyFormatToSource(s, fmt);
+            renderSourceList();
+          }
+        };
+        img.onerror = () => { s._imgLoading = false; };
         img.src = s.dataUrl;
       }
       if (s._img) {
-        drawCover(ctx, s._img, s.x, s.y, s.w, s.h);
+        if (isFramed(s)) drawFramedMedia(ctx, s, s._img);
+        else drawFitMedia(ctx, s, s._img);
       } else {
         ctx.fillStyle = '#333'; ctx.fillRect(s.x, s.y, s.w, s.h);
+        if (!s.dataUrl) {
+          ctx.fillStyle = '#666';
+          ctx.font = '600 22px Segoe UI';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('🖼  Pilih berkas gambar di Properti…', s.x + s.w / 2, s.y + s.h / 2);
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'alphabetic';
+        }
       }
       s._bbox = { x: s.x, y: s.y, w: s.w, h: s.h };
       break;
     }
 
-    case 'media': {
+    case 'media':
+    case 'camera':
+    case 'screen': {
       if (s._video && s._video.readyState >= 2) {
-        if (s.fit === 'contain') drawContain(ctx, s._video, s.x, s.y, s.w, s.h);
-        else drawCover(ctx, s._video, s.x, s.y, s.w, s.h);
+        if (isFramed(s)) drawFramedMedia(ctx, s, s._video);
+        else drawFitMedia(ctx, s, s._video);
       } else {
-        ctx.fillStyle = '#1a1a1a';
+        ctx.fillStyle = (s.type === 'media') ? '#1a1a1a' : '#232323';
         ctx.fillRect(s.x, s.y, s.w, s.h);
         ctx.fillStyle = '#666';
         ctx.font = '600 22px Segoe UI';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('🎬  Memuat media…', s.x + s.w / 2, s.y + s.h / 2);
+        ctx.fillText((s.type === 'media') ? '🎬  Memuat media…' : 'Menunggu sumber video…',
+                     s.x + s.w / 2, s.y + s.h / 2);
         ctx.textAlign = 'left';
         ctx.textBaseline = 'alphabetic';
-      }
-      s._bbox = { x: s.x, y: s.y, w: s.w, h: s.h };
-      break;
-    }
-
-    case 'camera':
-    case 'screen': {
-      if (s._video && s._video.readyState >= 2) {
-        drawCover(ctx, s._video, s.x, s.y, s.w, s.h);
-      } else {
-        ctx.fillStyle = '#232323';
-        ctx.fillRect(s.x, s.y, s.w, s.h);
-        ctx.fillStyle = '#666';
-        ctx.font = '600 26px Segoe UI';
-        ctx.textAlign = 'center';
-        ctx.fillText('Menunggu sumber video…', s.x + s.w / 2, s.y + s.h / 2);
-        ctx.textAlign = 'left';
       }
       s._bbox = { x: s.x, y: s.y, w: s.w, h: s.h };
       break;
@@ -881,22 +957,65 @@ function drawSource(ctx, s) {
   }
 }
 
-function drawCover(ctx, media, x, y, w, h) {
-  const mw = media.videoWidth || media.naturalWidth || media.width;
-  const mh = media.videoHeight || media.naturalHeight || media.height;
-  if (!mw || !mh) return;
-  const scale = Math.max(w / mw, h / mh);
-  const dw = mw * scale, dh = mh * scale;
-  ctx.drawImage(media, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+/* =========================================================
+   MEDIA DRAWING
+   ========================================================= */
+
+/* Hitung base scale sesuai mode fit */
+function baseScaleFor(s, mw, mh) {
+  if (s.fit === 'contain') return Math.min(s.w / mw, s.h / mh);
+  // default cover
+  return Math.max(s.w / mw, s.h / mh);
 }
 
-function drawContain(ctx, media, x, y, w, h) {
+/* Gambar non-framed (tidak di-clip) — perilaku lama */
+function drawFitMedia(ctx, s, media) {
   const mw = media.videoWidth || media.naturalWidth || media.width;
   const mh = media.videoHeight || media.naturalHeight || media.height;
   if (!mw || !mh) return;
-  const scale = Math.min(w / mw, h / mh);
+  const scale = baseScaleFor(s, mw, mh) * (s._zoom || 1);
   const dw = mw * scale, dh = mh * scale;
-  ctx.drawImage(media, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+  const dx = s.x + (s.w - dw) / 2 + (s._offsetX || 0);
+  const dy = s.y + (s.h - dh) / 2 + (s._offsetY || 0);
+  ctx.drawImage(media, dx, dy, dw, dh);
+}
+
+/* Gambar framed (di-clip ke frame) — frame TETAP, video bisa digeser & di-zoom */
+function drawFramedMedia(ctx, s, media) {
+  const mw = media.videoWidth || media.naturalWidth || media.width;
+  const mh = media.videoHeight || media.naturalHeight || media.height;
+  if (!mw || !mh) return;
+
+  const scale = baseScaleFor(s, mw, mh) * (s._zoom || 1);
+  const dw = mw * scale, dh = mh * scale;
+  const dx = s.x + (s.w - dw) / 2 + (s._offsetX || 0);
+  const dy = s.y + (s.h - dh) / 2 + (s._offsetY || 0);
+
+  // Ghost di luar frame (hanya saat editing & hanya untuk sumber terpilih)
+  if (_editing && state.selectedId === s.id) {
+    ctx.save();
+    ctx.globalAlpha = 0.14;
+    ctx.drawImage(media, dx, dy, dw, dh);
+    ctx.restore();
+  }
+
+  // Clip & gambar penuh
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(s.x, s.y, s.w, s.h);
+  ctx.clip();
+  ctx.drawImage(media, dx, dy, dw, dh);
+  ctx.restore();
+
+  // Outline batas konten (hanya saat editing & sumber terpilih)
+  if (_editing && state.selectedId === s.id) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(79,163,238,.55)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.strokeRect(dx, dy, dw, dh);
+    ctx.restore();
+  }
 }
 
 /* ---------------------------------------------------------
@@ -920,24 +1039,55 @@ function drawSelection(ctx, scene) {
   const s = scene.sources.find(x => x.id === state.selectedId);
   if (!s || !s.visible || !s._bbox) return;
   const b = s._bbox;
+  const framed = isFramed(s);
+
   ctx.save();
-  ctx.strokeStyle = s.locked ? '#e0a020' : '#3c8dd8';
-  ctx.lineWidth = 2;
-  ctx.setLineDash([7, 5]);
-  ctx.strokeRect(b.x, b.y, b.w, b.h);
-  ctx.setLineDash([]);
-  if (!s.locked) {
-    ctx.fillStyle = '#ffffff';
-    ctx.strokeStyle = '#3c8dd8';
-    ctx.lineWidth = 1.5;
-    for (const h of getHandles(b)) {
-      ctx.beginPath();
-      ctx.rect(h.x, h.y, h.w, h.h);
-      ctx.fill(); ctx.stroke();
+
+  // Border frame
+  if (framed) {
+    ctx.strokeStyle = '#4fa3ee';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([]);
+    ctx.strokeRect(b.x, b.y, b.w, b.h);
+
+    // corner brackets (penanda frame terkunci)
+    const c = Math.min(28, b.w / 3, b.h / 3);
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#4fa3ee';
+    [[b.x, b.y, 1, 1], [b.x + b.w, b.y, -1, 1], [b.x, b.y + b.h, 1, -1], [b.x + b.w, b.y + b.h, -1, -1]]
+      .forEach(([cx, cy, sx, sy]) => {
+        ctx.beginPath();
+        ctx.moveTo(cx + sx * c, cy);
+        ctx.lineTo(cx, cy);
+        ctx.lineTo(cx, cy + sy * c);
+        ctx.stroke();
+      });
+  } else {
+    ctx.strokeStyle = s.locked ? '#e0a020' : '#3c8dd8';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([7, 5]);
+    ctx.strokeRect(b.x, b.y, b.w, b.h);
+    ctx.setLineDash([]);
+
+    if (!s.locked) {
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = '#3c8dd8';
+      ctx.lineWidth = 1.5;
+      for (const h of getHandles(b)) {
+        ctx.beginPath();
+        ctx.rect(h.x, h.y, h.w, h.h);
+        ctx.fill(); ctx.stroke();
+      }
     }
   }
-  ctx.fillStyle = 'rgba(60,141,216,.9)';
-  const label = s.name;
+
+  // Label nama + info zoom
+  ctx.fillStyle = framed ? 'rgba(79,163,238,.95)' : 'rgba(60,141,216,.9)';
+  let label = s.name;
+  if (framed) {
+    label += ` · ${s._fitMode === 'native' ? 'ASLI' : s._fitMode} · ${(s._zoom || 1).toFixed(2)}×`;
+  }
   ctx.font = '600 16px Segoe UI';
   const tw = ctx.measureText(label).width;
   ctx.fillRect(b.x, b.y - 26, tw + 16, 24);
@@ -948,7 +1098,7 @@ function drawSelection(ctx, scene) {
 }
 
 /* ---------------------------------------------------------
-   UKURAN TAMPILAN — Asli / 16:9 / 9:16 (+ FRAME di display)
+   FORMAT: FRAME TETAP — UKURAN & POSISI FRAME DITENTUKAN FORMAT
 --------------------------------------------------------- */
 function mediaNaturalSize(s) {
   if (s._video && s._video.videoWidth && s._video.videoHeight)
@@ -958,20 +1108,28 @@ function mediaNaturalSize(s) {
   return null;
 }
 
-function applyFit(mode) {
-  const s = selectedSource();
-  if (!s) { toast('Pilih sumber dulu di daftar Sumber'); return; }
-  if (s.locked) { toast('Sumber terkunci — buka kunci untuk mengubah ukuran'); return; }
-  if (!['media', 'image', 'camera', 'screen', 'color'].includes(s.type)) {
-    toast('Penyesuaian ukuran tersedia untuk media / gambar / kamera / layar');
-    return;
-  }
+function applyFormatToSource(s, mode) {
+  if (!s) return null;
+  if (s.locked) return null;
+  if (!['media', 'image', 'camera', 'screen', 'color'].includes(s.type)) return null;
 
   let ratio, label;
+
   if (mode === 'native') {
     const nat = mediaNaturalSize(s);
-    if (nat) { ratio = nat.w / nat.h; label = `ASLI ${nat.w}×${nat.h}`; }
-    else { ratio = (s.w || BASE_W) / (s.h || BASE_H); label = `ASLI ${s.w}×${s.h}`; }
+    if (nat && nat.w && nat.h) {
+      ratio = nat.w / nat.h;
+      label = `ASLI ${nat.w}×${nat.h}`;
+    } else if (s.type === 'media') {
+      s._pendingFormat = 'native';
+      return null;
+    } else if (s.type === 'image') {
+      s._pendingFormat = 'native';
+      return null;
+    } else {
+      ratio = (s.w || BASE_W) / (s.h || BASE_H);
+      label = `ASLI ${s.w}×${s.h}`;
+    }
   } else {
     const [aw, ah] = mode.split(':').map(Number);
     ratio = aw / ah;
@@ -986,20 +1144,69 @@ function applyFit(mode) {
   s.x = Math.round((BASE_W - w) / 2);
   s.y = Math.round((BASE_H - h) / 2);
   s._fitMode = mode;
-  if (s.type === 'media' && mode === 'native') s.fit = 'contain';
+  s.fit = (mode === 'native') ? 'contain' : 'cover';
+
+  // Reset pan & zoom setiap kali frame diubah
+  s._offsetX = 0;
+  s._offsetY = 0;
+  s._zoom = 1;
 
   state.frame = { srcId: s.id, label, x: s.x, y: s.y, w: s.w, h: s.h, t0: performance.now() };
+  return label;
+}
 
+function applyFit(mode) {
+  state.currentFormat = mode;
+  const s = selectedSource();
+
+  if (!s) {
+    updateFitButtons();
+    toast(`Format ${mode} disimpan — gambar/media berikutnya otomatis mengikuti`);
+    setStatus(`Format aktif: ${mode} (otomatis untuk sumber baru)`);
+    return;
+  }
+  if (s.locked) { toast('Sumber terkunci'); return; }
+  if (!['media', 'image', 'camera', 'screen', 'color'].includes(s.type)) {
+    updateFitButtons();
+    toast(`Format ${mode} disimpan (berlaku untuk media/gambar/kamera/layar)`);
+    return;
+  }
+
+  const label = applyFormatToSource(s, mode);
+  updateFitButtons();
+
+  if (!label) {
+    toast('Menunggu media dimuat…');
+    renderSourceList();
+    return;
+  }
   renderSourceList();
-  setStatus(`Ukuran sumber disetel ke ${label} (${w}×${h})`);
-  toast(`Frame ${label} — ${w}×${h}`);
+  setStatus(`Frame ${label} — ${s.w}×${s.h} (drag = geser, scroll = zoom)`);
+  toast(`Frame ${label}. Drag untuk geser, scroll untuk zoom.`);
+}
+
+function resetPanZoom() {
+  const s = selectedSource();
+  if (!s || !isFramed(s)) { toast('Pilih sumber yang memiliki frame'); return; }
+  s._offsetX = 0; s._offsetY = 0; s._zoom = 1;
+  toast('Pan & zoom direset');
+  setStatus('Pan & zoom direset ke tengah');
 }
 
 function updateFitButtons() {
   const s = selectedSource();
-  $$('.fit-toolbar button').forEach(b => {
-    b.classList.toggle('active', !!(s && s._fitMode === b.dataset.fit));
+  const fmt = (s && s._fitMode) || state.currentFormat;
+  $$('.fit-toolbar button[data-fit]').forEach(b => {
+    b.classList.toggle('active', !!fmt && fmt === b.dataset.fit);
   });
+  // Hint & status zoom
+  const hint = $('#frameHint');
+  if (s && isFramed(s)) {
+    hint.classList.add('show');
+    hint.textContent = `🖱 Drag = geser · Scroll = zoom · Zoom: ${(s._zoom || 1).toFixed(2)}×`;
+  } else {
+    hint.classList.remove('show');
+  }
 }
 
 function drawFitFrame(ctx, scene) {
@@ -1015,19 +1222,16 @@ function drawFitFrame(ctx, scene) {
   ctx.save();
   ctx.globalAlpha = alpha;
 
-  // gelapkan area di luar frame
   ctx.fillStyle = 'rgba(0,0,0,.30)';
   ctx.beginPath();
   ctx.rect(0, 0, BASE_W, BASE_H);
   ctx.rect(f.x + f.w, f.y, -f.w, f.h);
   ctx.fill('evenodd');
 
-  // border frame
   ctx.strokeStyle = '#4fa3ee';
   ctx.lineWidth = 3;
   ctx.strokeRect(f.x + 1.5, f.y + 1.5, Math.max(0, f.w - 3), Math.max(0, f.h - 3));
 
-  // garis bantu tengah
   ctx.strokeStyle = 'rgba(255,255,255,.30)';
   ctx.lineWidth = 1;
   ctx.setLineDash([8, 8]);
@@ -1037,7 +1241,6 @@ function drawFitFrame(ctx, scene) {
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // sudut siku
   const c = Math.min(70, f.w / 4, f.h / 4);
   ctx.strokeStyle = '#4fa3ee';
   ctx.lineWidth = 6;
@@ -1051,7 +1254,6 @@ function drawFitFrame(ctx, scene) {
       ctx.stroke();
     });
 
-  // label frame
   const text = `FRAME ${f.label} · ${f.w}×${f.h}`;
   ctx.font = '700 17px "Segoe UI", sans-serif';
   const tw = ctx.measureText(text).width;
@@ -1068,10 +1270,16 @@ function drawFitFrame(ctx, scene) {
 }
 
 /* Wiring tombol toolbar */
-$$('.fit-toolbar button').forEach(btn => {
+$$('.fit-toolbar button[data-fit]').forEach(btn => {
   btn.addEventListener('click', e => {
     e.stopPropagation();
     applyFit(btn.dataset.fit);
+  });
+});
+$$('.fit-toolbar button[data-reset]').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    resetPanZoom();
   });
 });
 
@@ -1102,7 +1310,8 @@ function bindCanvas(canvas) {
     const pt = toCanvas(e, canvas);
     const sel = selectedSource();
 
-    if (sel && sel._bbox && !sel.locked) {
+    // Handle resize — HANYA untuk sumber non-framed
+    if (sel && sel._bbox && !sel.locked && !isFramed(sel)) {
       for (const h of getHandles(sel._bbox)) {
         if (pt.x >= h.x && pt.x <= h.x + h.w && pt.y >= h.y && pt.y <= h.y + h.h) {
           state.drag = { mode: 'resize', dir: h.id, pt, orig: { ...sel }, src: sel };
@@ -1115,7 +1324,20 @@ function bindCanvas(canvas) {
     if (hit) {
       state.selectedId = hit.id;
       renderSourceList();
-      if (!hit.locked) state.drag = { mode: 'move', pt, orig: { ...hit }, src: hit };
+
+      if (hit.locked) return;
+
+      if (isFramed(hit)) {
+        // FRAME TETAP → drag untuk PAN video
+        state.drag = {
+          mode: 'pan',
+          pt,
+          orig: { offsetX: hit._offsetX || 0, offsetY: hit._offsetY || 0 },
+          src: hit
+        };
+      } else {
+        state.drag = { mode: 'move', pt, orig: { ...hit }, src: hit };
+      }
     } else {
       state.selectedId = null;
       renderSourceList();
@@ -1128,6 +1350,17 @@ function bindCanvas(canvas) {
     const hit = hitTest(scene, pt);
     if (hit) { state.selectedId = hit.id; renderSourceList(); openProps(hit); }
   });
+
+  // Wheel = ZOOM untuk sumber framed
+  canvas.addEventListener('wheel', e => {
+    const s = selectedSource();
+    if (!s || !isFramed(s)) return;
+    e.preventDefault();
+    const factor = e.deltaY > 0 ? 0.93 : 1.07;
+    s._zoom = clamp((s._zoom || 1) * factor, 0.15, 8);
+    updateFitButtons();
+    setStatus(`Zoom: ${s._zoom.toFixed(2)}×`);
+  }, { passive: false });
 }
 
 window.addEventListener('mousemove', e => {
@@ -1137,7 +1370,11 @@ window.addEventListener('mousemove', e => {
   const dx = pt.x - d.pt.x, dy = pt.y - d.pt.y;
   const s = d.src, o = d.orig;
 
-  if (d.mode === 'move') {
+  if (d.mode === 'pan') {
+    // Geser konten video di dalam frame
+    s._offsetX = Math.round(o.offsetX + dx);
+    s._offsetY = Math.round(o.offsetY + dy);
+  } else if (d.mode === 'move') {
     s.x = Math.round(o.x + dx);
     s.y = Math.round(o.y + dy);
   } else {
@@ -1151,6 +1388,8 @@ window.addEventListener('mousemove', e => {
     if (y2 - y1 < 20) y2 = y1 + 20;
     s.x = Math.round(x1); s.y = Math.round(y1);
     s.w = Math.round(x2 - x1); s.h = Math.round(y2 - y1);
+    s._fitMode = null; s._pendingFormat = null;
+    s._zoom = 1; s._offsetX = 0; s._offsetY = 0;
     if (s.type === 'text') {
       const ratio = s.h / (o.h || 1);
       s.fontSize = clamp(Math.round(o.fontSize * ratio), 8, 400);
@@ -1163,6 +1402,14 @@ window.addEventListener('mouseup', () => { state.drag = null; });
 window.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
   const s = selectedSource();
+
+  // Keyboard zoom & reset
+  if (s && isFramed(s)) {
+    if (e.key === '=' || e.key === '+') { s._zoom = clamp((s._zoom||1) * 1.12, 0.15, 8); e.preventDefault(); updateFitButtons(); return; }
+    if (e.key === '-' || e.key === '_') { s._zoom = clamp((s._zoom||1) * 0.89, 0.15, 8); e.preventDefault(); updateFitButtons(); return; }
+    if (e.key === '0') { resetPanZoom(); e.preventDefault(); return; }
+  }
+
   if (!s) return;
   const step = e.shiftKey ? 20 : 2;
   if (e.key === 'ArrowLeft')  { s.x -= step; e.preventDefault(); }
@@ -1229,10 +1476,18 @@ function renderSourceList() {
     row.draggable = true;
     row.dataset.id = src.id;
 
+    let fmtBadge = '';
+    if (src._fitMode) {
+      const z = src._zoom || 1;
+      const zoomTxt = (z !== 1) ? ` · ${z.toFixed(1)}×` : '';
+      fmtBadge = `<span class="badge" style="margin-left:2px">${src._fitMode === 'native' ? 'ASLI' : src._fitMode}${zoomTxt}</span>`;
+    }
+
     row.innerHTML = `
       <span class="mini eye" title="Visibilitas">${src.visible ? EYE_ON : EYE_OFF}</span>
       <span class="mini lock" title="Kunci">${src.locked ? LOCK_ON : LOCK_OFF}</span>
       <span class="txt">${escapeHtml(src.name)}</span>
+      ${fmtBadge}
       <span class="type-chip">${TYPE_CHIP[src.type] || 'SRC'}</span>`;
 
     row.onclick = e => {
@@ -1395,14 +1650,34 @@ function openProps(src) {
     const c = field('Warna', `<input type="color" id="pColor" value="${src.color}">`).querySelector('#pColor');
     window._propsApply = () => { src.name = nameInput.value || src.name; src.color = c.value; };
   } else if (src.type === 'image') {
-    const f = field('Berkas Gambar', `<input type="file" id="pFile" accept="image/*" style="color:#aaa;font-size:11px">`).querySelector('#pFile');
+    const f = field('Berkas Gambar',
+      `<input type="file" id="pFile" accept="image/*" style="color:#aaa;font-size:11px">
+       <div style="font-size:10px;color:#777;margin-top:4px">Gambar otomatis mengikuti format frame aktif.</div>`
+    ).querySelector('#pFile');
+
     f.onchange = () => {
       const file = f.files[0]; if (!file) return;
       const r = new FileReader();
-      r.onload = () => { src.dataUrl = r.result; src._img = null; };
+      r.onload = () => {
+        src.dataUrl = r.result;
+        src._img = null;
+        src._imgLoading = false;
+        src._offsetX = 0; src._offsetY = 0; src._zoom = 1;
+        src._pendingFormat = state.currentFormat || null;
+      };
       r.readAsDataURL(file);
     };
-    window._propsApply = () => { src.name = nameInput.value || src.name; };
+
+    const fitSel = field('Mode Tampilan',
+      `<select id="pFit">
+        <option value="cover" ${src.fit === 'cover' ? 'selected' : ''}>Isi Penuh (cover)</option>
+        <option value="contain" ${src.fit === 'contain' ? 'selected' : ''}>Sesuaikan Rasio (contain)</option>
+       </select>`).querySelector('#pFit');
+
+    window._propsApply = () => {
+      src.name = nameInput.value || src.name;
+      src.fit = fitSel.value;
+    };
   } else if (src.type === 'media') {
     const f = field('Berkas Media (MP4 / WebM)',
       `<input type="file" id="pMediaFile" accept="video/mp4,video/webm,video/quicktime,video/*" style="color:#aaa;font-size:11px">
@@ -1416,6 +1691,8 @@ function openProps(src) {
       src.name = file.name.replace(/\.[^.]+$/, '');
       nameInput.value = src.name;
       src.playing = true;
+      src._offsetX = 0; src._offsetY = 0; src._zoom = 1;
+      src._pendingFormat = state.currentFormat || null;
       loadMediaSource(src, src._blobUrl);
       refreshMixer(); renderSourceList();
       setStatus(`Berkas media diganti: ${file.name}`);
@@ -1483,22 +1760,60 @@ function openProps(src) {
     window._propsApply = () => { src.name = nameInput.value || src.name; };
   }
 
+  // Kontrol Zoom/Pan (khusus framed media)
+  if (isFramed(src)) {
+    const zoomField = document.createElement('div');
+    zoomField.className = 'field';
+    zoomField.innerHTML = `
+      <label>Zoom</label>
+      <div class="zoom-row">
+        <input type="range" id="pZoom" min="0.15" max="8" step="0.01" value="${src._zoom || 1}">
+        <span class="z-val" id="pZoomVal">${(src._zoom || 1).toFixed(2)}×</span>
+        <button class="btn sm" id="pZoomReset" title="Reset zoom">⟲</button>
+      </div>
+      <div style="font-size:10px;color:#777;margin-top:2px">Drag di display = geser · Scroll = zoom</div>`;
+    body.appendChild(zoomField);
+
+    const zoomEl = zoomField.querySelector('#pZoom');
+    const zoomValEl = zoomField.querySelector('#pZoomVal');
+    zoomEl.oninput = () => {
+      src._zoom = parseFloat(zoomEl.value);
+      zoomValEl.textContent = src._zoom.toFixed(2) + '×';
+    };
+    zoomField.querySelector('#pZoomReset').onclick = () => {
+      src._zoom = 1;
+      src._offsetX = 0;
+      src._offsetY = 0;
+      zoomEl.value = 1;
+      zoomValEl.textContent = '1.00×';
+    };
+  }
+
   const grid = document.createElement('div');
   grid.className = 'grid2';
+  const framedNote = isFramed(src)
+    ? `<div style="grid-column:1/-1;font-size:10.5px;color:#7fc4ff;padding:4px 0">🔒 Frame terkunci — ukuran frame diatur oleh tombol format. Geser/zoom hanya pada konten video.</div>`
+    : '';
   grid.innerHTML = `
+    ${framedNote}
     <div class="field"><label>Posisi X</label><input type="number" id="pX" value="${src.x}"></div>
     <div class="field"><label>Posisi Y</label><input type="number" id="pY" value="${src.y}"></div>
-    <div class="field"><label>Lebar</label><input type="number" id="pW" value="${src.w}"></div>
-    <div class="field"><label>Tinggi</label><input type="number" id="pH" value="${src.h}"></div>`;
+    <div class="field"><label>Lebar Frame</label><input type="number" id="pW" value="${src.w}"></div>
+    <div class="field"><label>Tinggi Frame</label><input type="number" id="pH" value="${src.h}"></div>`;
   body.appendChild(grid);
 
   const prevApply = window._propsApply;
   window._propsApply = () => {
     prevApply();
-    src.x = +grid.querySelector('#pX').value;
-    src.y = +grid.querySelector('#pY').value;
-    src.w = Math.max(10, +grid.querySelector('#pW').value);
-    src.h = Math.max(10, +grid.querySelector('#pH').value);
+    const nx = +grid.querySelector('#pX').value;
+    const ny = +grid.querySelector('#pY').value;
+    const nw = Math.max(10, +grid.querySelector('#pW').value);
+    const nh = Math.max(10, +grid.querySelector('#pH').value);
+    if (nw !== src.w || nh !== src.h) {
+      src._fitMode = null; src._pendingFormat = null;
+      src._zoom = 1; src._offsetX = 0; src._offsetY = 0;
+    }
+    src.x = nx; src.y = ny; src.w = nw; src.h = nh;
   };
 
   $('#propsOverlay').classList.add('show');
@@ -1704,7 +2019,7 @@ function handleAction(act) {
     case 'dupe-scene': {
       const sc = previewScene(); if (!sc) return;
       const copy = { id: uid(), name: sc.name + ' (copy)', sources: sc.sources.map(s => {
-        const base = JSON.parse(JSON.stringify({ ...s, _video: null, _img: null, _bbox: null, _mediaNode: null, _stream: null }));
+        const base = JSON.parse(JSON.stringify({ ...s, _video: null, _img: null, _bbox: null, _mediaNode: null, _stream: null, _imgLoading: false }));
         base.id = uid();
         return base;
       })};
@@ -1742,8 +2057,11 @@ function handleAction(act) {
     case 'fill-source': {
       const s = selectedSource(); if (!s) return;
       s.x = 0; s.y = 0; s.w = BASE_W; s.h = BASE_H;
+      s._fitMode = null; s._pendingFormat = null;
+      s._zoom = 1; s._offsetX = 0; s._offsetY = 0;
       break;
     }
+    case 'reset-pan': resetPanZoom(); break;
     case 'toggle-studio': toggleStudio(); break;
     case 'toggle-mixer':
       $('#mixerPanel').style.display = $('#mixerPanel').style.display === 'none' ? 'flex' : 'none';
@@ -1769,20 +2087,25 @@ function handleAction(act) {
     case 'about':
       showInfo('Tentang OBS Studio Pro',
         `<p style="line-height:1.9;color:#bbb">OBS Studio Pro — Web Edition<br>
-         Versi 1.2.0 (build web + MP4 + Fit Frame)<br><br>
+         Versi 1.5.0 (Frame Tetap + Pan & Zoom Konten)<br><br>
          Antarmuka studio produksi siaran yang berjalan sepenuhnya di peramban.
          Mendukung komposisi multi-sken, sumber teks, warna, gambar, <b>berkas media MP4</b>,
-         kamera, tangkapan layar, mixer audio, perekaman kanvas, dan
-         <b>penyetelan ukuran tampilan (Asli / 16:9 / 9:16) dengan frame panduan di display</b>.</p>`);
+         kamera, tangkapan layar, mixer audio, dan perekaman kanvas.<br><br>
+         <b>Fitur frame tetap:</b> pilih format (Asli / 16:9 / 9:16) → frame terkunci
+         di ukuran tersebut → konten video/gambar bisa <b>digeser</b> (drag) dan
+         <b>di-zoom</b> (scroll) dengan bebas tanpa mengubah ukuran frame.</p>`);
       break;
     case 'shortcut':
       showInfo('Pintasan Keyboard',
         `<table style="width:100%;color:#ccc;line-height:2;font-size:12px">
           <tr><td>Panah</td><td style="text-align:right">Geser sumber 2px</td></tr>
           <tr><td>Shift + Panah</td><td style="text-align:right">Geser sumber 20px</td></tr>
+          <tr><td>0</td><td style="text-align:right">Reset pan &amp; zoom</td></tr>
+          <tr><td>+ / −</td><td style="text-align:right">Zoom in / out</td></tr>
           <tr><td>Delete</td><td style="text-align:right">Hapus sumber</td></tr>
+          <tr><td>Drag pada frame</td><td style="text-align:right">Geser konten video</td></tr>
+          <tr><td>Scroll pada frame</td><td style="text-align:right">Zoom konten video</td></tr>
           <tr><td>Klik-ganda kanvas</td><td style="text-align:right">Buka properti sumber</td></tr>
-          <tr><td>Klik-ganda sken</td><td style="text-align:right">Ganti nama sken</td></tr>
         </table>`);
       break;
   }
@@ -1902,7 +2225,7 @@ function init() {
   s1.sources.push(makeSource('text', {
     name: 'Sub Judul',
     x: 84, y: 220, fontSize: 38, color: '#7fc4ff', weight: 500,
-    text: 'OBS Studio Pro — Web Edition\nPilih sumber → klik Asli / 16:9 / 9:16 di atas display'
+    text: 'Frame Tetap · Konten Bisa Digeser & Di-Zoom'
   }));
 
   s1.sources.push(makeSource('text', {
@@ -1923,7 +2246,7 @@ function init() {
   bindCanvas(previewCanvas);
 
   requestAnimationFrame(loop);
-  setStatus('Siap — pilih sumber lalu klik tombol Asli / 16:9 / 9:16 di atas display');
+  setStatus('Siap — pilih format frame, lalu drag = geser · scroll = zoom');
 }
 
 init();
