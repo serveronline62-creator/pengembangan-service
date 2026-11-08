@@ -112,27 +112,27 @@ button{font-family:inherit;font-size:inherit;color:inherit;background:none;borde
 }
 .canvas-wrap.live .canvas-label{color:var(--danger)}
 
-/* ===== FLOATING MEDIA TOOLBAR ===== */
-.media-toolbar{
-  position:absolute; z-index:25; display:none; align-items:center; gap:4px;
-  background:rgba(20,20,20,.96); border:1px solid #4fa3ee; border-radius:6px;
-  padding:4px 6px; box-shadow:0 8px 26px rgba(0,0,0,.75), 0 0 0 1px rgba(79,163,238,.3);
-  backdrop-filter:blur(6px); pointer-events:auto;
+/* ===== FIT TOOLBAR (di dalam display) ===== */
+.fit-toolbar{
+  position:absolute; top:8px; left:50%; transform:translateX(-50%);
+  display:flex; align-items:center; gap:4px;
+  padding:4px 6px; border-radius:6px;
+  background:rgba(20,20,20,.82); border:1px solid #454545;
+  box-shadow:0 6px 18px rgba(0,0,0,.55);
+  backdrop-filter:blur(4px); z-index:25; white-space:nowrap;
 }
-.media-toolbar .mt-label{
-  font-size:10.5px; color:#9fc9ef; font-weight:700; letter-spacing:.4px;
-  padding:0 7px 0 2px; margin-right:2px; border-right:1px solid #3a3a3a;
-  max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+.fit-toolbar .lbl{
+  font-size:9.5px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  color:#8a8a8a; margin:0 3px 0 2px;
 }
-.media-toolbar button{
-  padding:5px 11px; border-radius:4px; background:#333; color:#cfcfcf;
-  font-size:11px; font-weight:700; border:1px solid #4a4a4a; transition:.12s; white-space:nowrap;
-  letter-spacing:.3px;
+.fit-toolbar button{
+  padding:4px 10px; border-radius:4px; font-size:11px; font-weight:700;
+  background:#3a3a3a; border:1px solid #4d4d4d; color:#cfcfcf; transition:.12s;
 }
-.media-toolbar button:hover{background:#4fa3ee;border-color:#4fa3ee;color:#fff}
-.media-toolbar button.active{
-  background:#3c8dd8;border-color:#6bb8f5;color:#fff;
-  box-shadow:0 0 10px rgba(79,163,238,.65);
+.fit-toolbar button:hover{background:#4d4d4d;color:#fff;border-color:#5d5d5d}
+.fit-toolbar button.active{
+  background:var(--accent); border-color:var(--accent); color:#fff;
+  box-shadow:0 0 10px rgba(60,141,216,.55);
 }
 
 .transition-bar{
@@ -341,25 +341,23 @@ select:focus,input:focus{border-color:var(--accent)}
       <div class="preview-area" id="previewArea">
         <div class="canvas-wrap" id="wrapProgram">
           <canvas id="programCanvas" width="1280" height="720"></canvas>
-          <div class="canvas-label" id="labelProgram">Pratinjau</div>
-          <!-- TOOLBAR PENGATURAN VIDEO (PROGRAM) -->
-          <div class="media-toolbar" id="toolbarProgram">
-            <span class="mt-label">🎬 Video</span>
-            <button data-fit="original" title="Ukuran asli video">Asli</button>
-            <button data-fit="16:9" title="Rasio 16:9 lebar">16:9</button>
-            <button data-fit="9:16" title="Rasio 9:16 vertikal">9:16</button>
+          <div class="fit-toolbar">
+            <span class="lbl">Ukuran</span>
+            <button data-fit="native" title="Rasio asli video (tidak terpotong)">Asli</button>
+            <button data-fit="16:9" title="Rasio 16:9 — landscape / YouTube">16:9</button>
+            <button data-fit="9:16" title="Rasio 9:16 — vertikal / Reels & TikTok">9:16</button>
           </div>
+          <div class="canvas-label" id="labelProgram">Pratinjau</div>
         </div>
         <div class="canvas-wrap live" id="wrapPreview" style="display:none">
           <canvas id="previewCanvas" width="1280" height="720"></canvas>
-          <div class="canvas-label">Pratinjau (Edit)</div>
-          <!-- TOOLBAR PENGATURAN VIDEO (PREVIEW / STUDIO) -->
-          <div class="media-toolbar" id="toolbarPreview">
-            <span class="mt-label">🎬 Video</span>
-            <button data-fit="original" title="Ukuran asli video">Asli</button>
-            <button data-fit="16:9" title="Rasio 16:9 lebar">16:9</button>
-            <button data-fit="9:16" title="Rasio 9:16 vertikal">9:16</button>
+          <div class="fit-toolbar">
+            <span class="lbl">Ukuran</span>
+            <button data-fit="native" title="Rasio asli video (tidak terpotong)">Asli</button>
+            <button data-fit="16:9" title="Rasio 16:9 — landscape / YouTube">16:9</button>
+            <button data-fit="9:16" title="Rasio 9:16 — vertikal / Reels & TikTok">9:16</button>
           </div>
+          <div class="canvas-label">Pratinjau (Edit)</div>
         </div>
       </div>
 
@@ -436,6 +434,7 @@ select:focus,input:focus{border-color:var(--accent)}
 
 <!-- HIDDEN FILE INPUTS -->
 <input type="file" id="mediaFileInput" accept="video/mp4,video/webm,video/quicktime,video/*" style="display:none">
+<input type="file" id="mediaFileInput2" accept="video/mp4,video/webm,video/quicktime,video/*" style="display:none">
 
 <!-- MODALS -->
 <div class="overlay" id="propsOverlay">
@@ -487,8 +486,8 @@ select:focus,input:focus{border-color:var(--accent)}
 
 <script>
 /* =========================================================
-   OBS STUDIO PRO — WEB EDITION
-   Fitur: Sumber MP4 + pengatur ukuran langsung di display
+   OBS STUDIO PRO — WEB EDITION + MP4 SOURCE
+   + FIT TOOLBAR (Asli / 16:9 / 9:16) + FRAME DI DISPLAY
    ========================================================= */
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -515,6 +514,7 @@ const state = {
   drag: null,
   fade: 0,
   fading: false,
+  frame: null,
   settings: { bitrate: 6000 }
 };
 
@@ -612,6 +612,7 @@ function removeSource() {
   disposeSource(src);
   sc.sources = sc.sources.filter(s => s.id !== src.id);
   state.selectedId = null;
+  if (state.frame && state.frame.srcId === src.id) state.frame = null;
   renderSourceList(); refreshMixer();
   setStatus('Sumber dihapus');
 }
@@ -654,7 +655,6 @@ function loadMediaSource(src, url) {
 
   video.addEventListener('loadedmetadata', () => {
     if (video.videoWidth && video.videoHeight) {
-      // Sinkronkan rasio jika ukuran sumber masih placeholder default
       const ar = video.videoWidth / video.videoHeight;
       if (src.w === 640 && src.h === 360) {
         src.h = 360;
@@ -681,7 +681,6 @@ function loadMediaSource(src, url) {
   return video;
 }
 
-/* Handler file picker media */
 let pendingMediaScene = null;
 const mediaFileInput = $('#mediaFileInput');
 
@@ -698,12 +697,12 @@ mediaFileInput.addEventListener('change', () => {
   loadMediaSource(src, src._blobUrl);
   addSourceTo(targetScene, src);
 
-  setStatus(`Media "${file.name}" ditambahkan — atur ukuran lewat tombol di layar`);
-  toast('🎬 Sumber MP4 ditambahkan — gunakan tombol Asli / 16:9 / 9:16');
+  setStatus(`Media "${file.name}" ditambahkan`);
+  toast('Sumber MP4 ditambahkan ke sken');
 });
 
 /* ---------------------------------------------------------
-   KAMERA / LAYAR / AUDIO
+   MEDIA KAMERA / LAYAR / AUDIO
 --------------------------------------------------------- */
 async function attachMedia(src) {
   try {
@@ -741,7 +740,6 @@ async function attachMedia(src) {
    RENDER LOOP
 --------------------------------------------------------- */
 let lastFpsT = performance.now(), frames = 0, fps = 60;
-let lastToolbarT = 0;
 
 function loop(now) {
   frames++;
@@ -771,12 +769,6 @@ function loop(now) {
     renderScene(pctx, liveScene(), true);
   }
 
-  // Update posisi toolbar pengaturan video (throttle ~25fps)
-  if (now - lastToolbarT > 40) {
-    updateMediaToolbars();
-    lastToolbarT = now;
-  }
-
   updateTimers();
   requestAnimationFrame(loop);
 }
@@ -793,19 +785,15 @@ function renderScene(ctx, scene, editable) {
     try { drawSource(ctx, s); } catch (e) {}
   }
 
-  // === FRAME SUMBER VIDEO DI DISPLAY ===
-  for (const s of scene.sources) {
-    if (!s.visible || s.type !== 'media' || !s._bbox) continue;
-    const isSel = editable && s.id === state.selectedId;
-    drawMediaFrame(ctx, s, isSel);
-  }
-
   if (state.fade > 0) {
     ctx.fillStyle = `rgba(0,0,0,${state.fade})`;
     ctx.fillRect(0, 0, BASE_W, BASE_H);
   }
 
-  if (editable) drawSelection(ctx, scene);
+  if (editable) {
+    drawSelection(ctx, scene);
+    drawFitFrame(ctx, scene);
+  }
 }
 
 function drawSource(ctx, s) {
@@ -843,8 +831,11 @@ function drawSource(ctx, s) {
         img.onload = () => { s._img = img; };
         img.src = s.dataUrl;
       }
-      if (s._img) drawCover(ctx, s._img, s.x, s.y, s.w, s.h);
-      else { ctx.fillStyle = '#333'; ctx.fillRect(s.x, s.y, s.w, s.h); }
+      if (s._img) {
+        drawCover(ctx, s._img, s.x, s.y, s.w, s.h);
+      } else {
+        ctx.fillStyle = '#333'; ctx.fillRect(s.x, s.y, s.w, s.h);
+      }
       s._bbox = { x: s.x, y: s.y, w: s.w, h: s.h };
       break;
     }
@@ -854,9 +845,9 @@ function drawSource(ctx, s) {
         if (s.fit === 'contain') drawContain(ctx, s._video, s.x, s.y, s.w, s.h);
         else drawCover(ctx, s._video, s.x, s.y, s.w, s.h);
       } else {
-        ctx.fillStyle = '#141414';
+        ctx.fillStyle = '#1a1a1a';
         ctx.fillRect(s.x, s.y, s.w, s.h);
-        ctx.fillStyle = '#5a5a5a';
+        ctx.fillStyle = '#666';
         ctx.font = '600 22px Segoe UI';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -890,131 +881,6 @@ function drawSource(ctx, s) {
   }
 }
 
-/* ---------------------------------------------------------
-   FRAME VIDEO DI DISPLAY + LABEL DIMENSI
---------------------------------------------------------- */
-function drawMediaFrame(ctx, s, selected) {
-  const b = s._bbox;
-  if (!b) return;
-
-  ctx.save();
-
-  // ---- Frame tipis untuk sumber video yang tidak terpilih ----
-  if (!selected) {
-    ctx.strokeStyle = 'rgba(79,163,238,.42)';
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([8, 6]);
-    ctx.strokeRect(b.x, b.y, b.w, b.h);
-    ctx.restore();
-    return;
-  }
-
-  // ---- Frame tegas + glow untuk sumber terpilih ----
-  ctx.strokeStyle = '#4fa3ee';
-  ctx.lineWidth = 2.5;
-  ctx.shadowColor = 'rgba(79,163,238,.85)';
-  ctx.shadowBlur = 16;
-  ctx.strokeRect(b.x, b.y, b.w, b.h);
-  ctx.shadowBlur = 0;
-
-  // Sudut bracket putih
-  const L = Math.max(14, Math.min(36, b.w / 4, b.h / 4));
-  ctx.strokeStyle = '#ffffff';
-  ctx.lineWidth = 3.5;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  const corners = [
-    [b.x, b.y, 1, 1],
-    [b.x + b.w, b.y, -1, 1],
-    [b.x, b.y + b.h, 1, -1],
-    [b.x + b.w, b.y + b.h, -1, -1]
-  ];
-  for (const [cx, cy, dx, dy] of corners) {
-    ctx.beginPath();
-    ctx.moveTo(cx + dx * L, cy);
-    ctx.lineTo(cx, cy);
-    ctx.lineTo(cx, cy + dy * L);
-    ctx.stroke();
-  }
-  ctx.lineCap = 'butt';
-  ctx.lineJoin = 'miter';
-
-  // ---- Label dimensi + rasio ----
-  const vw = s._video && s._video.videoWidth ? s._video.videoWidth : 0;
-  const vh = s._video && s._video.videoHeight ? s._video.videoHeight : 0;
-  const ar = b.h > 0 ? b.w / b.h : 0;
-  const arStr = simplifyAR(ar);
-
-  let label = `${Math.round(b.w)}×${Math.round(b.h)}`;
-  if (arStr) label += '  ·  ' + arStr;
-  if (vw && vh) label += `   (asli ${vw}×${vh})`;
-
-  ctx.font = '600 15px "Segoe UI", sans-serif';
-  const tw = ctx.measureText(label).width;
-  const padX = 12, labH = 28;
-  let lx = b.x + b.w / 2 - (tw + padX * 2) / 2;
-  let ly = b.y + b.h + 10;
-  if (ly + labH > BASE_H - 4) ly = b.y - labH - 10;
-  if (ly < 4) ly = b.y + b.h - labH - 10;
-  lx = clamp(lx, 4, BASE_W - tw - padX * 2 - 4);
-
-  ctx.fillStyle = 'rgba(60,141,216,.96)';
-  roundRectPath(ctx, lx, ly, tw + padX * 2, labH, 5);
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255,255,255,.35)';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  ctx.fillStyle = '#ffffff';
-  ctx.textBaseline = 'middle';
-  ctx.textAlign = 'center';
-  ctx.fillText(label, lx + (tw + padX * 2) / 2, ly + labH / 2 + 0.5);
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'alphabetic';
-
-  // ---- Handles resize ----
-  if (!s.locked) {
-    ctx.fillStyle = '#ffffff';
-    ctx.strokeStyle = '#3c8dd8';
-    ctx.lineWidth = 1.5;
-    for (const h of getHandles(b)) {
-      ctx.beginPath();
-      ctx.rect(h.x, h.y, h.w, h.h);
-      ctx.fill();
-      ctx.stroke();
-    }
-  }
-
-  ctx.restore();
-}
-
-function roundRectPath(ctx, x, y, w, h, r) {
-  r = Math.min(r, w / 2, h / 2);
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.arcTo(x + w, y, x + w, y + r, r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
-  ctx.lineTo(x + r, y + h);
-  ctx.arcTo(x, y + h, x, y + h - r, r);
-  ctx.lineTo(x, y + r);
-  ctx.arcTo(x, y, x + r, y, r);
-  ctx.closePath();
-}
-
-function simplifyAR(ar) {
-  if (!ar || !isFinite(ar)) return '';
-  const common = [
-    [16, 9], [9, 16], [4, 3], [3, 4], [21, 9],
-    [1, 1], [3, 2], [2, 3], [5, 4], [4, 5]
-  ];
-  for (const [a, b] of common) {
-    if (Math.abs(ar - a / b) < 0.015) return `${a}:${b}`;
-  }
-  return ar.toFixed(2) + ':1';
-}
-
 function drawCover(ctx, media, x, y, w, h) {
   const mw = media.videoWidth || media.naturalWidth || media.width;
   const mh = media.videoHeight || media.naturalHeight || media.height;
@@ -1032,131 +898,6 @@ function drawContain(ctx, media, x, y, w, h) {
   const dw = mw * scale, dh = mh * scale;
   ctx.drawImage(media, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
 }
-
-/* ---------------------------------------------------------
-   TOOLBAR PENGATURAN UKURAN VIDEO (DI DISPLAY)
---------------------------------------------------------- */
-function updateMediaToolbars() {
-  const tp = $('#toolbarProgram');
-  const tv = $('#toolbarPreview');
-  if (!tp || !tv) return;
-
-  tp.style.display = 'none';
-  tv.style.display = 'none';
-
-  const sel = selectedSource();
-  if (!sel || sel.type !== 'media' || !sel.visible || !sel._bbox) return;
-
-  if (state.studio) {
-    placeToolbar(tv, previewCanvas, sel);
-  } else {
-    placeToolbar(tp, programCanvas, sel);
-  }
-}
-
-function placeToolbar(tool, canvas, src) {
-  const wrap = canvas.parentElement;
-  const cRect = canvas.getBoundingClientRect();
-  const wRect = wrap.getBoundingClientRect();
-  const scale = cRect.width / BASE_W;
-
-  const offX = cRect.left - wRect.left;
-  const offY = cRect.top - wRect.top;
-  const b = src._bbox;
-
-  tool.style.display = 'flex';
-
-  // Label nama sumber
-  const lbl = tool.querySelector('.mt-label');
-  if (lbl) lbl.textContent = '🎬 ' + src.name;
-
-  const tw = tool.offsetWidth;
-  const th = tool.offsetHeight;
-
-  let left = offX + (b.x + b.w / 2) * scale - tw / 2;
-  let top  = offY + b.y * scale - th - 8;
-
-  if (top < 4) top = offY + (b.y + b.h) * scale + 8;
-
-  left = clamp(left, 4, Math.max(4, wRect.width - tw - 4));
-  top  = clamp(top,  4, Math.max(4, wRect.height - th - 4));
-
-  tool.style.left = left + 'px';
-  tool.style.top  = top + 'px';
-
-  // Tandai tombol yang aktif sesuai rasio saat ini
-  const ar = b.h > 0 ? b.w / b.h : 0;
-  const vw = src._video && src._video.videoWidth ? src._video.videoWidth : 0;
-  const vh = src._video && src._video.videoHeight ? src._video.videoHeight : 0;
-
-  tool.querySelectorAll('button[data-fit]').forEach(btn => {
-    let on = false;
-    const fit = btn.dataset.fit;
-    if (fit === '16:9') {
-      on = Math.abs(ar - 16 / 9) < 0.02;
-    } else if (fit === '9:16') {
-      on = Math.abs(ar - 9 / 16) < 0.02;
-    } else if (fit === 'original' && vw && vh) {
-      const sFit = Math.min(1, BASE_W / vw, BASE_H / vh);
-      on = Math.abs(b.w - vw * sFit) < 2 && Math.abs(b.h - vh * sFit) < 2;
-    }
-    btn.classList.toggle('active', on);
-  });
-}
-
-/* Aksi tombol pengaturan ukuran */
-function applyMediaFit(fit) {
-  const s = selectedSource();
-  if (!s || s.type !== 'media') {
-    toast('Pilih sumber video terlebih dahulu');
-    return;
-  }
-
-  if (fit === 'original') {
-    const vw = s._video && s._video.videoWidth ? s._video.videoWidth : 0;
-    const vh = s._video && s._video.videoHeight ? s._video.videoHeight : 0;
-    if (!vw || !vh) {
-      toast('Video belum siap — tunggu hingga termuat');
-      return;
-    }
-    const sc = Math.min(1, BASE_W / vw, BASE_H / vh);
-    s.w = Math.round(vw * sc);
-    s.h = Math.round(vh * sc);
-    s.x = Math.round((BASE_W - s.w) / 2);
-    s.y = Math.round((BASE_H - s.h) / 2);
-    setStatus(`Ukuran ASLI video ${vw}×${vh}` + (sc < 1 ? ' — diperkecil agar muat di kanvas' : ''));
-    toast(`📐 Ukuran asli: ${vw}×${vh}`);
-  } else if (fit === '16:9') {
-    s.w = BASE_W;
-    s.h = BASE_H;
-    s.x = 0;
-    s.y = 0;
-    setStatus('Ukuran video: 16:9 (1280×720) — penuh kanvas');
-    toast('📐 Rasio 16:9 — mengisi penuh kanvas');
-  } else if (fit === '9:16') {
-    const h = BASE_H;
-    const w = Math.round(h * 9 / 16); // 405
-    s.w = w;
-    s.h = h;
-    s.x = Math.round((BASE_W - w) / 2);
-    s.y = 0;
-    setStatus('Ukuran video: 9:16 (405×720) — vertikal di tengah');
-    toast('📐 Rasio 9:16 — vertikal di tengah');
-  }
-
-  s.fit = 'cover';
-  s._bbox = null;
-  renderSourceList();
-}
-
-/* Bind tombol toolbar (program + preview) */
-$$('.media-toolbar button[data-fit]').forEach(btn => {
-  btn.addEventListener('mousedown', e => e.stopPropagation());
-  btn.addEventListener('click', e => {
-    e.stopPropagation();
-    applyMediaFit(btn.dataset.fit);
-  });
-});
 
 /* ---------------------------------------------------------
    SELECTION & HANDLES
@@ -1178,8 +919,6 @@ function getHandles(b) {
 function drawSelection(ctx, scene) {
   const s = scene.sources.find(x => x.id === state.selectedId);
   if (!s || !s.visible || !s._bbox) return;
-  if (s.type === 'media') return; // sudah digambar oleh drawMediaFrame
-
   const b = s._bbox;
   ctx.save();
   ctx.strokeStyle = s.locked ? '#e0a020' : '#3c8dd8';
@@ -1207,6 +946,134 @@ function drawSelection(ctx, scene) {
   ctx.fillText(label, b.x + 8, b.y - 13);
   ctx.restore();
 }
+
+/* ---------------------------------------------------------
+   UKURAN TAMPILAN — Asli / 16:9 / 9:16 (+ FRAME di display)
+--------------------------------------------------------- */
+function mediaNaturalSize(s) {
+  if (s._video && s._video.videoWidth && s._video.videoHeight)
+    return { w: s._video.videoWidth, h: s._video.videoHeight };
+  if (s._img && s._img.naturalWidth && s._img.naturalHeight)
+    return { w: s._img.naturalWidth, h: s._img.naturalHeight };
+  return null;
+}
+
+function applyFit(mode) {
+  const s = selectedSource();
+  if (!s) { toast('Pilih sumber dulu di daftar Sumber'); return; }
+  if (s.locked) { toast('Sumber terkunci — buka kunci untuk mengubah ukuran'); return; }
+  if (!['media', 'image', 'camera', 'screen', 'color'].includes(s.type)) {
+    toast('Penyesuaian ukuran tersedia untuk media / gambar / kamera / layar');
+    return;
+  }
+
+  let ratio, label;
+  if (mode === 'native') {
+    const nat = mediaNaturalSize(s);
+    if (nat) { ratio = nat.w / nat.h; label = `ASLI ${nat.w}×${nat.h}`; }
+    else { ratio = (s.w || BASE_W) / (s.h || BASE_H); label = `ASLI ${s.w}×${s.h}`; }
+  } else {
+    const [aw, ah] = mode.split(':').map(Number);
+    ratio = aw / ah;
+    label = mode;
+  }
+
+  let w = BASE_W, h = Math.round(BASE_W / ratio);
+  if (h > BASE_H) { h = BASE_H; w = Math.round(BASE_H * ratio); }
+  w = Math.max(8, w); h = Math.max(8, h);
+
+  s.w = w; s.h = h;
+  s.x = Math.round((BASE_W - w) / 2);
+  s.y = Math.round((BASE_H - h) / 2);
+  s._fitMode = mode;
+  if (s.type === 'media' && mode === 'native') s.fit = 'contain';
+
+  state.frame = { srcId: s.id, label, x: s.x, y: s.y, w: s.w, h: s.h, t0: performance.now() };
+
+  renderSourceList();
+  setStatus(`Ukuran sumber disetel ke ${label} (${w}×${h})`);
+  toast(`Frame ${label} — ${w}×${h}`);
+}
+
+function updateFitButtons() {
+  const s = selectedSource();
+  $$('.fit-toolbar button').forEach(b => {
+    b.classList.toggle('active', !!(s && s._fitMode === b.dataset.fit));
+  });
+}
+
+function drawFitFrame(ctx, scene) {
+  const f = state.frame;
+  if (!f || !scene) return;
+  const src = scene.sources.find(x => x.id === f.srcId);
+  if (!src) return;
+  if (state.selectedId !== f.srcId || !src.visible) { state.frame = null; return; }
+
+  f.x = src.x; f.y = src.y; f.w = src.w; f.h = src.h;
+
+  const alpha = Math.min(1, (performance.now() - f.t0) / 180);
+  ctx.save();
+  ctx.globalAlpha = alpha;
+
+  // gelapkan area di luar frame
+  ctx.fillStyle = 'rgba(0,0,0,.30)';
+  ctx.beginPath();
+  ctx.rect(0, 0, BASE_W, BASE_H);
+  ctx.rect(f.x + f.w, f.y, -f.w, f.h);
+  ctx.fill('evenodd');
+
+  // border frame
+  ctx.strokeStyle = '#4fa3ee';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(f.x + 1.5, f.y + 1.5, Math.max(0, f.w - 3), Math.max(0, f.h - 3));
+
+  // garis bantu tengah
+  ctx.strokeStyle = 'rgba(255,255,255,.30)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([8, 8]);
+  ctx.beginPath();
+  ctx.moveTo(f.x + f.w / 2, f.y); ctx.lineTo(f.x + f.w / 2, f.y + f.h);
+  ctx.moveTo(f.x, f.y + f.h / 2); ctx.lineTo(f.x + f.w, f.y + f.h / 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // sudut siku
+  const c = Math.min(70, f.w / 4, f.h / 4);
+  ctx.strokeStyle = '#4fa3ee';
+  ctx.lineWidth = 6;
+  ctx.lineCap = 'round';
+  [[f.x, f.y, 1, 1], [f.x + f.w, f.y, -1, 1], [f.x, f.y + f.h, 1, -1], [f.x + f.w, f.y + f.h, -1, -1]]
+    .forEach(([cx, cy, sx, sy]) => {
+      ctx.beginPath();
+      ctx.moveTo(cx + sx * c, cy);
+      ctx.lineTo(cx, cy);
+      ctx.lineTo(cx, cy + sy * c);
+      ctx.stroke();
+    });
+
+  // label frame
+  const text = `FRAME ${f.label} · ${f.w}×${f.h}`;
+  ctx.font = '700 17px "Segoe UI", sans-serif';
+  const tw = ctx.measureText(text).width;
+  const bw = tw + 24, bh = 30;
+  let bx = f.x, by = f.y - bh - 8;
+  if (by < 4) by = f.y + 8;
+  if (bx + bw > BASE_W) bx = BASE_W - bw - 4;
+  ctx.fillStyle = 'rgba(60,141,216,.95)';
+  ctx.fillRect(bx, by, bw, bh);
+  ctx.fillStyle = '#fff';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, bx + 12, by + bh / 2 + 1);
+  ctx.restore();
+}
+
+/* Wiring tombol toolbar */
+$$('.fit-toolbar button').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    applyFit(btn.dataset.fit);
+  });
+});
 
 /* ---------------------------------------------------------
    CANVAS INTERACTION
@@ -1320,6 +1187,7 @@ function renderSceneList() {
       state.previewSceneId = sc.id;
       if (!state.studio) state.liveSceneId = sc.id;
       state.selectedId = null;
+      state.frame = null;
       renderSceneList(); renderSourceList(); refreshMixer();
       $('#statusScene').textContent = 'Sken: ' + sc.name;
     };
@@ -1402,6 +1270,7 @@ function renderSourceList() {
   });
 
   $('#statusSources').textContent = 'Sumber: ' + sc.sources.length;
+  updateFitButtons();
 }
 
 function escapeHtml(s) {
@@ -1630,7 +1499,6 @@ function openProps(src) {
     src.y = +grid.querySelector('#pY').value;
     src.w = Math.max(10, +grid.querySelector('#pW').value);
     src.h = Math.max(10, +grid.querySelector('#pH').value);
-    src._bbox = null;
   };
 
   $('#propsOverlay').classList.add('show');
@@ -1668,6 +1536,7 @@ function toggleStudio() {
     const other = state.scenes.find(s => s.id !== state.liveSceneId);
     if (other) state.previewSceneId = other.id;
   }
+  state.frame = null;
   renderSceneList(); renderSourceList(); refreshMixer();
   setStatus(state.studio ? 'Mode Studio aktif' : 'Mode Studio nonaktif');
 }
@@ -1735,6 +1604,7 @@ async function toggleRecord() {
   }
   try {
     const stream = programCanvas.captureStream(30);
+
     try {
       recAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const dest = recAudioCtx.createMediaStreamDestination();
@@ -1867,13 +1737,11 @@ function handleAction(act) {
       const s = selectedSource(); if (!s) return;
       s.x = Math.round((BASE_W - s.w) / 2);
       s.y = Math.round((BASE_H - s.h) / 2);
-      s._bbox = null;
       break;
     }
     case 'fill-source': {
       const s = selectedSource(); if (!s) return;
       s.x = 0; s.y = 0; s.w = BASE_W; s.h = BASE_H;
-      s._bbox = null;
       break;
     }
     case 'toggle-studio': toggleStudio(); break;
@@ -1901,12 +1769,11 @@ function handleAction(act) {
     case 'about':
       showInfo('Tentang OBS Studio Pro',
         `<p style="line-height:1.9;color:#bbb">OBS Studio Pro — Web Edition<br>
-         Versi 1.2.0 (build web + kontrol ukuran video)<br><br>
+         Versi 1.2.0 (build web + MP4 + Fit Frame)<br><br>
          Antarmuka studio produksi siaran yang berjalan sepenuhnya di peramban.
-         Mendukung komposisi multi-sken, sumber teks, warna, gambar,
-         <b>berkas media MP4</b>, kamera, tangkapan layar, mixer audio, dan perekaman kanvas.<br><br>
-         <b>Baru:</b> saat sumber video dipilih, tombol <b>Asli</b>, <b>16:9</b>, dan <b>9:16</b>
-         muncul langsung di atas frame video pada layar display.</p>`);
+         Mendukung komposisi multi-sken, sumber teks, warna, gambar, <b>berkas media MP4</b>,
+         kamera, tangkapan layar, mixer audio, perekaman kanvas, dan
+         <b>penyetelan ukuran tampilan (Asli / 16:9 / 9:16) dengan frame panduan di display</b>.</p>`);
       break;
     case 'shortcut':
       showInfo('Pintasan Keyboard',
@@ -1950,7 +1817,9 @@ $$('#addMenu button').forEach(b => {
     const src = makeSource(type);
     addSourceTo(sc, src);
     setStatus(`Sumber "${src.name}" ditambahkan`);
-    if (type === 'image') setTimeout(() => openProps(src), 50);
+    if (type === 'image') {
+      setTimeout(() => openProps(src), 50);
+    }
   };
 });
 
@@ -2033,7 +1902,7 @@ function init() {
   s1.sources.push(makeSource('text', {
     name: 'Sub Judul',
     x: 84, y: 220, fontSize: 38, color: '#7fc4ff', weight: 500,
-    text: 'OBS Studio Pro — Web Edition\nTambahkan MP4, lalu atur ukuran lewat tombol di layar'
+    text: 'OBS Studio Pro — Web Edition\nPilih sumber → klik Asli / 16:9 / 9:16 di atas display'
   }));
 
   s1.sources.push(makeSource('text', {
@@ -2054,7 +1923,7 @@ function init() {
   bindCanvas(previewCanvas);
 
   requestAnimationFrame(loop);
-  setStatus('Siap — impor MP4 lewat + Sumber, lalu pilih video untuk mengatur ukuran di layar');
+  setStatus('Siap — pilih sumber lalu klik tombol Asli / 16:9 / 9:16 di atas display');
 }
 
 init();
