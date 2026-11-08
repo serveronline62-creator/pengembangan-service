@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Web OBS Lite — Full Version</title>
+<title>Web OBS Lite — Final</title>
 <style>
   :root {
     --bg: #1e1e1e; --panel: #252526; --panel2: #2d2d30;
@@ -50,17 +50,51 @@
   .source-item button, .audio-item button {
     padding: 1px 5px; font-size: 11px; line-height: 1;
   }
+
+  /* ===== PREVIEW AREA + FRAME ===== */
   .preview-area {
     display: flex; align-items: center; justify-content: center;
-    background: #111; padding: 16px; min-width: 0; overflow: hidden;
+    background: radial-gradient(ellipse at center, #141414 0%, #0a0a0a 100%);
+    padding: 32px 24px 44px;
+    min-width: 0; overflow: hidden;
+    position: relative;
   }
   .canvas-wrap {
-    position: relative; width: 100%; max-width: 1280px;
-    aspect-ratio: 16 / 9; background: #000;
-    box-shadow: 0 0 0 1px #000, 0 10px 30px rgba(0,0,0,.5);
-    transition: aspect-ratio 0.3s ease;
+    position: relative;
+    background: #000;
+    border-radius: 3px;
+    box-shadow:
+      0 0 0 1px #000,
+      0 0 0 2px #3a3a3d,
+      0 0 0 4px #1a1a1a,
+      0 16px 48px rgba(0,0,0,.75);
+    transition: width 0.28s cubic-bezier(.4,0,.2,1),
+                height 0.28s cubic-bezier(.4,0,.2,1);
+    flex-shrink: 0;
   }
-  canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+  .canvas-wrap::after {
+    content: attr(data-dim);
+    position: absolute;
+    bottom: -26px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    color: #7a7a7a;
+    letter-spacing: 0.8px;
+    white-space: nowrap;
+    pointer-events: none;
+    background: #0a0a0a;
+    padding: 2px 10px;
+    border-radius: 10px;
+    border: 1px solid #2a2a2a;
+  }
+  canvas {
+    width: 100%; height: 100%;
+    display: block; touch-action: none;
+    border-radius: 2px;
+  }
+
   button {
     background: var(--panel2); color: var(--text);
     border: 1px solid var(--border); border-radius: 4px;
@@ -145,7 +179,6 @@
   }
   .recording-item .rec-actions { display: flex; gap: 4px; flex-wrap: wrap; }
   .recording-item .rec-actions button { padding: 2px 8px; font-size: 11px; }
-  @keyframes pulse { 50% { opacity: .5; } }
   .ratio-select {
     font-weight: 600;
     background: var(--accent);
@@ -193,7 +226,7 @@
   </aside>
 
   <section class="preview-area">
-    <div class="canvas-wrap" id="canvas-wrap">
+    <div class="canvas-wrap" id="canvas-wrap" data-dim="1280 × 720">
       <canvas id="preview" width="1280" height="720"></canvas>
     </div>
   </section>
@@ -204,7 +237,6 @@
       <select id="source-type-select">
         <option value="webcam">Webcam</option>
         <option value="screen">Screen Capture</option>
-        <option value="window">Window Capture</option>
         <option value="videofile">Video File (MP4/WebM)</option>
         <option value="image">Gambar (URL)</option>
         <option value="text">Teks</option>
@@ -367,9 +399,7 @@ function detectMimeSupport() {
     'WebM VP8': 'video/webm;codecs=vp8',
   };
   const results = {};
-  for (const [k, v] of Object.entries(checks)) {
-    results[k] = MediaRecorder.isTypeSupported(v);
-  }
+  for (const [k, v] of Object.entries(checks)) results[k] = MediaRecorder.isTypeSupported(v);
   return results;
 }
 function refreshMimeInfo() {
@@ -377,13 +407,12 @@ function refreshMimeInfo() {
   const hasMp4 = results['MP4 H.264'];
   mimeSupportEl.textContent = hasMp4 ? '✔ MP4 didukung' : '⚠ MP4 tidak didukung';
   mimeSupportEl.style.color = hasMp4 ? 'var(--ok)' : 'var(--warn)';
-  mimeInfoEl.innerHTML = Object.entries(results).map(([k, v]) =>
-    `<div>${v ? '✔' : '✕'} ${k}</div>`
-  ).join('');
+  mimeInfoEl.innerHTML = Object.entries(results)
+    .map(([k, v]) => `<div>${v ? '✔' : '✕'} ${k}</div>`).join('');
 }
 
 /* =========================================================
-   CANVAS RATIO HANDLING
+   CANVAS RATIO & DISPLAY SIZING
    ========================================================= */
 function getRatioDimensions(ratio) {
   if (ratio === '9:16') return { width: 720, height: 1280 };
@@ -391,18 +420,48 @@ function getRatioDimensions(ratio) {
   return { width: 1280, height: 720 };
 }
 
+function resizeCanvasDisplay() {
+  const area = document.querySelector('.preview-area');
+  if (!area) return;
+  const styles = getComputedStyle(area);
+  const padX = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
+  const padY = parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom);
+  const availW = Math.max(100, area.clientWidth - padX);
+  const availH = Math.max(100, area.clientHeight - padY);
+
+  const ratio = canvas.width / canvas.height;
+  let w, h;
+
+  if (availW / availH > ratio) {
+    h = availH;
+    w = Math.round(h * ratio);
+  } else {
+    w = availW;
+    h = Math.round(w / ratio);
+  }
+
+  canvasWrap.style.width = w + 'px';
+  canvasWrap.style.height = h + 'px';
+  canvasWrap.setAttribute('data-dim', `${canvas.width} × ${canvas.height}`);
+}
+
+window.addEventListener('resize', () => {
+  clearTimeout(window.__canvasResizeT);
+  window.__canvasResizeT = setTimeout(resizeCanvasDisplay, 80);
+});
+
 function applyCanvasRatio(ratio) {
   const oldW = canvas.width, oldH = canvas.height;
   const { width, height } = getRatioDimensions(ratio);
   if (oldW === width && oldH === height) {
     state.canvasRatio = ratio;
+    resizeCanvasDisplay();
     updateStatus();
     return;
   }
 
   canvas.width = width;
   canvas.height = height;
-  canvasWrap.style.aspectRatio = `${width} / ${height}`;
 
   const scaleX = width / oldW;
   const scaleY = height / oldH;
@@ -419,6 +478,7 @@ function applyCanvasRatio(ratio) {
   });
 
   state.canvasRatio = ratio;
+  resizeCanvasDisplay();
   renderSources();
   drawFrame();
   updateStatus();
@@ -587,42 +647,6 @@ async function createScreenSource() {
   return buildDisplaySource(stream, '🖥 Screen Capture');
 }
 
-/* =========================================================
-   SOURCES — WINDOW CAPTURE
-   ========================================================= */
-async function createWindowSource() {
-  let stream;
-  try {
-    // Chrome 109+: strict window-only mode
-    stream = await navigator.mediaDevices.getDisplayMedia({
-      video: { displaySurface: 'window' },
-      audio: true,
-      selfBrowserSurface: 'exclude',
-      surfaceSwitching: 'include',
-      systemAudio: 'exclude',
-      monitorTypeSurfaces: 'exclude',
-      windowAudio: 'window',
-    });
-  } catch {
-    try {
-      stream = await navigator.mediaDevices.getDisplayMedia({
-        video: { displaySurface: 'window' },
-        audio: true,
-      });
-    } catch {
-      try {
-        stream = await navigator.mediaDevices.getDisplayMedia({
-          video: true, audio: false,
-        });
-      } catch (err) {
-        throw new Error('Window capture dibatalkan: ' + err.message);
-      }
-    }
-  }
-  return buildDisplaySource(stream, '🪟 Window Capture');
-}
-
-/* Shared helper for Screen + Window Capture */
 function buildDisplaySource(stream, name) {
   const video = document.createElement('video');
   video.srcObject = stream; video.muted = true;
@@ -638,7 +662,7 @@ function buildDisplaySource(stream, name) {
   const height = Math.round(vh * ratio);
 
   const src = {
-    id: uid('src'), type: name.includes('Window') ? 'window' : 'screen', name,
+    id: uid('src'), type: 'screen', name,
     visible: true,
     x: Math.round((canvas.width - width) / 2),
     y: Math.round((canvas.height - height) / 2),
@@ -649,7 +673,6 @@ function buildDisplaySource(stream, name) {
   const audioTracks = stream.getAudioTracks();
   if (audioTracks.length) connectAudioTrack(src, audioTracks[0]);
 
-  // Recalculate size after metadata ready
   video.addEventListener('loadedmetadata', () => {
     if (video.videoWidth && video.videoHeight) {
       const vw2 = video.videoWidth, vh2 = video.videoHeight;
@@ -661,7 +684,6 @@ function buildDisplaySource(stream, name) {
     }
   });
 
-  // Stop share when user stops from browser UI
   const videoTrack = stream.getVideoTracks()[0];
   if (videoTrack) {
     videoTrack.addEventListener('ended', () => {
@@ -805,7 +827,6 @@ async function addSource(type) {
   let src;
   if (type === 'webcam') src = await createWebcamSource();
   else if (type === 'screen') src = await createScreenSource();
-  else if (type === 'window') src = await createWindowSource();
   else if (type === 'videofile') src = await createVideoFileSource();
   else if (type === 'image') src = createImageSource();
   else if (type === 'text') src = createTextSource();
@@ -927,8 +948,7 @@ function drawFrame() {
   for (const src of scene.sources) {
     if (!src.visible) continue;
     ctx.save();
-    if (src.type === 'webcam' || src.type === 'screen' ||
-        src.type === 'window' || src.type === 'videofile') {
+    if (src.type === 'webcam' || src.type === 'screen' || src.type === 'videofile') {
       if (src.videoEl && src.videoEl.readyState >= 2 && src.videoEl.videoWidth > 0) {
         try { ctx.drawImage(src.videoEl, src.x, src.y, src.width, src.height); } catch {}
       }
@@ -1331,7 +1351,6 @@ function init() {
   const { width, height } = getRatioDimensions(state.canvasRatio);
   canvas.width = width;
   canvas.height = height;
-  canvasWrap.style.aspectRatio = `${width} / ${height}`;
   canvasRatioSelect.value = state.canvasRatio;
 
   renderScenes();
@@ -1342,6 +1361,12 @@ function init() {
   drawFrame();
   state.drawTimer = setInterval(drawFrame, 1000 / 30);
   updateStatus();
+  resizeCanvasDisplay();
+
+  if (window.ResizeObserver) {
+    new ResizeObserver(() => resizeCanvasDisplay())
+      .observe(document.querySelector('.preview-area'));
+  }
 }
 
 window.addEventListener('beforeunload', () => {
