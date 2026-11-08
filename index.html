@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Web OBS Lite — Final</title>
+<title>Web OBS Lite — Audio Fixed</title>
 <style>
   :root {
     --bg: #1e1e1e; --panel: #252526; --panel2: #2d2d30;
@@ -40,6 +40,7 @@
     border-bottom: 1px solid var(--border); display: flex;
     justify-content: space-between; align-items: center; flex-shrink: 0;
   }
+  .panel-header small { font-size: 9px; text-transform: none; letter-spacing: 0; opacity: .8; }
   .scroll { overflow-y: auto; flex: 1; min-height: 60px; }
   .scene-item, .source-item, .audio-item {
     padding: 6px 10px; font-size: 13px; cursor: pointer;
@@ -50,8 +51,13 @@
   .source-item button, .audio-item button {
     padding: 1px 5px; font-size: 11px; line-height: 1;
   }
+  .zoom-badge {
+    font-size: 10px; padding: 1px 6px; border-radius: 3px;
+    background: var(--warn); color: #1e1e1e; border: none;
+    cursor: pointer; font-weight: 600; line-height: 1.4;
+  }
+  .zoom-badge:hover { opacity: .8; }
 
-  /* ===== PREVIEW AREA + FRAME ===== */
   .preview-area {
     display: flex; align-items: center; justify-content: center;
     background: radial-gradient(ellipse at center, #141414 0%, #0a0a0a 100%);
@@ -60,40 +66,19 @@
     position: relative;
   }
   .canvas-wrap {
-    position: relative;
-    background: #000;
-    border-radius: 3px;
-    box-shadow:
-      0 0 0 1px #000,
-      0 0 0 2px #3a3a3d,
-      0 0 0 4px #1a1a1a,
-      0 16px 48px rgba(0,0,0,.75);
-    transition: width 0.28s cubic-bezier(.4,0,.2,1),
-                height 0.28s cubic-bezier(.4,0,.2,1);
+    position: relative; background: #000; border-radius: 3px;
+    box-shadow: 0 0 0 1px #000, 0 0 0 2px #3a3a3d, 0 0 0 4px #1a1a1a, 0 16px 48px rgba(0,0,0,.75);
+    transition: width 0.28s cubic-bezier(.4,0,.2,1), height 0.28s cubic-bezier(.4,0,.2,1);
     flex-shrink: 0;
   }
   .canvas-wrap::after {
     content: attr(data-dim);
-    position: absolute;
-    bottom: -26px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 11px;
-    font-family: ui-monospace, "SF Mono", Consolas, monospace;
-    color: #7a7a7a;
-    letter-spacing: 0.8px;
-    white-space: nowrap;
-    pointer-events: none;
-    background: #0a0a0a;
-    padding: 2px 10px;
-    border-radius: 10px;
-    border: 1px solid #2a2a2a;
+    position: absolute; bottom: -26px; left: 50%; transform: translateX(-50%);
+    font-size: 11px; font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    color: #7a7a7a; letter-spacing: 0.8px; white-space: nowrap; pointer-events: none;
+    background: #0a0a0a; padding: 2px 10px; border-radius: 10px; border: 1px solid #2a2a2a;
   }
-  canvas {
-    width: 100%; height: 100%;
-    display: block; touch-action: none;
-    border-radius: 2px;
-  }
+  canvas { width: 100%; height: 100%; display: block; touch-action: none; border-radius: 2px; }
 
   button {
     background: var(--panel2); color: var(--text);
@@ -129,19 +114,14 @@
     opacity: 0; pointer-events: none;
   }
   .audio-item input[type="range"] { width: 60px; }
-  .empty-hint {
-    padding: 10px; color: var(--muted); font-size: 12px; line-height: 1.5;
-  }
+  .empty-hint { padding: 10px; color: var(--muted); font-size: 12px; line-height: 1.5; }
   .rec-controls {
     display: flex; align-items: center; gap: 6px;
-    padding: 0 10px;
-    border-left: 1px solid var(--border);
-    margin-left: 8px;
+    padding: 0 10px; border-left: 1px solid var(--border); margin-left: 8px;
   }
   #rec-timer {
-    font-family: ui-monospace, "SF Mono", Consolas, monospace;
-    font-size: 13px; color: var(--danger); min-width: 68px;
-    font-weight: 600;
+    font-family: ui-monospace, monospace; font-size: 13px;
+    color: var(--danger); min-width: 68px; font-weight: 600;
   }
   #rec-size {
     font-family: ui-monospace, monospace; font-size: 11px;
@@ -149,8 +129,7 @@
   }
   .modal {
     position: fixed; inset: 0; background: rgba(0,0,0,.7);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 1000;
+    display: flex; align-items: center; justify-content: center; z-index: 1000;
   }
   .modal.hidden { display: none; }
   .modal-box {
@@ -160,34 +139,47 @@
     box-shadow: 0 20px 60px rgba(0,0,0,.5);
   }
   .modal-box h3 { margin: 0 0 16px; font-size: 15px; color: #fff; }
-  .form-row {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 10px;
-  }
+  .form-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
   .form-row label { flex: 0 0 90px; font-size: 12px; color: var(--muted); }
   .form-row select { flex: 1; }
-  .recording-item {
-    padding: 8px 10px; border-bottom: 1px solid #2a2a2a;
-    font-size: 12px;
-  }
+  .recording-item { padding: 8px 10px; border-bottom: 1px solid #2a2a2a; font-size: 12px; }
   .recording-item .rec-title {
     font-weight: 600; color: #fff; margin-bottom: 3px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  .recording-item .rec-meta {
-    color: var(--muted); font-size: 11px; margin-bottom: 6px;
-  }
+  .recording-item .rec-meta { color: var(--muted); font-size: 11px; margin-bottom: 6px; }
   .recording-item .rec-actions { display: flex; gap: 4px; flex-wrap: wrap; }
   .recording-item .rec-actions button { padding: 2px 8px; font-size: 11px; }
-  .ratio-select {
-    font-weight: 600;
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
+  .ratio-select { font-weight: 600; background: var(--accent); color: #fff; border-color: var(--accent); }
   .info-badge {
     font-size: 10px; padding: 1px 6px; border-radius: 3px;
     background: #3a3a3d; color: var(--muted);
+  }
+  /* Toast */
+  #toast-container {
+    position: fixed; top: 66px; left: 50%; transform: translateX(-50%);
+    z-index: 2000; display: flex; flex-direction: column; gap: 8px;
+    pointer-events: none; max-width: 90vw;
+  }
+  .toast {
+    background: #2d2d30; color: #fff; border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 6px; padding: 10px 16px;
+    font-size: 13px; line-height: 1.4;
+    box-shadow: 0 8px 24px rgba(0,0,0,.5);
+    animation: toastIn .25s ease;
+    max-width: 480px; pointer-events: auto;
+  }
+  .toast.warn { border-left-color: var(--warn); }
+  .toast.success { border-left-color: var(--ok); }
+  .toast.error { border-left-color: var(--danger); }
+  .toast.fadeout { animation: toastOut .3s ease forwards; }
+  @keyframes toastIn {
+    from { transform: translateY(-12px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes toastOut {
+    to { transform: translateY(-12px); opacity: 0; }
   }
 </style>
 </head>
@@ -232,7 +224,10 @@
   </section>
 
   <aside class="panel">
-    <div class="panel-header"><span>Sources</span></div>
+    <div class="panel-header">
+      <span>Sources</span>
+      <small>🖱 scroll = zoom · dblclick = reset</small>
+    </div>
     <div class="add-row">
       <select id="source-type-select">
         <option value="webcam">Webcam</option>
@@ -263,6 +258,7 @@
 
 <div id="status"></div>
 <div id="media-pool"></div>
+<div id="toast-container"></div>
 
 <div id="settings-modal" class="modal hidden">
   <div class="modal-box">
@@ -312,7 +308,7 @@
 
 <script>
 /* =========================================================
-   STATE
+   STATE — monitorOn default TRUE
    ========================================================= */
 const state = {
   scenes: [],
@@ -321,7 +317,7 @@ const state = {
   audioContext: null,
   masterGain: null,
   monitorGain: null,
-  monitorOn: false,
+  monitorOn: true,        // ← default ON
   audioDestination: null,
   canvasRatio: '16:9',
   recording: false,
@@ -376,6 +372,21 @@ const mediaPool = document.getElementById('media-pool');
 const monitorToggle = document.getElementById('monitor-toggle');
 const mimeSupportEl = document.getElementById('mime-support');
 const mimeInfoEl = document.getElementById('mime-info');
+const toastContainer = document.getElementById('toast-container');
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+function showToast(msg, type = 'info', duration = 4000) {
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  toastContainer.appendChild(t);
+  setTimeout(() => {
+    t.classList.add('fadeout');
+    setTimeout(() => t.remove(), 300);
+  }, duration);
+}
 
 /* =========================================================
    UTILITY
@@ -410,9 +421,108 @@ function refreshMimeInfo() {
   mimeInfoEl.innerHTML = Object.entries(results)
     .map(([k, v]) => `<div>${v ? '✔' : '✕'} ${k}</div>`).join('');
 }
+function isZoomable(src) {
+  return ['webcam', 'screen', 'videofile', 'image'].includes(src.type);
+}
 
 /* =========================================================
-   CANVAS RATIO & DISPLAY SIZING
+   AUDIO GRAPH
+   ========================================================= */
+function ensureAudioContext() {
+  if (!state.audioContext) {
+    state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    state.masterGain = state.audioContext.createGain();
+    state.audioDestination = state.audioContext.createMediaStreamDestination();
+    state.monitorGain = state.audioContext.createGain();
+    state.monitorGain.gain.value = state.monitorOn ? 0.8 : 0;
+    state.masterGain.connect(state.audioDestination);
+    state.masterGain.connect(state.monitorGain);
+    state.monitorGain.connect(state.audioContext.destination);
+  }
+  if (state.audioContext.state === 'suspended') state.audioContext.resume();
+}
+
+async function resumeAudioContext() {
+  ensureAudioContext();
+  if (state.audioContext.state === 'suspended') {
+    try { await state.audioContext.resume(); } catch (e) { console.warn('Resume gagal:', e); }
+  }
+}
+
+monitorToggle.onclick = () => {
+  ensureAudioContext();
+  state.monitorOn = !state.monitorOn;
+  state.monitorGain.gain.value = state.monitorOn ? 0.8 : 0;
+  monitorToggle.textContent = state.monitorOn ? '🔊 Monitor' : '🔇 Monitor';
+  monitorToggle.classList.toggle('primary', state.monitorOn);
+};
+
+function connectAudioTrack(src, track) {
+  ensureAudioContext();
+  const stream = new MediaStream([track]);
+  const srcNode = state.audioContext.createMediaStreamSource(stream);
+  const gain = state.audioContext.createGain();
+  const isActiveScene = getActiveScene()?.sources.includes(src);
+  const shouldMute = src.muted || !isActiveScene;
+  gain.gain.value = shouldMute ? 0 : src.volume;
+  srcNode.connect(gain).connect(state.masterGain);
+  src.gainNode = gain;
+  src.audioTrack = track;
+  src.audioSourceNode = srcNode;
+}
+
+/* Mute audio untuk source di scene yang tidak aktif */
+function updateAllSceneAudio() {
+  state.scenes.forEach(scene => {
+    const isActive = scene.id === state.activeSceneId;
+    scene.sources.forEach(src => {
+      if (!src.gainNode) return;
+      const shouldMute = src.muted || !isActive;
+      src.gainNode.gain.value = shouldMute ? 0 : src.volume;
+    });
+  });
+}
+
+function renderAudioMixer() {
+  audioListEl.innerHTML = '';
+  const scene = getActiveScene();
+  if (!scene) return;
+  const audioSources = scene.sources.filter(s => s.gainNode || s.type === 'mic');
+  if (!audioSources.length) {
+    audioListEl.innerHTML = '<div class="empty-hint">Belum ada sumber audio.</div>';
+    return;
+  }
+  audioSources.forEach(src => {
+    const div = document.createElement('div');
+    div.className = 'audio-item';
+    const name = document.createElement('span');
+    name.textContent = src.name;
+    name.style.flex = '1'; name.style.overflow = 'hidden';
+    name.style.textOverflow = 'ellipsis'; name.style.whiteSpace = 'nowrap';
+
+    const mute = document.createElement('button');
+    mute.textContent = src.muted ? '🔇' : '🔊';
+    mute.onclick = () => {
+      src.muted = !src.muted;
+      updateAllSceneAudio();
+      renderAudioMixer();
+    };
+
+    const slider = document.createElement('input');
+    slider.type = 'range'; slider.min = '0'; slider.max = '1'; slider.step = '0.01';
+    slider.value = src.volume;
+    slider.oninput = () => {
+      src.volume = parseFloat(slider.value);
+      if (!src.muted && src.gainNode) src.gainNode.gain.value = src.volume;
+    };
+
+    div.append(name, mute, slider);
+    audioListEl.appendChild(div);
+  });
+}
+
+/* =========================================================
+   CANVAS RATIO & DISPLAY
    ========================================================= */
 function getRatioDimensions(ratio) {
   if (ratio === '9:16') return { width: 720, height: 1280 };
@@ -431,7 +541,6 @@ function resizeCanvasDisplay() {
 
   const ratio = canvas.width / canvas.height;
   let w, h;
-
   if (availW / availH > ratio) {
     h = availH;
     w = Math.round(h * ratio);
@@ -486,81 +595,7 @@ function applyCanvasRatio(ratio) {
 canvasRatioSelect.onchange = (e) => applyCanvasRatio(e.target.value);
 
 /* =========================================================
-   AUDIO GRAPH
-   ========================================================= */
-function ensureAudioContext() {
-  if (!state.audioContext) {
-    state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    state.masterGain = state.audioContext.createGain();
-    state.audioDestination = state.audioContext.createMediaStreamDestination();
-    state.monitorGain = state.audioContext.createGain();
-    state.monitorGain.gain.value = 0;
-    state.masterGain.connect(state.audioDestination);
-    state.masterGain.connect(state.monitorGain);
-    state.monitorGain.connect(state.audioContext.destination);
-  }
-  if (state.audioContext.state === 'suspended') state.audioContext.resume();
-}
-
-monitorToggle.onclick = () => {
-  ensureAudioContext();
-  state.monitorOn = !state.monitorOn;
-  state.monitorGain.gain.value = state.monitorOn ? 1 : 0;
-  monitorToggle.textContent = state.monitorOn ? '🔊 Monitor' : '🔇 Monitor';
-  monitorToggle.classList.toggle('primary', state.monitorOn);
-};
-
-function connectAudioTrack(src, track) {
-  ensureAudioContext();
-  const stream = new MediaStream([track]);
-  const srcNode = state.audioContext.createMediaStreamSource(stream);
-  const gain = state.audioContext.createGain();
-  gain.gain.value = src.muted ? 0 : src.volume;
-  srcNode.connect(gain).connect(state.masterGain);
-  src.gainNode = gain;
-  src.audioTrack = track;
-}
-
-function renderAudioMixer() {
-  audioListEl.innerHTML = '';
-  const scene = getActiveScene();
-  if (!scene) return;
-  const audioSources = scene.sources.filter(s => s.gainNode || s.type === 'mic');
-  if (!audioSources.length) {
-    audioListEl.innerHTML = '<div class="empty-hint">Belum ada sumber audio.</div>';
-    return;
-  }
-  audioSources.forEach(src => {
-    const div = document.createElement('div');
-    div.className = 'audio-item';
-    const name = document.createElement('span');
-    name.textContent = src.name;
-    name.style.flex = '1'; name.style.overflow = 'hidden';
-    name.style.textOverflow = 'ellipsis'; name.style.whiteSpace = 'nowrap';
-
-    const mute = document.createElement('button');
-    mute.textContent = src.muted ? '🔇' : '🔊';
-    mute.onclick = () => {
-      src.muted = !src.muted;
-      if (src.gainNode) src.gainNode.gain.value = src.muted ? 0 : src.volume;
-      renderAudioMixer();
-    };
-
-    const slider = document.createElement('input');
-    slider.type = 'range'; slider.min = '0'; slider.max = '1'; slider.step = '0.01';
-    slider.value = src.volume;
-    slider.oninput = () => {
-      src.volume = parseFloat(slider.value);
-      if (!src.muted && src.gainNode) src.gainNode.gain.value = src.volume;
-    };
-
-    div.append(name, mute, slider);
-    audioListEl.appendChild(div);
-  });
-}
-
-/* =========================================================
-   SCENES
+   SCENES — with audio switch fix
    ========================================================= */
 function createScene(name) {
   return { id: uid('scene'), name, background: '#000000', sources: [] };
@@ -577,7 +612,10 @@ function renderScenes() {
     div.onclick = () => {
       state.activeSceneId = scene.id;
       state.selectedSourceId = null;
-      renderScenes(); renderSources(); renderAudioMixer();
+      renderScenes();
+      renderSources();
+      renderAudioMixer();
+      updateAllSceneAudio();   // ← fix: mute audio scene non-aktif
     };
     scenesListEl.appendChild(div);
   });
@@ -590,6 +628,7 @@ addSceneBtn.onclick = () => {
   state.activeSceneId = scene.id;
   state.selectedSourceId = null;
   renderScenes(); renderSources(); renderAudioMixer();
+  updateAllSceneAudio();
 };
 
 /* =========================================================
@@ -602,6 +641,8 @@ async function createWebcamSource() {
   } catch {
     stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
   }
+  await resumeAudioContext();
+
   const video = document.createElement('video');
   video.srcObject = stream; video.muted = true;
   video.playsInline = true; video.autoplay = true;
@@ -618,10 +659,16 @@ async function createWebcamSource() {
     visible: true,
     x: 40, y: 40,
     width: Math.round(vw * ratio), height: Math.round(vh * ratio),
+    zoom: 1, panX: 0, panY: 0,
     videoEl: video, stream, gainNode: null, volume: 1, muted: false,
   };
   const audioTracks = stream.getAudioTracks();
-  if (audioTracks.length) connectAudioTrack(src, audioTracks[0]);
+  if (audioTracks.length) {
+    connectAudioTrack(src, audioTracks[0]);
+    showToast('📷 Webcam ditambah dengan audio', 'success', 2500);
+  } else {
+    showToast('📷 Webcam ditambah (tanpa audio)', 'warn', 2500);
+  }
   return src;
 }
 
@@ -644,6 +691,7 @@ async function createScreenSource() {
       stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
     }
   }
+  await resumeAudioContext();
   return buildDisplaySource(stream, '🖥 Screen Capture');
 }
 
@@ -667,11 +715,20 @@ function buildDisplaySource(stream, name) {
     x: Math.round((canvas.width - width) / 2),
     y: Math.round((canvas.height - height) / 2),
     width, height,
+    zoom: 1, panX: 0, panY: 0,
     videoEl: video, stream, gainNode: null, volume: 1, muted: false,
   };
 
   const audioTracks = stream.getAudioTracks();
-  if (audioTracks.length) connectAudioTrack(src, audioTracks[0]);
+  if (audioTracks.length) {
+    connectAudioTrack(src, audioTracks[0]);
+    showToast('🖥 Screen capture dengan audio', 'success', 3000);
+  } else {
+    showToast(
+      '⚠ Screen capture TANPA audio.\nCoba lagi dan centang "Share audio" / "Bagikan audio" di dialog picker.',
+      'warn', 7000
+    );
+  }
 
   video.addEventListener('loadedmetadata', () => {
     if (video.videoWidth && video.videoHeight) {
@@ -695,7 +752,7 @@ function buildDisplaySource(stream, name) {
 }
 
 /* =========================================================
-   SOURCES — VIDEO FILE
+   SOURCES — VIDEO FILE (audio fixed)
    ========================================================= */
 function pickVideoFile() {
   return new Promise(resolve => {
@@ -724,25 +781,47 @@ async function createVideoFileSource() {
   }
 
   const video = document.createElement('video');
-  video.src = videoUrl; video.loop = true;
-  video.playsInline = true; video.crossOrigin = 'anonymous';
+  video.src = videoUrl;
+  video.loop = true;
+  video.playsInline = true;
+  video.crossOrigin = 'anonymous';
   video.muted = false;
+  video.volume = 1;
   mediaPool.appendChild(video);
 
+  // WAJIB: resume audio context SEBELUM createMediaElementSource
+  await resumeAudioContext();
+
+  // Tunggu metadata
   await new Promise((resolve) => {
-    video.onloadedmetadata = resolve; video.onerror = resolve;
+    video.onloadedmetadata = resolve;
+    video.onerror = resolve;
     setTimeout(resolve, 5000);
   });
-  try { await video.play(); } catch (e) { console.warn('Autoplay gagal:', e); }
 
-  ensureAudioContext();
+  // Route audio via Web Audio
   let gain = null;
+  let routed = false;
   try {
     const srcNode = state.audioContext.createMediaElementSource(video);
     gain = state.audioContext.createGain();
     gain.gain.value = 1;
     srcNode.connect(gain).connect(state.masterGain);
-  } catch (e) { console.warn('Routing audio gagal:', e); }
+    routed = true;
+  } catch (e) {
+    console.warn('Web Audio routing gagal, pakai fallback:', e);
+    // Fallback: audio diputar langsung oleh elemen <video>
+    video.muted = false;
+    video.volume = 1;
+  }
+
+  // Play
+  try {
+    await video.play();
+  } catch (e) {
+    console.warn('Autoplay gagal:', e);
+    showToast('⚠ Video tidak bisa autoplay. Klik video di preview untuk memutar.', 'warn', 4000);
+  }
 
   const vw = video.videoWidth || 640, vh = video.videoHeight || 360;
   const maxW = 800, maxH = 450;
@@ -756,8 +835,16 @@ async function createVideoFileSource() {
     x: Math.round((canvas.width - width) / 2),
     y: Math.round((canvas.height - height) / 2),
     width, height,
+    zoom: 1, panX: 0, panY: 0,
     videoEl: video, gainNode: gain, volume: 1, muted: false, url: videoUrl,
   };
+
+  if (routed) {
+    showToast('📹 Video ditambah — audio siap', 'success', 2500);
+  } else {
+    showToast('⚠ Video ditambah tanpa routing audio ke recording. Audio tetap terdengar di speaker.', 'warn', 5000);
+  }
+
   video.addEventListener('play', () => renderSources());
   video.addEventListener('pause', () => renderSources());
   return src;
@@ -775,6 +862,7 @@ function createImageSource() {
   const src = {
     id: uid('src'), type: 'image', name: '🖼 Gambar',
     visible: true, x: 100, y: 100, width: 400, height: 300,
+    zoom: 1, panX: 0, panY: 0,
     imgEl: img, volume: 1, muted: false,
   };
   img.onload = () => {
@@ -809,12 +897,14 @@ function createColorSource() {
 
 async function createMicSource() {
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  await resumeAudioContext();
   const src = {
     id: uid('src'), type: 'mic', name: '🎤 Mikrofon',
     visible: true, x: 0, y: 0, width: 0, height: 0,
     stream, gainNode: null, volume: 1, muted: false,
   };
   connectAudioTrack(src, stream.getAudioTracks()[0]);
+  showToast('🎤 Mikrofon aktif', 'success', 2500);
   return src;
 }
 
@@ -835,7 +925,9 @@ async function addSource(type) {
   if (!src) return;
   scene.sources.push(src);
   state.selectedSourceId = src.id;
-  renderSources(); renderAudioMixer();
+  renderSources();
+  renderAudioMixer();
+  updateAllSceneAudio();
 }
 
 addSourceBtn.onclick = async () => {
@@ -848,6 +940,7 @@ addSourceBtn.onclick = async () => {
    ========================================================= */
 function cleanupSource(src) {
   if (src.stream) src.stream.getTracks().forEach(t => t.stop());
+  if (src.audioSourceNode) { try { src.audioSourceNode.disconnect(); } catch {} }
   if (src.gainNode) { try { src.gainNode.disconnect(); } catch {} }
   if (src.videoEl) {
     try {
@@ -871,7 +964,9 @@ function removeSource(id) {
   cleanupSource(scene.sources[idx]);
   scene.sources.splice(idx, 1);
   if (state.selectedSourceId === id) state.selectedSourceId = null;
-  renderSources(); renderAudioMixer();
+  renderSources();
+  renderAudioMixer();
+  updateAllSceneAudio();
 }
 
 function moveSource(index, delta) {
@@ -882,6 +977,14 @@ function moveSource(index, delta) {
   const [item] = scene.sources.splice(index, 1);
   scene.sources.splice(newIndex, 0, item);
   renderSources();
+}
+
+function resetZoom(src) {
+  src.zoom = 1;
+  src.panX = 0;
+  src.panY = 0;
+  renderSources();
+  updateStatus();
 }
 
 function renderSources() {
@@ -907,6 +1010,15 @@ function renderSources() {
     label.style.textOverflow = 'ellipsis'; label.style.whiteSpace = 'nowrap';
 
     div.append(eye, label);
+
+    if (isZoomable(src) && src.zoom && Math.abs(src.zoom - 1) > 0.01) {
+      const zb = document.createElement('button');
+      zb.className = 'zoom-badge';
+      zb.textContent = Math.round(src.zoom * 100) + '%';
+      zb.title = 'Klik untuk reset zoom';
+      zb.onclick = (e) => { e.stopPropagation(); resetZoom(src); };
+      div.appendChild(zb);
+    }
 
     if (src.type === 'videofile') {
       const playBtn = document.createElement('button');
@@ -939,6 +1051,28 @@ function renderSources() {
 /* =========================================================
    CANVAS RENDER
    ========================================================= */
+function drawZoomedImage(src, media) {
+  const z = src.zoom || 1;
+  const panX = src.panX || 0;
+  const panY = src.panY || 0;
+  if (z === 1 && panX === 0 && panY === 0) {
+    ctx.drawImage(media, src.x, src.y, src.width, src.height);
+    return;
+  }
+  const dw = src.width * z;
+  const dh = src.height * z;
+  const cx = src.x + src.width / 2 + panX;
+  const cy = src.y + src.height / 2 + panY;
+  const drawX = cx - dw / 2;
+  const drawY = cy - dh / 2;
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(src.x, src.y, src.width, src.height);
+  ctx.clip();
+  ctx.drawImage(media, drawX, drawY, dw, dh);
+  ctx.restore();
+}
+
 function drawFrame() {
   const scene = getActiveScene();
   ctx.fillStyle = scene ? scene.background : '#000';
@@ -950,11 +1084,11 @@ function drawFrame() {
     ctx.save();
     if (src.type === 'webcam' || src.type === 'screen' || src.type === 'videofile') {
       if (src.videoEl && src.videoEl.readyState >= 2 && src.videoEl.videoWidth > 0) {
-        try { ctx.drawImage(src.videoEl, src.x, src.y, src.width, src.height); } catch {}
+        try { drawZoomedImage(src, src.videoEl); } catch {}
       }
     } else if (src.type === 'image') {
       if (src.imgEl && src.imgEl.complete && src.imgEl.naturalWidth) {
-        ctx.drawImage(src.imgEl, src.x, src.y, src.width, src.height);
+        try { drawZoomedImage(src, src.imgEl); } catch {}
       }
     } else if (src.type === 'text') {
       ctx.font = src.font; ctx.fillStyle = src.color; ctx.textBaseline = 'top';
@@ -979,6 +1113,15 @@ function drawSelection() {
   ctx.setLineDash([]);
   ctx.fillStyle = '#00aaff';
   ctx.fillRect(src.x + src.width - 8, src.y + src.height - 8, 12, 12);
+  if (isZoomable(src) && src.zoom && Math.abs(src.zoom - 1) > 0.01) {
+    const text = Math.round(src.zoom * 100) + '%';
+    ctx.fillStyle = 'rgba(0,170,255,.9)';
+    ctx.fillRect(src.x, src.y - 20, 44, 16);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 11px ui-monospace, monospace';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, src.x + 6, src.y - 12);
+  }
   ctx.restore();
 }
 
@@ -1040,6 +1183,60 @@ window.addEventListener('pointermove', (e) => {
   }
 });
 window.addEventListener('pointerup', () => { interaction = null; });
+
+/* =========================================================
+   ZOOM
+   ========================================================= */
+const ZOOM_MIN = 0.5;
+const ZOOM_MAX = 5;
+
+function findTopSourceAt(pt) {
+  const scene = getActiveScene();
+  if (!scene) return null;
+  for (let i = scene.sources.length - 1; i >= 0; i--) {
+    const src = scene.sources[i];
+    if (!src.visible || !isZoomable(src)) continue;
+    if (isInsideSource(pt, src)) return src;
+  }
+  return null;
+}
+
+function applyZoomAt(src, newZoom, anchorX, anchorY) {
+  newZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, newZoom));
+  const oldZoom = src.zoom || 1;
+  if (Math.abs(newZoom - oldZoom) < 1e-6) return;
+  const panX = src.panX || 0;
+  const panY = src.panY || 0;
+  const cx = src.x + src.width / 2;
+  const cy = src.y + src.height / 2;
+  const dx = anchorX - cx;
+  const dy = anchorY - cy;
+  const ratio = newZoom / oldZoom;
+  src.panX = dx - (dx - panX) * ratio;
+  src.panY = dy - (dy - panY) * ratio;
+  src.zoom = newZoom;
+}
+
+canvas.addEventListener('wheel', (e) => {
+  const pt = getCanvasPoint(e);
+  const src = findTopSourceAt(pt);
+  if (!src) return;
+  e.preventDefault();
+  const wheelDelta = -e.deltaY;
+  const step = Math.sign(wheelDelta) * Math.min(0.2, Math.abs(wheelDelta) * 0.0025);
+  if (step === 0) return;
+  const newZoom = (src.zoom || 1) + step;
+  applyZoomAt(src, newZoom, pt.x, pt.y);
+  state.selectedSourceId = src.id;
+  renderSources();
+  updateStatus();
+}, { passive: false });
+
+canvas.addEventListener('dblclick', (e) => {
+  const pt = getCanvasPoint(e);
+  const src = findTopSourceAt(pt);
+  if (src) { resetZoom(src); e.preventDefault(); }
+});
 
 /* =========================================================
    RECORDING
@@ -1112,8 +1309,7 @@ async function startRecording() {
     alert('Browser tidak mendukung canvas.captureStream().');
     return;
   }
-  ensureAudioContext();
-  await state.audioContext.resume();
+  await resumeAudioContext();
 
   const stream = getRecordingStream();
   const mime = pickSupportedMime(state.recMime);
@@ -1157,6 +1353,7 @@ async function startRecording() {
 
     state.recording = false; state.recPaused = false; state.currentRecSize = 0;
     stopRecTimer(); updateRecButtons(); updateStatus();
+    showToast('✅ Rekaman selesai & terunduh: ' + name, 'success', 4000);
   };
 
   recorder.start(1000);
@@ -1254,7 +1451,7 @@ function deleteRecording(id) {
 }
 
 /* =========================================================
-   BUTTON HANDLERS
+   BUTTONS
    ========================================================= */
 recordBtn.onclick = () => { if (!state.recording) startRecording(); };
 pauseBtn.onclick = () => { if (state.recPaused) resumeRecording(); else pauseRecording(); };
@@ -1277,12 +1474,11 @@ previewModal.addEventListener('click', (e) => {
 });
 
 /* =========================================================
-   WHIP STREAMING
+   WHIP
    ========================================================= */
 async function startWHIP(endpoint) {
   if (state.whipPc) { alert('Siaran sudah aktif.'); return; }
-  ensureAudioContext();
-  await state.audioContext.resume();
+  await resumeAudioContext();
   const stream = getRecordingStream();
   const pc = new RTCPeerConnection();
   stream.getTracks().forEach(track => pc.addTrack(track, stream));
@@ -1321,7 +1517,7 @@ function stopWHIP() {
 }
 liveBtn.onclick = async () => {
   if (state.isLive) { stopWHIP(); return; }
-  const endpoint = prompt('WHIP endpoint (contoh: https://server/whip/stream):');
+  const endpoint = prompt('WHIP endpoint:');
   if (!endpoint) return;
   try { await startWHIP(endpoint); }
   catch (err) { alert('Gagal siaran: ' + err.message); stopWHIP(); }
@@ -1335,8 +1531,19 @@ function updateStatus() {
   const audioCount = scene ? scene.sources.filter(s => s.gainNode || s.type === 'mic').length : 0;
   let recText = '';
   if (state.recording) recText = state.recPaused ? ' | ⏸ REC PAUSED' : ' | ● REC';
+
+  let zoomText = '';
+  if (scene && state.selectedSourceId) {
+    const sel = scene.sources.find(s => s.id === state.selectedSourceId);
+    if (sel && isZoomable(sel) && sel.zoom && Math.abs(sel.zoom - 1) > 0.01) {
+      zoomText = `  |  🔍 Zoom: ${Math.round(sel.zoom * 100)}%`;
+    }
+  }
+
+  const monText = state.monitorOn ? '🔊 Monitor ON' : '🔇 Monitor OFF';
+
   statusEl.textContent =
-    `Scene: ${scene?.name || '-'}  |  ${canvas.width}×${canvas.height} @${state.recFps}fps  |  Rasio: ${state.canvasRatio}  |  Audio: ${audioCount}  |  Rekaman: ${recordings.length}${recText}`;
+    `${monText}  |  Scene: ${scene?.name || '-'}  |  ${canvas.width}×${canvas.height} @${state.recFps}fps  |  Rasio: ${state.canvasRatio}  |  Audio: ${audioCount}  |  Rekaman: ${recordings.length}${recText}${zoomText}`;
 }
 setInterval(updateStatus, 1000);
 
@@ -1353,6 +1560,11 @@ function init() {
   canvas.height = height;
   canvasRatioSelect.value = state.canvasRatio;
 
+  // Setup audio + monitor ON default
+  ensureAudioContext();
+  monitorToggle.textContent = '🔊 Monitor';
+  monitorToggle.classList.add('primary');
+
   renderScenes();
   renderSources();
   renderAudioMixer();
@@ -1367,6 +1579,11 @@ function init() {
     new ResizeObserver(() => resizeCanvasDisplay())
       .observe(document.querySelector('.preview-area'));
   }
+
+  // Toast awal
+  setTimeout(() => {
+    showToast('🔊 Audio Monitor aktif (80%). Gunakan headphone agar tidak feedback.', 'info', 6000);
+  }, 500);
 }
 
 window.addEventListener('beforeunload', () => {
