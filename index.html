@@ -1,1774 +1,1393 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OBS Studio Pro — Web</title>
-<style>
-:root{
-  --bg:#1e1e1e; --panel:#2b2b2b; --panel2:#323232; --header:#3a3a3a;
-  --border:#141414; --text:#d4d4d4; --dim:#8a8a8a; --accent:#3c8dd8;
-  --accent2:#4fa3ee; --danger:#d84a3c; --success:#4caf50; --warn:#e0a020;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{
-  font-family:"Segoe UI",Roboto,system-ui,sans-serif; font-size:12px;
-  background:var(--bg); color:var(--text); overflow:hidden; user-select:none;
-}
-button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer}
-::-webkit-scrollbar{width:10px;height:10px}
-::-webkit-scrollbar-track{background:#1a1a1a}
-::-webkit-scrollbar-thumb{background:#4a4a4a;border-radius:5px;border:2px solid #1a1a1a}
-::-webkit-scrollbar-thumb:hover{background:#5c5c5c}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBS Pro Web Clone</title>
+    <style>
+        /* ========== RESET & VARIABEL ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            user-select: none;
+        }
 
-.app{display:flex;flex-direction:column;height:100vh}
+        :root {
+            --bg-dark: #1e1e1e;
+            --bg-darker: #121212;
+            --bg-panel: #252525;
+            --bg-hover: #333;
+            --bg-active: #3a3a3a;
+            --border: #3a3a3a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #ff4444;
+            --accent-hover: #ff6666;
+            --success: #2ecc71;
+            --warning: #f1c40f;
+            --danger: #e74c3c;
+            --radius: 4px;
+            --shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
 
-/* ===== MENU BAR ===== */
-.menubar{
-  height:30px;background:#252525;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:2px;padding:0 8px;flex-shrink:0;position:relative;z-index:60;
-}
-.logo{font-weight:700;font-size:12px;letter-spacing:1.5px;color:#fff;margin-right:14px;display:flex;align-items:center;gap:6px}
-.logo b{color:var(--accent2)}
-.logo .dot{width:8px;height:8px;border-radius:50%;background:var(--danger);box-shadow:0 0 8px var(--danger)}
-.menu-item{padding:5px 10px;border-radius:3px;color:#c8c8c8;position:relative;cursor:pointer}
-.menu-item:hover{background:#3a3a3a}
-.dropdown{
-  display:none;position:absolute;top:100%;left:0;min-width:230px;background:#2f2f2f;
-  border:1px solid #111;border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,.6);padding:4px;z-index:100;
-}
-.menu-item.open .dropdown{display:block}
-.dropdown button{display:flex;justify-content:space-between;width:100%;padding:7px 10px;border-radius:3px;text-align:left;color:#d0d0d0}
-.dropdown button:hover{background:var(--accent);color:#fff}
-.dropdown .sep{height:1px;background:#444;margin:4px 2px}
-.dropdown kbd{color:#888;font-size:10px}
-.menu-right{margin-left:auto;display:flex;gap:6px;align-items:center;color:var(--dim);font-size:11px}
+        body {
+            background: var(--bg-darker);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
 
-/* ===== MAIN ===== */
-.main{display:flex;flex:1;min-height:0}
-.panel{background:var(--panel);display:flex;flex-direction:column;min-height:0}
-.sidebar{width:238px;background:#252525;border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0;flex-shrink:0}
-.rightbar{width:196px;background:#252525;border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+        /* ========== SCROLLBAR ========== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-darker);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: var(--radius);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
 
-.block{display:flex;flex-direction:column;min-height:0;border-bottom:1px solid var(--border)}
-.block.grow{flex:1}
-.block-head{
-  height:26px;background:var(--header);display:flex;align-items:center;justify-content:space-between;
-  padding:0 6px 0 9px;font-size:11px;font-weight:600;letter-spacing:.6px;color:#c9c9c9;flex-shrink:0;
-  text-transform:uppercase;
-}
-.block-head .tools{display:flex;gap:2px}
-.icon-btn{
-  width:20px;height:20px;border-radius:3px;display:flex;align-items:center;justify-content:center;
-  color:#b0b0b0;font-size:14px;line-height:1;
-}
-.icon-btn:hover{background:#4d4d4d;color:#fff}
-.icon-btn.danger:hover{background:var(--danger);color:#fff}
+        /* ========== MENU BAR ========== */
+        .menubar {
+            display: flex;
+            align-items: center;
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border);
+            padding: 0 8px;
+            height: 32px;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
 
-/* ===== SCENE LIST ===== */
-.list{overflow-y:auto;flex:1;padding:3px}
-.list-item{
-  display:flex;align-items:center;gap:6px;padding:6px 7px;border-radius:3px;
-  cursor:pointer;color:#c0c0c0;border:1px solid transparent;
-}
-.list-item:hover{background:#353535}
-.list-item.active{background:var(--accent);color:#fff;font-weight:600}
-.list-item.active .badge{background:rgba(255,255,255,.25);color:#fff}
-.list-item .txt{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.badge{font-size:9px;padding:1px 5px;border-radius:8px;background:#3d3d3d;color:#9a9a9a;letter-spacing:.4px}
+        .menubar .logo {
+            font-weight: 700;
+            color: var(--accent);
+            margin-right: 16px;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
 
-.src-item{display:flex;align-items:center;gap:5px;padding:5px 6px;border-radius:3px;cursor:pointer;color:#c0c0c0}
-.src-item:hover{background:#353535}
-.src-item.active{background:#3b6fa8;color:#fff}
-.src-item.dragover{border-top:2px solid var(--accent2)}
-.src-item .txt{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.src-item .mini{width:16px;height:16px;display:flex;align-items:center;justify-content:center;opacity:.65;border-radius:2px;flex-shrink:0}
-.src-item .mini:hover{opacity:1;background:rgba(255,255,255,.15)}
-.src-item.hidden-src .txt{opacity:.42}
-.src-item .type-chip{
-  font-size:8.5px;font-weight:700;padding:1px 4px;border-radius:2px;background:#4a4a4a;color:#bbb;
-  letter-spacing:.4px;flex-shrink:0;
-}
-.src-item.active .type-chip{background:rgba(255,255,255,.22);color:#fff}
-.src-item .mini svg{width:12px;height:12px;fill:currentColor}
-.src-item.playing .type-chip{background:#2e7d32;color:#a5f0a8}
+        .menu-item {
+            position: relative;
+            padding: 4px 10px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: background 0.15s, color 0.15s;
+        }
 
-/* ===== CENTER ===== */
-.center{flex:1;display:flex;flex-direction:column;min-width:0;background:#181818}
-.preview-area{
-  flex:1;display:flex;align-items:center;justify-content:center;gap:10px;
-  padding:10px;min-height:0;background:
-    repeating-conic-gradient(#1c1c1c 0% 25%, #202020 0% 50%) 50%/22px 22px;
-}
-.canvas-wrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;min-height:0;max-width:100%;max-height:100%}
-.canvas-wrap canvas{
-  max-width:100%;max-height:100%;background:#000;border:1px solid #000;
-  box-shadow:0 0 0 1px #3a3a3a, 0 6px 22px rgba(0,0,0,.7);border-radius:2px;display:block;
-}
-.canvas-wrap.live canvas{box-shadow:0 0 0 2px var(--danger), 0 6px 22px rgba(0,0,0,.7)}
-.canvas-label{
-  font-size:10px;font-weight:700;letter-spacing:1.4px;color:#8a8a8a;text-transform:uppercase;
-}
-.canvas-wrap.live .canvas-label{color:var(--danger)}
+        .menu-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
 
-.transition-bar{
-  height:38px;background:#252525;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:10px;padding:0 10px;flex-shrink:0;
-}
-.transition-bar label{color:var(--dim);font-size:11px}
-select,input[type=text],input[type=number]{
-  background:#1c1c1c;border:1px solid #444;color:var(--text);border-radius:3px;padding:5px 7px;
-  font-family:inherit;font-size:11.5px;outline:none;
-}
-select:focus,input:focus{border-color:var(--accent)}
-.btn{
-  padding:6px 12px;border-radius:3px;background:#3d3d3d;color:#dcdcdc;font-weight:600;font-size:11.5px;
-  border:1px solid #4a4a4a;transition:.12s;
-}
-.btn:hover{background:#4a4a4a}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn.accent{background:var(--accent);border-color:var(--accent);color:#fff}
-.btn.accent:hover{background:var(--accent2)}
-.btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
-.btn.danger:hover{background:#ee5a4a}
-.btn.wide{width:100%}
-.btn.sm{padding:4px 9px;font-size:11px}
+        .menu-item.active {
+            background: var(--bg-active);
+            color: var(--text-primary);
+        }
 
-/* ===== AUDIO MIXER ===== */
-.mixer{
-  height:172px;background:#252525;border-top:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;
-}
-.mixer-head{
-  height:26px;background:var(--header);display:flex;align-items:center;justify-content:space-between;
-  padding:0 10px;font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#c9c9c9;
-}
-.mixer-body{flex:1;display:flex;gap:8px;padding:8px 10px;overflow-x:auto;align-items:stretch}
-.chan{
-  width:78px;flex-shrink:0;background:#2e2e2e;border:1px solid #3a3a3a;border-radius:4px;
-  display:flex;flex-direction:column;padding:5px;gap:4px;
-}
-.chan .nm{font-size:10px;color:#c8c8c8;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
-.chan .meter{
-  flex:1;width:100%;background:#141414;border-radius:3px;position:relative;overflow:hidden;
-  display:flex;flex-direction:column-reverse;gap:1px;padding:2px;
-}
-.chan .meter i{display:block;width:100%;height:3px;border-radius:1px;background:transparent;transition:background .06s}
-.chan .meter i.on{background:linear-gradient(90deg,#39d353,#5ce07a)}
-.chan .meter i.warn{background:linear-gradient(90deg,#e0a020,#f5c542)}
-.chan .meter i.peak{background:linear-gradient(90deg,#e04a3c,#ff6b5b)}
-.chan .vol{
-  -webkit-appearance:none;width:100%;height:4px;background:#4a4a4a;border-radius:2px;outline:none;
-}
-.chan .vol::-webkit-slider-thumb{
-  -webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:#c8c8c8;cursor:pointer;
-  border:1px solid #666;
-}
-.chan .vol::-moz-range-thumb{width:11px;height:11px;border-radius:50%;background:#c8c8c8;border:1px solid #666;cursor:pointer}
-.chan .row{display:flex;gap:3px}
-.chan .mute{
-  flex:1;background:#3d3d3d;border-radius:3px;font-size:9px;font-weight:700;padding:3px 0;color:#bbb;letter-spacing:.5px;
-}
-.chan .mute:hover{background:#4d4d4d}
-.chan .mute.on{background:var(--danger);color:#fff}
-.chan .db{font-size:9px;color:#888;text-align:center}
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            min-width: 220px;
+            z-index: 1000;
+            padding: 4px 0;
+        }
 
-/* ===== RIGHT BAR ===== */
-.ctrl-group{padding:10px 10px 12px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:7px}
-.ctrl-title{font-size:10px;font-weight:700;letter-spacing:1px;color:#8a8a8a;text-transform:uppercase;margin-bottom:2px}
-.stat-row{display:flex;justify-content:space-between;font-size:11px;color:#9a9a9a;padding:2px 0}
-.stat-row b{color:#cfcfcf;font-weight:600;font-variant-numeric:tabular-nums}
-.timer{font-variant-numeric:tabular-nums;font-size:15px;font-weight:700;color:#e8e8e8;letter-spacing:1px;text-align:center;padding:2px 0}
-.live-dot{width:7px;height:7px;border-radius:50%;background:#555;display:inline-block;margin-right:5px}
-.live-dot.on{background:var(--danger);box-shadow:0 0 8px var(--danger);animation:pulse 1.4s infinite}
-@keyframes pulse{50%{opacity:.35}}
+        .menu-item:hover .dropdown,
+        .menu-item.active .dropdown {
+            display: block;
+        }
 
-/* ===== STATUS BAR ===== */
-.statusbar{
-  height:24px;background:#1a1a1a;border-top:1px solid var(--border);display:flex;align-items:center;
-  gap:18px;padding:0 12px;font-size:10.5px;color:#7d7d7d;flex-shrink:0;
-}
-.statusbar .sp{margin-left:auto}
-.statusbar b{color:#a8a8a8;font-weight:600}
-.bar{width:52px;height:7px;background:#333;border-radius:4px;overflow:hidden;display:inline-block;vertical-align:middle}
-.bar i{display:block;height:100%;background:var(--success);border-radius:4px;transition:width .4s}
+        .dropdown-item {
+            padding: 6px 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
 
-/* ===== MODALS ===== */
-.overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:200;
-  backdrop-filter:blur(2px);
-}
-.overlay.show{display:flex}
-.modal{
-  background:#2b2b2b;border:1px solid #444;border-radius:6px;min-width:380px;max-width:540px;width:90%;
-  box-shadow:0 20px 60px rgba(0,0,0,.8);overflow:hidden;max-height:86vh;display:flex;flex-direction:column;
-}
-.modal-head{
-  background:var(--header);padding:11px 14px;font-weight:700;font-size:13px;display:flex;
-  justify-content:space-between;align-items:center;letter-spacing:.3px;
-}
-.modal-head .x{width:22px;height:22px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:16px}
-.modal-head .x:hover{background:var(--danger);color:#fff}
-.modal-body{padding:14px;display:flex;flex-direction:column;gap:11px;overflow-y:auto}
-.modal-foot{padding:11px 14px;background:#262626;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid #1c1c1c}
-.field{display:flex;flex-direction:column;gap:4px}
-.field label{font-size:11px;color:#9a9a9a;font-weight:600;letter-spacing:.3px}
-.field input[type=color]{
-  width:100%;height:30px;background:#1c1c1c;border:1px solid #444;border-radius:3px;padding:2px;cursor:pointer;
-}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+        .dropdown-item:hover {
+            background: var(--accent);
+            color: #fff;
+        }
 
-.add-menu{
-  position:fixed;background:#2f2f2f;border:1px solid #111;border-radius:4px;padding:4px;
-  box-shadow:0 10px 30px rgba(0,0,0,.7);z-index:300;display:none;min-width:200px;
-}
-.add-menu.show{display:block}
-.add-menu button{display:flex;align-items:center;gap:9px;width:100%;padding:7px 10px;border-radius:3px;text-align:left;color:#d0d0d0}
-.add-menu button:hover{background:var(--accent);color:#fff}
-.add-menu button .ic{width:18px;text-align:center;font-size:13px;opacity:.85}
-.add-menu .sep{height:1px;background:#444;margin:4px 2px}
+        .dropdown-separator {
+            height: 1px;
+            background: var(--border);
+            margin: 4px 0;
+        }
 
-.toast{
-  position:fixed;bottom:44px;left:50%;transform:translateX(-50%) translateY(20px);
-  background:#2f2f2f;border:1px solid #4a4a4a;border-left:3px solid var(--accent);
-  padding:10px 18px;border-radius:4px;color:#ddd;font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,.6);
-  opacity:0;pointer-events:none;transition:.25s;z-index:400;
-}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-</style>
+        .dropdown-item .shortcut {
+            font-size: 11px;
+            color: #777;
+            margin-left: 20px;
+        }
+
+        /* ========== MAIN LAYOUT ========== */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ========== DOCK PANELS ========== */
+        .dock {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin: 4px;
+        }
+
+        .dock-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 8px;
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: grab;
+            flex-shrink: 0;
+        }
+
+        .dock-header .actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .dock-header .actions button {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .dock-header .actions button:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+
+        .dock-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 4px;
+        }
+
+        /* Left Sidebar */
+        .sidebar-left {
+            width: 260px;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            gap: 4px;
+        }
+
+        .sidebar-left .dock {
+            margin: 0 4px;
+        }
+
+        .scenes-dock {
+            flex: 1;
+        }
+
+        .sources-dock {
+            flex: 1.5;
+        }
+
+        /* Right Sidebar */
+        .sidebar-right {
+            width: 280px;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            gap: 4px;
+        }
+
+        .sidebar-right .dock {
+            margin: 0 4px;
+        }
+
+        .mixer-dock {
+            flex: 2;
+        }
+
+        .transitions-dock {
+            flex: 1;
+        }
+
+        /* ========== CENTRAL AREA ========== */
+        .central-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin: 4px;
+            gap: 4px;
+        }
+
+        .preview-container {
+            flex: 1;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-placeholder {
+            color: #555;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .preview-placeholder span {
+            display: block;
+            font-size: 12px;
+            margin-top: 8px;
+            color: #444;
+        }
+
+        /* Studio Mode dual preview */
+        .studio-mode .preview-container {
+            flex-direction: row;
+        }
+
+        .preview-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+            position: relative;
+        }
+
+        .preview-pane:last-child {
+            border-right: none;
+        }
+
+        .preview-label {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0,0,0,0.7);
+            padding: 2px 8px;
+            border-radius: var(--radius);
+            font-size: 11px;
+            color: var(--text-secondary);
+            z-index: 10;
+        }
+
+        /* ========== CONTROLS DOCK ========== */
+        .controls-dock {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            flex-shrink: 0;
+        }
+
+        .btn {
+            padding: 6px 16px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-stream {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-stream:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-stream.active {
+            background: var(--danger);
+            animation: pulse 1.5s infinite;
+        }
+
+        .btn-record {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-record:hover {
+            background: var(--bg-active);
+        }
+
+        .btn-record.active {
+            background: var(--danger);
+            color: #fff;
+            border-color: var(--danger);
+            animation: pulse 1.5s infinite;
+        }
+
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-active);
+            color: var(--text-primary);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* ========== STATUS BAR ========== */
+        .statusbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-dark);
+            border-top: 1px solid var(--border);
+            padding: 2px 12px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .status-left, .status-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .status-dot.offline {
+            background: #555;
+        }
+
+        .status-dot.recording {
+            background: var(--danger);
+        }
+
+        /* ========== SCENE & SOURCE ITEMS ========== */
+        .scene-item, .source-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 8px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-secondary);
+            transition: background 0.15s;
+            gap: 8px;
+        }
+
+        .scene-item:hover, .source-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .scene-item.active {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .source-item.active {
+            background: var(--bg-active);
+            color: var(--text-primary);
+        }
+
+        .source-item .icon {
+            width: 16px;
+            height: 16px;
+            background: #555;
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+        .source-item .visibility-toggle {
+            margin-left: auto;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .source-item .visibility-toggle:hover {
+            color: var(--text-primary);
+        }
+
+        /* ========== AUDIO MIXER ========== */
+        .audio-channel {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 6px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .audio-channel:last-child {
+            border-bottom: none;
+        }
+
+        .audio-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            min-width: 60px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .audio-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background: #444;
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .audio-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .audio-mute {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 2px;
+        }
+
+        .audio-mute.muted {
+            color: var(--danger);
+        }
+
+        .audio-meter {
+            width: 40px;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .audio-meter-fill {
+            height: 100%;
+            width: 60%;
+            background: linear-gradient(90deg, var(--success), var(--warning));
+            border-radius: 3px;
+        }
+
+        /* ========== TRANSITIONS ========== */
+        .transition-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: var(--radius);
+        }
+
+        .transition-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .transition-item.active {
+            background: var(--bg-active);
+            color: var(--text-primary);
+        }
+
+        .transition-duration {
+            font-size: 11px;
+            color: #777;
+        }
+
+        /* ========== MODAL ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            width: 500px;
+            max-width: 90vw;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .modal-body label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            margin-top: 12px;
+        }
+
+        .modal-body input, .modal-body select {
+            width: 100%;
+            padding: 8px 10px;
+            background: var(--bg-darker);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text-primary);
+            font-size: 13px;
+            outline: none;
+        }
+
+        .modal-body input:focus, .modal-body select:focus {
+            border-color: var(--accent);
+        }
+
+        .modal-footer {
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        /* ========== TOOLBAR ========== */
+        .toolbar {
+            display: flex;
+            gap: 4px;
+            padding: 4px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toolbar button {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            padding: 2px 8px;
+            border-radius: var(--radius);
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .toolbar button:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border);
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 900px) {
+            .sidebar-left, .sidebar-right {
+                width: 200px;
+            }
+            .menubar .logo {
+                display: none;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar-left, .sidebar-right {
+                display: none;
+            }
+        }
+
+        /* ========== UTILITY ========== */
+        .hidden { display: none !important; }
+        .text-muted { color: var(--text-secondary); }
+        .mt-2 { margin-top: 8px; }
+        .gap-2 { gap: 8px; }
+    </style>
 </head>
 <body>
-<div class="app">
 
-  <!-- ================= MENU BAR ================= -->
-  <div class="menubar">
-    <div class="logo"><span class="dot"></span>OBS <b>STUDIO PRO</b></div>
-    <div class="menu-item" data-menu>File
-      <div class="dropdown">
-        <button data-act="new-scene">Sken Baru <kbd>Ctrl+N</kbd></button>
-        <button data-act="dupe-scene">Duplikat Sken</button>
-        <div class="sep"></div>
-        <button data-act="import-media">Impor Media (MP4)…</button>
-        <button data-act="screenshot">Ambil Screenshot Program</button>
-        <button data-act="reset">Reset Semua</button>
-      </div>
-    </div>
-    <div class="menu-item" data-menu>Edit
-      <div class="dropdown">
-        <button data-act="dupe-source">Duplikat Sumber</button>
-        <button data-act="remove-source">Hapus Sumber <kbd>Del</kbd></button>
-        <div class="sep"></div>
-        <button data-act="center-source">Pusatkan Sumber</button>
-        <button data-act="fill-source">Isi Penuh Layar</button>
-      </div>
-    </div>
-    <div class="menu-item" data-menu>View
-      <div class="dropdown">
-        <button data-act="toggle-studio">Mode Studio</button>
-        <button data-act="toggle-mixer">Tampilkan Audio Mixer</button>
-      </div>
-    </div>
-    <div class="menu-item" data-menu>Tools
-      <div class="dropdown">
-        <button data-act="auto-config">Wizard Konfigurasi Otomatis</button>
-        <button data-act="test-stream">Uji Kualitas Streaming</button>
-      </div>
-    </div>
-    <div class="menu-item" data-menu>Help
-      <div class="dropdown">
-        <button data-act="about">Tentang OBS Studio Pro</button>
-        <button data-act="shortcut">Pintasan Keyboard</button>
-      </div>
-    </div>
-    <div class="menu-right"><span id="profileName">Profil: Default</span></div>
-  </div>
+    <!-- ==================== MENU BAR ==================== -->
+    <div class="menubar">
+        <div class="logo">OBS Pro</div>
 
-  <!-- ================= MAIN ================= -->
-  <div class="main">
-
-    <!-- LEFT SIDEBAR -->
-    <aside class="sidebar">
-      <div class="block" style="flex:0 0 38%">
-        <div class="block-head">
-          <span>Sken</span>
-          <div class="tools">
-            <button class="icon-btn" id="btnAddScene" title="Tambah Sken">+</button>
-            <button class="icon-btn" id="btnDupeScene" title="Duplikat">⧉</button>
-            <button class="icon-btn danger" id="btnDelScene" title="Hapus">−</button>
-          </div>
+        <!-- File -->
+        <div class="menu-item" data-menu="file">
+            File
+            <div class="dropdown">
+                <div class="dropdown-item">Show Recordings <span class="shortcut"></span></div>
+                <div class="dropdown-item">Remux Recordings</div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item">Settings</div>
+                <div class="dropdown-item">Show Settings Folder</div>
+                <div class="dropdown-item">Show Profile Folder</div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item">Always On Top</div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item">Exit</div>
+            </div>
         </div>
-        <div class="list" id="sceneList"></div>
-      </div>
 
-      <div class="block grow">
-        <div class="block-head">
-          <span>Sumber</span>
-          <div class="tools">
-            <button class="icon-btn" id="btnAddSource" title="Tambah Sumber">+</button>
-            <button class="icon-btn" id="btnSourceProps" title="Properti">⚙</button>
-            <button class="icon-btn danger" id="btnDelSource" title="Hapus">−</button>
-          </div>
+        <!-- Edit -->
+        <div class="menu-item" data-menu="edit">
+            Edit
+            <div class="dropdown">
+                <div class="dropdown-item">Copy</div>
+                <div class="dropdown-item">Paste (Reference)</div>
+                <div class="dropdown-item">Paste (Duplicate)</div>
+                <div class="dropdown-item">Copy Filters</div>
+                <div class="dropdown-item">Paste Filters</div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item">Transform</div>
+                <div class="dropdown-item">Order</div>
+                <div class="dropdown-item">Preview Scaling</div>
+                <div class="dropdown-item">Lock Preview</div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item">Advanced Audio Properties</div>
+            </div>
         </div>
-        <div class="list" id="sourceList"></div>
-      </div>
-    </aside>
 
-    <!-- CENTER -->
-    <section class="center">
-      <div class="preview-area" id="previewArea">
-        <div class="canvas-wrap" id="wrapProgram">
-          <canvas id="programCanvas" width="1280" height="720"></canvas>
-          <div class="canvas-label" id="labelProgram">Pratinjau</div>
+        <!-- View -->
+        <div class="menu-item" data-menu="view">
+            View
+            <div class="dropdown">
+                <div class="dropdown-item">Fullscreen Interface</div>
+                <div class="dropdown-item">Docks</div>
+                <div class="dropdown-item">Toolbars</div>
+                <div class="dropdown-item">Status Bar</div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item">Stats</div>
+                <div class="dropdown-item">Multiview (Fullscreen)</div>
+                <div class="dropdown-item">Multiview (Windowed)</div>
+            </div>
         </div>
-        <div class="canvas-wrap live" id="wrapPreview" style="display:none">
-          <canvas id="previewCanvas" width="1280" height="720"></canvas>
-          <div class="canvas-label">Pratinjau (Edit)</div>
+
+        <!-- Docks -->
+        <div class="menu-item" data-menu="docks">
+            Docks
+            <div class="dropdown">
+                <div class="dropdown-item">Scenes</div>
+                <div class="dropdown-item">Sources</div>
+                <div class="dropdown-item">Audio Mixer</div>
+                <div class="dropdown-item">Scene Transitions</div>
+                <div class="dropdown-item">Controls</div>
+                <div class="dropdown-item">Stats</div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item">Lock Docks</div>
+                <div class="dropdown-item">Reset Docks</div>
+            </div>
         </div>
-      </div>
 
-      <div class="transition-bar">
-        <label>Transisi</label>
-        <select id="selTransition">
-          <option>Fade</option><option>Cut</option><option>Luma Wipe</option><option>Slide</option><option>Stinger</option>
-        </select>
-        <label>Durasi</label>
-        <input type="number" id="transDur" value="300" min="0" max="3000" step="50" style="width:74px">
-        <span style="color:#666">ms</span>
-        <button class="btn accent" id="btnTransition" disabled style="margin-left:auto">Transisi</button>
-      </div>
-
-      <div class="mixer" id="mixerPanel">
-        <div class="mixer-head">
-          <span>Mixer Audio</span>
-          <span style="color:#8a8a8a;font-weight:400;text-transform:none;letter-spacing:0" id="mixerInfo">—</span>
+        <!-- Profile -->
+        <div class="menu-item" data-menu="profile">
+            Profile
+            <div class="dropdown">
+                <div class="dropdown-item">New</div>
+                <div class="dropdown-item">Duplicate</div>
+                <div class="dropdown-item">Rename</div>
+                <div class="dropdown-item">Remove</div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item">Import</div>
+                <div class="dropdown-item">Export</div>
+            </div>
         </div>
-        <div class="mixer-body" id="mixerBody"></div>
-      </div>
-    </section>
 
-    <!-- RIGHT BAR -->
-    <aside class="rightbar">
-      <div class="ctrl-group">
-        <div class="ctrl-title">Kontrol</div>
-        <button class="btn wide" id="btnStudio">Mode Studio</button>
-      </div>
-      <div class="ctrl-group">
-        <div class="ctrl-title">Streaming</div>
-        <div class="timer" id="streamTimer">00:00:00</div>
-        <button class="btn wide accent" id="btnStream"><span class="live-dot" id="streamDot"></span>Mulai Streaming</button>
-      </div>
-      <div class="ctrl-group">
-        <div class="ctrl-title">Rekaman</div>
-        <div class="timer" id="recTimer">00:00:00</div>
-        <button class="btn wide danger" id="btnRecord">Mulai Rekaman</button>
-        <button class="btn wide sm" id="btnSettings">Pengaturan</button>
-      </div>
-      <div class="ctrl-group" style="flex:1">
-        <div class="ctrl-title">Statistik</div>
-        <div class="stat-row"><span>FPS</span><b id="statFps">60</b></div>
-        <div class="stat-row"><span>CPU</span><b id="statCpu">3.1%</b></div>
-        <div class="stat-row"><span>Bitrate</span><b id="statBit">0 kb/s</b></div>
-        <div class="stat-row"><span>Drop</span><b id="statDrop">0.0%</b></div>
-        <div class="stat-row"><span>Resolusi</span><b>1280×720</b></div>
-        <div class="stat-row"><span>Render</span><b id="statRender">1.2 ms</b></div>
-      </div>
-    </aside>
-  </div>
+        <!-- Scene Collection -->
+        <div class="menu-item" data-menu="scene-collection">
+            Scene Collection
+            <div class="dropdown">
+                <div class="dropdown-item">New</div>
+                <div class="dropdown-item">Duplicate</div>
+                <div class="dropdown-item">Rename</div>
+                <div class="dropdown-item">Remove</div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item">Import</div>
+                <div class="dropdown-item">Export</div>
+            </div>
+        </div>
 
-  <!-- STATUS BAR -->
-  <div class="statusbar">
-    <span>CPU <span class="bar"><i id="cpuBar" style="width:8%"></i></span></span>
-    <span>FPS <b id="statusFps">60</b></span>
-    <span id="statusScene">Sken: —</span>
-    <span id="statusSources">Sumber: 0</span>
-    <span class="sp" id="statusMsg">Siap</span>
-  </div>
-</div>
+        <!-- Tools -->
+        <div class="menu-item" data-menu="tools">
+            Tools
+            <div class="dropdown">
+                <div class="dropdown-item">Auto-Configuration Wizard</div>
+                <div class="dropdown-item">Captions (Experimental)</div>
+                <div class="dropdown-item">Automatic Scene Switcher</div>
+                <div class="dropdown-item">Output Timer</div>
+                <div class="dropdown-item">Scripts</div>
+            </div>
+        </div>
 
-<!-- ADD SOURCE MENU -->
-<div class="add-menu" id="addMenu">
-  <button data-type="text"><span class="ic">T</span>Teks (Text)</button>
-  <button data-type="color"><span class="ic">▮</span>Warna Sumber (Color Source)</button>
-  <button data-type="image"><span class="ic">🖼</span>Gambar (Image)</button>
-  <div class="sep"></div>
-  <button data-type="media"><span class="ic">🎬</span>Berkas Media (MP4)</button>
-  <button data-type="camera"><span class="ic">📷</span>Perangkat Video Capture</button>
-  <button data-type="screen"><span class="ic">🖥</span>Capture Layar</button>
-  <button data-type="audio"><span class="ic">🎤</span>Input Audio</button>
-</div>
-
-<!-- HIDDEN FILE INPUTS -->
-<input type="file" id="mediaFileInput" accept="video/mp4,video/webm,video/quicktime,video/*" style="display:none">
-<input type="file" id="mediaFileInput2" accept="video/mp4,video/webm,video/quicktime,video/*" style="display:none">
-
-<!-- MODALS -->
-<div class="overlay" id="propsOverlay">
-  <div class="modal">
-    <div class="modal-head"><span id="propsTitle">Properti Sumber</span><button class="x" data-close>×</button></div>
-    <div class="modal-body" id="propsBody"></div>
-    <div class="modal-foot">
-      <button class="btn" data-close>Batal</button>
-      <button class="btn accent" id="propsSave">Terapkan</button>
+        <!-- Help -->
+        <div class="menu-item" data-menu="help">
+            Help
+            <div class="dropdown">
+                <div class="dropdown-item">Help Portal</div>
+                <div class="dropdown-item">Visit Website</div>
+                <div class="dropdown-item">Join Discord Server</div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item">Log Files</div>
+                <div class="dropdown-item">Crash Reports</div>
+                <div class="dropdown-item">Check for Updates</div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-<div class="overlay" id="settingsOverlay">
-  <div class="modal">
-    <div class="modal-head"><span>Pengaturan</span><button class="x" data-close>×</button></div>
-    <div class="modal-body">
-      <div class="grid2">
-        <div class="field"><label>Resolusi Kanvas</label>
-          <select id="setRes"><option>1280×720</option><option>1920×1080</option><option>854×480</option></select>
+    <!-- ==================== MAIN CONTAINER ==================== -->
+    <div class="main-container">
+
+        <!-- LEFT SIDEBAR -->
+        <div class="sidebar-left">
+            <!-- SCENES DOCK -->
+            <div class="dock scenes-dock" id="dock-scenes">
+                <div class="dock-header">
+                    <span>Scenes</span>
+                    <div class="actions">
+                        <button title="Add Scene" onclick="addScene()">+</button>
+                        <button title="Remove Scene" onclick="removeScene()">−</button>
+                    </div>
+                </div>
+                <div class="dock-content" id="scene-list">
+                    <div class="scene-item active" data-scene="Scene 1">
+                        <span class="icon"></span> Scene 1
+                    </div>
+                    <div class="scene-item" data-scene="Scene 2">
+                        <span class="icon"></span> Scene 2
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOURCES DOCK -->
+            <div class="dock sources-dock" id="dock-sources">
+                <div class="dock-header">
+                    <span>Sources</span>
+                    <div class="actions">
+                        <button title="Add Source" onclick="openAddSourceModal()">+</button>
+                        <button title="Remove Source" onclick="removeSource()">−</button>
+                    </div>
+                </div>
+                <div class="toolbar">
+                    <button onclick="moveSource('up')">▲</button>
+                    <button onclick="moveSource('down')">▼</button>
+                </div>
+                <div class="dock-content" id="source-list">
+                    <div class="source-item active" data-source="Screen Capture">
+                        <span class="icon"></span> Screen Capture
+                        <button class="visibility-toggle" title="Toggle Visibility">👁</button>
+                    </div>
+                    <div class="source-item" data-source="Webcam">
+                        <span class="icon"></span> Webcam
+                        <button class="visibility-toggle" title="Toggle Visibility">👁</button>
+                    </div>
+                    <div class="source-item" data-source="Audio Input">
+                        <span class="icon"></span> Audio Input
+                        <button class="visibility-toggle" title="Toggle Visibility">👁</button>
+                    </div>
+                    <div class="source-item" data-source="Text Overlay">
+                        <span class="icon"></span> Text Overlay
+                        <button class="visibility-toggle" title="Toggle Visibility">👁</button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="field"><label>FPS</label>
-          <select id="setFps"><option>30</option><option selected>60</option><option>120</option></select>
+
+        <!-- CENTRAL AREA -->
+        <div class="central-area" id="central-area">
+            <!-- PREVIEW -->
+            <div class="preview-container" id="preview-container">
+                <div class="preview-placeholder" id="preview-placeholder">
+                    Preview Disabled
+                    <span>Click "Start Streaming" or "Start Recording" to enable</span>
+                </div>
+                <!-- Studio mode panes (hidden by default) -->
+                <div class="preview-pane hidden" id="studio-preview-pane">
+                    <span class="preview-label">Preview</span>
+                </div>
+                <div class="preview-pane hidden" id="studio-program-pane">
+                    <span class="preview-label">Program</span>
+                </div>
+            </div>
+
+            <!-- CONTROLS DOCK -->
+            <div class="controls-dock">
+                <button class="btn btn-stream" id="btn-stream" onclick="toggleStream()">
+                    ▶ Start Streaming
+                </button>
+                <button class="btn btn-record" id="btn-record" onclick="toggleRecord()">
+                    ⏺ Start Recording
+                </button>
+                <button class="btn btn-secondary" id="btn-studio" onclick="toggleStudioMode()">
+                    🎬 Studio Mode
+                </button>
+                <button class="btn btn-secondary" onclick="openSettingsModal()">
+                    ⚙ Settings
+                </button>
+                <button class="btn btn-secondary" onclick="exitApp()">
+                    ✕ Exit
+                </button>
+            </div>
         </div>
-      </div>
-      <div class="field"><label>Kualitas Bitrate (kbps)</label>
-        <input type="number" id="setBitrate" value="6000" min="500" max="50000" step="500">
-      </div>
-      <div class="field"><label>Format Rekaman</label>
-        <select id="setFormat"><option>MKV</option><option>MP4</option><option>FLV</option></select>
-      </div>
+
+        <!-- RIGHT SIDEBAR -->
+        <div class="sidebar-right">
+            <!-- AUDIO MIXER DOCK -->
+            <div class="dock mixer-dock" id="dock-mixer">
+                <div class="dock-header">
+                    <span>Audio Mixer</span>
+                    <div class="actions">
+                        <button title="Advanced Audio Properties">⚙</button>
+                    </div>
+                </div>
+                <div class="dock-content" id="audio-mixer">
+                    <div class="audio-channel">
+                        <span class="audio-label">Desktop Audio</span>
+                        <input type="range" class="audio-slider" min="0" max="100" value="80">
+                        <div class="audio-meter"><div class="audio-meter-fill" style="width:75%"></div></div>
+                        <button class="audio-mute" onclick="toggleMute(this)">🔊</button>
+                    </div>
+                    <div class="audio-channel">
+                        <span class="audio-label">Mic/Aux</span>
+                        <input type="range" class="audio-slider" min="0" max="100" value="65">
+                        <div class="audio-meter"><div class="audio-meter-fill" style="width:50%"></div></div>
+                        <button class="audio-mute" onclick="toggleMute(this)">🔊</button>
+                    </div>
+                    <div class="audio-channel">
+                        <span class="audio-label">Game Audio</span>
+                        <input type="range" class="audio-slider" min="0" max="100" value="90">
+                        <div class="audio-meter"><div class="audio-meter-fill" style="width:85%"></div></div>
+                        <button class="audio-mute" onclick="toggleMute(this)">🔊</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCENE TRANSITIONS DOCK -->
+            <div class="dock transitions-dock" id="dock-transitions">
+                <div class="dock-header">
+                    <span>Scene Transitions</span>
+                    <div class="actions">
+                        <button title="Add Transition">+</button>
+                    </div>
+                </div>
+                <div class="dock-content" id="transition-list">
+                    <div class="transition-item active" data-transition="Fade">
+                        Fade <span class="transition-duration">300 ms</span>
+                    </div>
+                    <div class="transition-item" data-transition="Cut">
+                        Cut <span class="transition-duration">0 ms</span>
+                    </div>
+                    <div class="transition-item" data-transition="Slide">
+                        Slide <span class="transition-duration">500 ms</span>
+                    </div>
+                    <div class="transition-item" data-transition="Stinger">
+                        Stinger <span class="transition-duration">800 ms</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="modal-foot">
-      <button class="btn" data-close>Tutup</button>
-      <button class="btn accent" id="settingsSave">Simpan</button>
+
+    <!-- ==================== STATUS BAR ==================== -->
+    <div class="statusbar">
+        <div class="status-left">
+            <div class="status-item">
+                <span class="status-dot offline" id="status-indicator"></span>
+                <span id="status-text">Offline</span>
+            </div>
+            <div class="status-item">
+                <span>CPU: <span id="cpu-usage">12%</span></span>
+            </div>
+            <div class="status-item">
+                <span>FPS: <span id="fps-counter">60</span></span>
+            </div>
+        </div>
+        <div class="status-right">
+            <div class="status-item" id="stream-timer" style="display:none;">
+                <span>LIVE: <span id="live-time">00:00:00</span></span>
+            </div>
+            <div class="status-item" id="record-timer" style="display:none;">
+                <span>REC: <span id="rec-time">00:00:00</span></span>
+            </div>
+            <div class="status-item">
+                <span>Dropped Frames: <span id="dropped-frames">0</span></span>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-<div class="overlay" id="infoOverlay">
-  <div class="modal">
-    <div class="modal-head"><span id="infoTitle">Info</span><button class="x" data-close>×</button></div>
-    <div class="modal-body" id="infoBody"></div>
-    <div class="modal-foot"><button class="btn accent" data-close>OK</button></div>
-  </div>
-</div>
+    <!-- ==================== MODALS ==================== -->
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="modal-settings">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Settings</span>
+                <button class="modal-close" onclick="closeModal('modal-settings')">✕</button>
+            </div>
+            <div class="modal-body">
+                <label>Theme</label>
+                <select id="setting-theme">
+                    <option value="dark" selected>Dark (Default)</option>
+                    <option value="light">Light</option>
+                    <option value="acri">Acri</option>
+                    <option value="yami">Yami</option>
+                </select>
 
-<div class="toast" id="toast"></div>
+                <label>Output Resolution</label>
+                <select>
+                    <option>1920x1080</option>
+                    <option>1280x720</option>
+                    <option>854x480</option>
+                </select>
 
-<script>
-/* =========================================================
-   OBS STUDIO PRO — WEB EDITION + MP4 SOURCE
-   ========================================================= */
-const $  = s => document.querySelector(s);
-const $$ = s => [...document.querySelectorAll(s)];
-const uid = () => Math.random().toString(36).slice(2, 9);
-const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+                <label>FPS</label>
+                <select>
+                    <option>60</option>
+                    <option>30</option>
+                    <option>24</option>
+                </select>
 
-const BASE_W = 1280, BASE_H = 720;
+                <label>Encoder</label>
+                <select>
+                    <option>x264</option>
+                    <option>NVENC (H.264)</option>
+                    <option>QuickSync (H.264)</option>
+                </select>
 
-/* ---------------------------------------------------------
-   STATE
---------------------------------------------------------- */
-const state = {
-  scenes: [],
-  liveSceneId: null,
-  previewSceneId: null,
-  selectedId: null,
-  studio: false,
-  streaming: false,
-  recording: false,
-  streamT0: 0,
-  recT0: 0,
-  transition: 'Fade',
-  transDur: 300,
-  drag: null,
-  fade: 0,
-  fading: false,
-  settings: { bitrate: 6000 }
-};
+                <label>Bitrate (Kbps)</label>
+                <input type="number" value="6000" min="1000" max="50000">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-settings')">Cancel</button>
+                <button class="btn btn-stream" onclick="saveSettings()">Apply</button>
+            </div>
+        </div>
+    </div>
 
-const programCanvas = $('#programCanvas');
-const previewCanvas = $('#previewCanvas');
-const pctx = programCanvas.getContext('2d');
-const vctx = previewCanvas.getContext('2d');
+    <!-- Add Source Modal -->
+    <div class="modal-overlay" id="modal-add-source">
+        <div class="modal">
+            <div class="modal-header">
+                <span>Add Source</span>
+                <button class="modal-close" onclick="closeModal('modal-add-source')">✕</button>
+            </div>
+            <div class="modal-body">
+                <label>Source Name</label>
+                <input type="text" id="new-source-name" placeholder="e.g., My Webcam">
 
-/* ---------------------------------------------------------
-   SOURCE FACTORY  (+ media = MP4)
---------------------------------------------------------- */
-function makeSource(type, overrides = {}) {
-  const base = {
-    id: uid(), type, name: defaultName(type),
-    x: 0, y: 0, w: BASE_W, h: BASE_H,
-    visible: true, locked: false,
-    volume: 100, muted: false, hasAudio: false,
-    _bbox: null
-  };
-  const map = {
-    text:   { x: 90, y: 90, w: 620, h: 120, text: 'Teks Baru', fontSize: 76, color: '#ffffff', bg: 'transparent', font: 'Inter, Segoe UI, sans-serif', weight: 700 },
-    color:  { x: 0, y: 0, w: BASE_W, h: BASE_H, color: '#1b3a5c' },
-    image:  { x: 340, y: 160, w: 600, h: 400 },
-    media:  { x: 320, y: 180, w: 640, h: 360, hasAudio: true, loop: true, playing: true, fit: 'cover' },
-    camera: { x: 740, y: 380, w: 480, h: 300, hasAudio: true },
-    screen: { x: 0, y: 0, w: BASE_W, h: BASE_H, hasAudio: true },
-    audio:  { x: 0, y: 0, w: 0, h: 0, hasAudio: true }
-  };
-  return Object.assign(base, map[type] || {}, overrides);
-}
+                <label>Source Type</label>
+                <select id="new-source-type">
+                    <option>Video Capture Device</option>
+                    <option>Display Capture</option>
+                    <option>Window Capture</option>
+                    <option>Audio Input Capture</option>
+                    <option>Browser</option>
+                    <option>Image</option>
+                    <option>Text</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-add-source')">Cancel</button>
+                <button class="btn btn-stream" onclick="addSource()">Add</button>
+            </div>
+        </div>
+    </div>
 
-function defaultName(type) {
-  return { text: 'Teks', color: 'Warna', image: 'Gambar', media: 'Media', camera: 'Kamera', screen: 'Layar', audio: 'Audio' }[type] || type;
-}
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        // ========== STATE ==========
+        const state = {
+            streaming: false,
+            recording: false,
+            studioMode: false,
+            streamStartTime: null,
+            recordStartTime: null,
+            streamInterval: null,
+            recordInterval: null,
+            scenes: ['Scene 1', 'Scene 2'],
+            activeScene: 'Scene 1',
+            sources: ['Screen Capture', 'Webcam', 'Audio Input', 'Text Overlay'],
+            activeSource: 'Screen Capture'
+        };
 
-/* ---------------------------------------------------------
-   SCENE MANAGEMENT
---------------------------------------------------------- */
-function newScene(name) {
-  return { id: uid(), name: name || `Sken ${state.scenes.length + 1}`, sources: [] };
-}
-function getScene(id) { return state.scenes.find(s => s.id === id); }
-function liveScene()   { return getScene(state.liveSceneId); }
-function previewScene(){ return getScene(state.previewSceneId); }
-function selectedSource() {
-  const sc = previewScene(); if (!sc) return null;
-  return sc.sources.find(s => s.id === state.selectedId) || null;
-}
+        // ========== MENU INTERACTION ==========
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // Close others
+                document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+                // Toggle current
+                this.classList.toggle('active');
+            });
+        });
 
-function addScene(scene) {
-  state.scenes.push(scene);
-  state.liveSceneId = state.previewSceneId = scene.id;
-  renderSceneList(); renderSourceList(); refreshMixer();
-}
-function deleteScene() {
-  if (state.scenes.length <= 1) return toast('Minimal harus ada satu sken');
-  const idx = state.scenes.findIndex(s => s.id === state.previewSceneId);
-  const [removed] = state.scenes.splice(idx, 1);
-  removed.sources.forEach(disposeSource);
-  const next = state.scenes[Math.max(0, idx - 1)];
-  state.liveSceneId = state.previewSceneId = next.id;
-  state.selectedId = null;
-  renderSceneList(); renderSourceList(); refreshMixer();
-}
+        // Close menus when clicking outside
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        });
 
-/* ---------------------------------------------------------
-   SOURCE MANAGEMENT
---------------------------------------------------------- */
-function addSourceTo(scene, src, silent) {
-  scene.sources.unshift(src);
-  if (!silent) {
-    state.selectedId = src.id;
-    renderSourceList(); refreshMixer();
-    if (src.type === 'camera' || src.type === 'screen' || src.type === 'audio') attachMedia(src);
-  }
-  return src;
-}
+        // Prevent dropdown clicks from closing menu
+        document.querySelectorAll('.dropdown').forEach(d => {
+            d.addEventListener('click', (e) => e.stopPropagation());
+        });
 
-function disposeSource(src) {
-  if (src._video) {
-    try { src._video.pause(); } catch(e){}
-    if (src._video.srcObject) src._video.srcObject.getTracks().forEach(t => t.stop());
-    try { src._video.removeAttribute('src'); src._video.load(); } catch(e){}
-    src._video = null;
-  }
-  if (src._stream) { src._stream.getTracks().forEach(t => t.stop()); src._stream = null; }
-  if (src._img) { src._img.src = ''; src._img = null; }
-  if (src._blobUrl) { try { URL.revokeObjectURL(src._blobUrl); } catch(e){} src._blobUrl = null; }
-  if (src._mediaNode) { try { src._mediaNode.disconnect(); } catch(e){} src._mediaNode = null; }
-}
-
-function removeSource() {
-  const sc = previewScene(); const src = selectedSource();
-  if (!sc || !src) return;
-  disposeSource(src);
-  sc.sources = sc.sources.filter(s => s.id !== src.id);
-  state.selectedId = null;
-  renderSourceList(); refreshMixer();
-  setStatus('Sumber dihapus');
-}
-
-function duplicateSource() {
-  const sc = previewScene(); const src = selectedSource();
-  if (!sc || !src) return;
-  const copy = JSON.parse(JSON.stringify({
-    ...src,
-    _video: null, _img: null, _bbox: null,
-    _mediaNode: null, _stream: null
-  }));
-  copy.id = uid(); copy.name = src.name + ' (copy)';
-  copy.x += 30; copy.y += 30;
-  if (src.type === 'image' && src.dataUrl) copy.dataUrl = src.dataUrl;
-  if (src.type === 'media' && copy._blobUrl) loadMediaSource(copy, copy._blobUrl);
-  addSourceTo(sc, copy);
-  renderSourceList();
-}
-
-/* ---------------------------------------------------------
-   MEDIA: FILE MP4 LOADER
---------------------------------------------------------- */
-function loadMediaSource(src, url) {
-  // Bersihkan video lama
-  if (src._video) {
-    try { src._video.pause(); } catch(e){}
-    try { src._video.removeAttribute('src'); src._video.load(); } catch(e){}
-    src._video = null;
-  }
-
-  const video = document.createElement('video');
-  video.src = url;
-  video.loop = src.loop !== false;
-  video.muted = !!src.muted;
-  video.volume = clamp((src.volume ?? 100) / 100, 0, 1);
-  video.playsInline = true;
-  video.crossOrigin = 'anonymous';
-  video.preload = 'auto';
-  video.autoplay = true;
-
-  video.addEventListener('loadedmetadata', () => {
-    if (video.videoWidth && video.videoHeight) {
-      const ar = video.videoWidth / video.videoHeight;
-      // Sesuaikan rasio jika ukuran sumber masih default
-      if (src.w === 640 && src.h === 360) {
-        src.h = 360;
-        src.w = Math.round(360 * ar);
-        // Posisikan di tengah
-        src.x = Math.round((BASE_W - src.w) / 2);
-        src.y = Math.round((BASE_H - src.h) / 2);
-      }
-    }
-    src.hasAudio = true;
-    refreshMixer(); renderSourceList();
-  });
-
-  video.addEventListener('error', () => {
-    toast('Gagal memuat berkas media');
-    setStatus('Gagal memuat media: ' + (video.error?.message || 'format tidak didukung'));
-  });
-
-  src._video = video;
-  src.hasAudio = true;
-
-  if (src.playing !== false) {
-    video.play().catch(() => {
-      // Autoplay mungkin diblokir; jangan error
-    });
-  }
-  return video;
-}
-
-/* Handler untuk file picker media (add source) */
-let pendingMediaScene = null;
-const mediaFileInput = $('#mediaFileInput');
-
-mediaFileInput.addEventListener('change', () => {
-  const file = mediaFileInput.files && mediaFileInput.files[0];
-  const targetScene = pendingMediaScene;
-  pendingMediaScene = null;
-  mediaFileInput.value = '';
-  if (!file || !targetScene) return;
-
-  const baseName = file.name.replace(/\.[^.]+$/, '');
-  const src = makeSource('media', { name: baseName });
-  src._blobUrl = URL.createObjectURL(file);
-  loadMediaSource(src, src._blobUrl);
-  addSourceTo(targetScene, src);
-
-  setStatus(`Media "${file.name}" ditambahkan`);
-  toast('Sumber MP4 ditambahkan ke sken');
-});
-
-/* ---------------------------------------------------------
-   MEDIA KAMERA / LAYAR / AUDIO (tetap dipertahankan)
---------------------------------------------------------- */
-async function attachMedia(src) {
-  try {
-    let stream;
-    if (src.type === 'camera') {
-      stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: true });
-    } else if (src.type === 'screen') {
-      stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-    } else if (src.type === 'audio') {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    }
-    src._stream = stream;
-    const video = document.createElement('video');
-    video.autoplay = true; video.playsInline = true; video.muted = src.muted;
-    video.srcObject = stream;
-    video.volume = src.volume / 100;
-    src._video = video;
-    await video.play().catch(() => {});
-    src.hasAudio = stream.getAudioTracks().length > 0;
-    stream.getVideoTracks().forEach(t => {
-      t.onended = () => { src.visible = false; renderSourceList(); };
-    });
-    refreshMixer(); renderSourceList();
-    setStatus(`Sumber "${src.name}" aktif`);
-  } catch (err) {
-    setStatus('Gagal mengakses media: ' + err.message);
-    toast('Akses media ditolak / dibatalkan');
-    const sc = previewScene();
-    if (sc) sc.sources = sc.sources.filter(s => s.id !== src.id);
-    renderSourceList(); refreshMixer();
-  }
-}
-
-/* ---------------------------------------------------------
-   RENDER LOOP
---------------------------------------------------------- */
-let lastFpsT = performance.now(), frames = 0, fps = 60;
-
-function loop(now) {
-  frames++;
-  if (now - lastFpsT >= 500) {
-    fps = Math.round(frames * 1000 / (now - lastFpsT));
-    frames = 0; lastFpsT = now;
-    $('#statFps').textContent = fps;
-    $('#statusFps').textContent = fps;
-    $('#statCpu').textContent = (2 + Math.random() * 5).toFixed(1) + '%';
-    $('#cpuBar').style.width = (6 + Math.random() * 14) + '%';
-    $('#statRender').textContent = (0.8 + Math.random() * 1.6).toFixed(1) + ' ms';
-    $('#statBit').textContent = state.streaming ? Math.round(state.settings.bitrate * 0.97) + ' kb/s' : '0 kb/s';
-    $('#statDrop').textContent = state.streaming ? (Math.random() * 0.4).toFixed(1) + '%' : '0.0%';
-  }
-
-  if (state.fading) {
-    state.fade = Math.min(1, state.fade + 0.06);
-    if (state.fade >= 1) state.fading = false;
-  } else if (state.fade > 0 && state.transition !== 'Fade') {
-    state.fade = Math.max(0, state.fade - 0.06);
-  }
-
-  if (state.studio) {
-    renderScene(vctx, previewScene(), true);
-    renderScene(pctx, liveScene(), false);
-  } else {
-    renderScene(pctx, liveScene(), true);
-  }
-
-  updateTimers();
-  requestAnimationFrame(loop);
-}
-
-function renderScene(ctx, scene, editable) {
-  ctx.clearRect(0, 0, BASE_W, BASE_H);
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, 0, BASE_W, BASE_H);
-  if (!scene) return;
-
-  for (let i = scene.sources.length - 1; i >= 0; i--) {
-    const s = scene.sources[i];
-    if (!s.visible) continue;
-    try { drawSource(ctx, s); } catch (e) {}
-  }
-
-  if (state.fade > 0) {
-    ctx.fillStyle = `rgba(0,0,0,${state.fade})`;
-    ctx.fillRect(0, 0, BASE_W, BASE_H);
-  }
-
-  if (editable) drawSelection(ctx, scene);
-}
-
-function drawSource(ctx, s) {
-  switch (s.type) {
-    case 'color':
-      ctx.fillStyle = s.color;
-      ctx.fillRect(s.x, s.y, s.w, s.h);
-      s._bbox = { x: s.x, y: s.y, w: s.w, h: s.h };
-      break;
-
-    case 'text': {
-      const lh = s.fontSize * 1.22;
-      const lines = String(s.text).split('\n');
-      ctx.font = `${s.weight || 700} ${s.fontSize}px ${s.font || 'Segoe UI, sans-serif'}`;
-      ctx.textBaseline = 'top';
-      let maxW = 0;
-      for (const l of lines) maxW = Math.max(maxW, ctx.measureText(l).width);
-      const totalH = lines.length * lh;
-      const pad = 10;
-      if (s.bg && s.bg !== 'transparent') {
-        ctx.fillStyle = s.bg;
-        ctx.fillRect(s.x - pad, s.y - pad, maxW + pad * 2, totalH + pad);
-      }
-      ctx.fillStyle = s.color;
-      ctx.shadowColor = 'rgba(0,0,0,.55)'; ctx.shadowBlur = 6; ctx.shadowOffsetY = 2;
-      lines.forEach((l, i) => ctx.fillText(l, s.x, s.y + i * lh));
-      ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
-      s._bbox = { x: s.x - pad, y: s.y - pad, w: maxW + pad * 2, h: totalH + pad };
-      break;
-    }
-
-    case 'image': {
-      if (!s._img && s.dataUrl) {
-        const img = new Image();
-        img.onload = () => { s._img = img; };
-        img.src = s.dataUrl;
-      }
-      if (s._img) {
-        drawCover(ctx, s._img, s.x, s.y, s.w, s.h);
-      } else {
-        ctx.fillStyle = '#333'; ctx.fillRect(s.x, s.y, s.w, s.h);
-      }
-      s._bbox = { x: s.x, y: s.y, w: s.w, h: s.h };
-      break;
-    }
-
-    case 'media': {
-      if (s._video && s._video.readyState >= 2) {
-        if (s.fit === 'contain') drawContain(ctx, s._video, s.x, s.y, s.w, s.h);
-        else drawCover(ctx, s._video, s.x, s.y, s.w, s.h);
-      } else {
-        ctx.fillStyle = '#1a1a1a';
-        ctx.fillRect(s.x, s.y, s.w, s.h);
-        ctx.fillStyle = '#666';
-        ctx.font = '600 22px Segoe UI';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('🎬  Memuat media…', s.x + s.w / 2, s.y + s.h / 2);
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'alphabetic';
-      }
-      s._bbox = { x: s.x, y: s.y, w: s.w, h: s.h };
-      break;
-    }
-
-    case 'camera':
-    case 'screen': {
-      if (s._video && s._video.readyState >= 2) {
-        drawCover(ctx, s._video, s.x, s.y, s.w, s.h);
-      } else {
-        ctx.fillStyle = '#232323';
-        ctx.fillRect(s.x, s.y, s.w, s.h);
-        ctx.fillStyle = '#666';
-        ctx.font = '600 26px Segoe UI';
-        ctx.textAlign = 'center';
-        ctx.fillText('Menunggu sumber video…', s.x + s.w / 2, s.y + s.h / 2);
-        ctx.textAlign = 'left';
-      }
-      s._bbox = { x: s.x, y: s.y, w: s.w, h: s.h };
-      break;
-    }
-
-    default:
-      s._bbox = { x: s.x, y: s.y, w: s.w, h: s.h };
-  }
-}
-
-function drawCover(ctx, media, x, y, w, h) {
-  const mw = media.videoWidth || media.naturalWidth || media.width;
-  const mh = media.videoHeight || media.naturalHeight || media.height;
-  if (!mw || !mh) return;
-  const scale = Math.max(w / mw, h / mh);
-  const dw = mw * scale, dh = mh * scale;
-  ctx.drawImage(media, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
-}
-
-function drawContain(ctx, media, x, y, w, h) {
-  const mw = media.videoWidth || media.naturalWidth || media.width;
-  const mh = media.videoHeight || media.naturalHeight || media.height;
-  if (!mw || !mh) return;
-  const scale = Math.min(w / mw, h / mh);
-  const dw = mw * scale, dh = mh * scale;
-  ctx.drawImage(media, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
-}
-
-/* ---------------------------------------------------------
-   SELECTION & HANDLES
---------------------------------------------------------- */
-function getHandles(b) {
-  const S = 11;
-  return [
-    { id: 'nw', x: b.x - S, y: b.y - S },
-    { id: 'n',  x: b.x + b.w / 2 - S, y: b.y - S },
-    { id: 'ne', x: b.x + b.w - S, y: b.y - S },
-    { id: 'e',  x: b.x + b.w - S, y: b.y + b.h / 2 - S },
-    { id: 'se', x: b.x + b.w - S, y: b.y + b.h - S },
-    { id: 's',  x: b.x + b.w / 2 - S, y: b.y + b.h - S },
-    { id: 'sw', x: b.x - S, y: b.y + b.h - S },
-    { id: 'w',  x: b.x - S, y: b.y + b.h / 2 - S }
-  ].map(h => ({ ...h, w: S * 2, h: S * 2 }));
-}
-
-function drawSelection(ctx, scene) {
-  const s = scene.sources.find(x => x.id === state.selectedId);
-  if (!s || !s.visible || !s._bbox) return;
-  const b = s._bbox;
-  ctx.save();
-  ctx.strokeStyle = s.locked ? '#e0a020' : '#3c8dd8';
-  ctx.lineWidth = 2;
-  ctx.setLineDash([7, 5]);
-  ctx.strokeRect(b.x, b.y, b.w, b.h);
-  ctx.setLineDash([]);
-  if (!s.locked) {
-    ctx.fillStyle = '#ffffff';
-    ctx.strokeStyle = '#3c8dd8';
-    ctx.lineWidth = 1.5;
-    for (const h of getHandles(b)) {
-      ctx.beginPath();
-      ctx.rect(h.x, h.y, h.w, h.h);
-      ctx.fill(); ctx.stroke();
-    }
-  }
-  ctx.fillStyle = 'rgba(60,141,216,.9)';
-  const label = s.name;
-  ctx.font = '600 16px Segoe UI';
-  const tw = ctx.measureText(label).width;
-  ctx.fillRect(b.x, b.y - 26, tw + 16, 24);
-  ctx.fillStyle = '#fff';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(label, b.x + 8, b.y - 13);
-  ctx.restore();
-}
-
-/* ---------------------------------------------------------
-   CANVAS INTERACTION
---------------------------------------------------------- */
-function toCanvas(e, canvas) {
-  const r = canvas.getBoundingClientRect();
-  return {
-    x: (e.clientX - r.left) * (canvas.width / r.width),
-    y: (e.clientY - r.top) * (canvas.height / r.height)
-  };
-}
-
-function hitTest(scene, pt) {
-  for (const s of scene.sources) {
-    if (!s.visible || !s._bbox) continue;
-    const b = s._bbox;
-    if (pt.x >= b.x && pt.x <= b.x + b.w && pt.y >= b.y && pt.y <= b.y + b.h) return s;
-  }
-  return null;
-}
-
-function bindCanvas(canvas) {
-  canvas.addEventListener('mousedown', e => {
-    if (!state.studio && canvas !== programCanvas) return;
-    const scene = previewScene(); if (!scene) return;
-    const pt = toCanvas(e, canvas);
-    const sel = selectedSource();
-
-    if (sel && sel._bbox && !sel.locked) {
-      for (const h of getHandles(sel._bbox)) {
-        if (pt.x >= h.x && pt.x <= h.x + h.w && pt.y >= h.y && pt.y <= h.y + h.h) {
-          state.drag = { mode: 'resize', dir: h.id, pt, orig: { ...sel }, src: sel };
-          return;
+        // ========== SCENE MANAGEMENT ==========
+        function renderScenes() {
+            const list = document.getElementById('scene-list');
+            list.innerHTML = '';
+            state.scenes.forEach(scene => {
+                const div = document.createElement('div');
+                div.className = `scene-item ${scene === state.activeScene ? 'active' : ''}`;
+                div.dataset.scene = scene;
+                div.innerHTML = `<span class="icon"></span> ${scene}`;
+                div.onclick = () => {
+                    state.activeScene = scene;
+                    renderScenes();
+                };
+                list.appendChild(div);
+            });
         }
-      }
-    }
 
-    const hit = hitTest(scene, pt);
-    if (hit) {
-      state.selectedId = hit.id;
-      renderSourceList();
-      if (!hit.locked) state.drag = { mode: 'move', pt, orig: { ...hit }, src: hit };
-    } else {
-      state.selectedId = null;
-      renderSourceList();
-    }
-  });
-
-  canvas.addEventListener('dblclick', e => {
-    const scene = previewScene(); if (!scene) return;
-    const pt = toCanvas(e, canvas);
-    const hit = hitTest(scene, pt);
-    if (hit) { state.selectedId = hit.id; renderSourceList(); openProps(hit); }
-  });
-}
-
-window.addEventListener('mousemove', e => {
-  const d = state.drag; if (!d) return;
-  const canvas = state.studio ? previewCanvas : programCanvas;
-  const pt = toCanvas(e, canvas);
-  const dx = pt.x - d.pt.x, dy = pt.y - d.pt.y;
-  const s = d.src, o = d.orig;
-
-  if (d.mode === 'move') {
-    s.x = Math.round(o.x + dx);
-    s.y = Math.round(o.y + dy);
-  } else {
-    let x1 = o.x, y1 = o.y, x2 = o.x + o.w, y2 = o.y + o.h;
-    const dir = d.dir;
-    if (dir.includes('w')) x1 = o.x + dx;
-    if (dir.includes('e')) x2 = o.x + o.w + dx;
-    if (dir.includes('n')) y1 = o.y + dy;
-    if (dir.includes('s')) y2 = o.y + o.h + dy;
-    if (x2 - x1 < 30) x2 = x1 + 30;
-    if (y2 - y1 < 20) y2 = y1 + 20;
-    s.x = Math.round(x1); s.y = Math.round(y1);
-    s.w = Math.round(x2 - x1); s.h = Math.round(y2 - y1);
-    if (s.type === 'text') {
-      const ratio = s.h / (o.h || 1);
-      s.fontSize = clamp(Math.round(o.fontSize * ratio), 8, 400);
-    }
-  }
-});
-
-window.addEventListener('mouseup', () => { state.drag = null; });
-
-window.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
-  const s = selectedSource();
-  if (!s) return;
-  const step = e.shiftKey ? 20 : 2;
-  if (e.key === 'ArrowLeft')  { s.x -= step; e.preventDefault(); }
-  if (e.key === 'ArrowRight') { s.x += step; e.preventDefault(); }
-  if (e.key === 'ArrowUp')    { s.y -= step; e.preventDefault(); }
-  if (e.key === 'ArrowDown')  { s.y += step; e.preventDefault(); }
-  if (e.key === 'Delete')     { removeSource(); }
-});
-
-/* ---------------------------------------------------------
-   UI: SCENE LIST
---------------------------------------------------------- */
-function renderSceneList() {
-  const box = $('#sceneList');
-  box.innerHTML = '';
-  state.scenes.forEach(sc => {
-    const row = document.createElement('div');
-    row.className = 'list-item' + (sc.id === state.previewSceneId ? ' active' : '');
-    row.innerHTML = `<span class="txt">${escapeHtml(sc.name)}</span>
-      <span class="badge">${sc.sources.length}</span>`;
-    row.onclick = () => {
-      state.previewSceneId = sc.id;
-      if (!state.studio) state.liveSceneId = sc.id;
-      state.selectedId = null;
-      renderSceneList(); renderSourceList(); refreshMixer();
-      $('#statusScene').textContent = 'Sken: ' + sc.name;
-    };
-    row.ondblclick = () => renameScene(sc);
-    box.appendChild(row);
-  });
-  const cur = previewScene();
-  $('#statusScene').textContent = 'Sken: ' + (cur ? cur.name : '—');
-}
-
-function renameScene(sc) {
-  const n = prompt('Nama sken baru:', sc.name);
-  if (n && n.trim()) { sc.name = n.trim(); renderSceneList(); }
-}
-
-/* ---------------------------------------------------------
-   UI: SOURCE LIST
---------------------------------------------------------- */
-const TYPE_CHIP = { text: 'TXT', color: 'CLR', image: 'IMG', media: 'MP4', camera: 'CAM', screen: 'SCR', audio: 'AUD' };
-
-const EYE_ON = `<svg viewBox="0 0 16 16"><path d="M8 3C4.4 3 1.6 5.6.8 8c.8 2.4 3.6 5 7.2 5s6.4-2.6 7.2-5C14.4 5.6 11.6 3 8 3zm0 8.3A3.3 3.3 0 1 1 8 4.7a3.3 3.3 0 0 1 0 6.6zm0-1.6a1.7 1.7 0 1 0 0-3.4 1.7 1.7 0 0 0 0 3.4z"/></svg>`;
-const EYE_OFF = `<svg viewBox="0 0 16 16"><path d="M8 3c-3.6 0-6.4 2.6-7.2 5 .3.9.9 1.8 1.6 2.6l1.2-1.2A6.6 6.6 0 0 1 2.3 8C3.2 6.1 5.4 4.5 8 4.5c.6 0 1.1.1 1.6.2l1.2-1.2C10 3.2 9 3 8 3zm5.6 2.4-1.2 1.2c.5.4.9.9 1.3 1.4-.9 1.9-3.1 3.5-5.7 3.5-.4 0-.8 0-1.2-.1L5.5 12.6c.8.3 1.6.4 2.5.4 3.6 0 6.4-2.6 7.2-5-.3-.9-.9-1.8-1.6-2.6zM3 2.2 1.6 3.6l10.8 10.8 1.4-1.4L3 2.2z"/></svg>`;
-const LOCK_ON  = `<svg viewBox="0 0 16 16"><path d="M12 7V5.5A4 4 0 0 0 4 5.5V7H3v7h10V7h-1zM6 5.5a2 2 0 1 1 4 0V7H6V5.5z"/></svg>`;
-const LOCK_OFF = `<svg viewBox="0 0 16 16"><path d="M12 7V5.5a4 4 0 0 0-7.7-1.5l1.4.8A2 2 0 0 1 10 5.5V7H3v7h10V7h-1z"/></svg>`;
-
-function renderSourceList() {
-  const box = $('#sourceList');
-  box.innerHTML = '';
-  const sc = previewScene();
-  if (!sc) return;
-
-  sc.sources.forEach(src => {
-    const row = document.createElement('div');
-    const isPlaying = src.type === 'media' && src._video && !src._video.paused;
-    row.className = 'src-item'
-      + (src.id === state.selectedId ? ' active' : '')
-      + (!src.visible ? ' hidden-src' : '')
-      + (isPlaying ? ' playing' : '');
-    row.draggable = true;
-    row.dataset.id = src.id;
-
-    row.innerHTML = `
-      <span class="mini eye" title="Visibilitas">${src.visible ? EYE_ON : EYE_OFF}</span>
-      <span class="mini lock" title="Kunci">${src.locked ? LOCK_ON : LOCK_OFF}</span>
-      <span class="txt">${escapeHtml(src.name)}</span>
-      <span class="type-chip">${TYPE_CHIP[src.type] || 'SRC'}</span>`;
-
-    row.onclick = e => {
-      if (e.target.closest('.mini')) return;
-      state.selectedId = src.id;
-      renderSourceList();
-    };
-    row.querySelector('.eye').onclick = e => {
-      e.stopPropagation(); src.visible = !src.visible; renderSourceList();
-    };
-    row.querySelector('.lock').onclick = e => {
-      e.stopPropagation(); src.locked = !src.locked; renderSourceList();
-    };
-    row.ondblclick = () => { state.selectedId = src.id; openProps(src); };
-
-    row.ondragstart = e => {
-      e.dataTransfer.setData('text/plain', src.id);
-      e.dataTransfer.effectAllowed = 'move';
-    };
-    row.ondragover = e => { e.preventDefault(); row.classList.add('dragover'); };
-    row.ondragleave = () => row.classList.remove('dragover');
-    row.ondrop = e => {
-      e.preventDefault(); row.classList.remove('dragover');
-      const fromId = e.dataTransfer.getData('text/plain');
-      if (fromId === src.id) return;
-      const fromIdx = sc.sources.findIndex(s => s.id === fromId);
-      const toIdx = sc.sources.findIndex(s => s.id === src.id);
-      if (fromIdx < 0 || toIdx < 0) return;
-      const [moved] = sc.sources.splice(fromIdx, 1);
-      sc.sources.splice(toIdx, 0, moved);
-      renderSourceList();
-    };
-
-    box.appendChild(row);
-  });
-
-  $('#statusSources').textContent = 'Sumber: ' + sc.sources.length;
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-}
-
-/* ---------------------------------------------------------
-   AUDIO MIXER
---------------------------------------------------------- */
-let mixerAnim = null;
-
-function refreshMixer() {
-  const body = $('#mixerBody');
-  body.innerHTML = '';
-  const sc = liveScene();
-  const chans = [];
-
-  chans.push({ id: '__desktop', name: 'Desktop Audio', volume: 82, muted: false, fake: true });
-  chans.push({ id: '__mic', name: 'Mic/Aux', volume: 65, muted: false, fake: true });
-
-  if (sc) {
-    sc.sources.forEach(s => {
-      if (s.hasAudio) chans.push({ id: s.id, name: s.name, volume: s.volume, muted: s.muted, src: s });
-    });
-  }
-
-  $('#mixerInfo').textContent = chans.length + ' kanal';
-
-  chans.forEach(ch => {
-    const el = document.createElement('div');
-    el.className = 'chan';
-    el.innerHTML = `
-      <div class="nm" title="${escapeHtml(ch.name)}">${escapeHtml(ch.name)}</div>
-      <div class="meter">${Array.from({ length: 14 }, () => '<i></i>').join('')}</div>
-      <input type="range" class="vol" min="0" max="100" value="${ch.volume}">
-      <div class="row"><button class="mute ${ch.muted ? 'on' : ''}">MUTE</button></div>
-      <div class="db">${ch.muted ? '-∞' : (ch.volume === 0 ? '-∞' : (20 * Math.log10(ch.volume / 100)).toFixed(1) + ' dB')}</div>`;
-
-    const bars = [...el.querySelectorAll('.meter i')];
-    const volEl = el.querySelector('.vol');
-    const dbEl = el.querySelector('.db');
-    const muteBtn = el.querySelector('.mute');
-
-    volEl.oninput = () => {
-      const v = +volEl.value;
-      if (ch.fake) ch.volume = v;
-      else {
-        ch.src.volume = v;
-        if (ch.src._video) ch.src._video.volume = clamp(v / 100, 0, 1);
-      }
-      dbEl.textContent = v === 0 ? '-∞' : (20 * Math.log10(v / 100)).toFixed(1) + ' dB';
-    };
-
-    muteBtn.onclick = () => {
-      ch.muted = !ch.muted;
-      if (!ch.fake) {
-        ch.src.muted = ch.muted;
-        if (ch.src._video) ch.src._video.muted = ch.muted;
-      }
-      muteBtn.classList.toggle('on', ch.muted);
-      dbEl.textContent = ch.muted ? '-∞' : (ch.volume === 0 ? '-∞' : (20 * Math.log10(ch.volume / 100)).toFixed(1) + ' dB');
-    };
-
-    ch._bars = bars;
-    body.appendChild(el);
-  });
-
-  if (mixerAnim) cancelAnimationFrame(mixerAnim);
-  const tick = () => {
-    chans.forEach(ch => {
-      let target = ch.muted ? 0 : (ch.volume / 100) * (0.55 + Math.random() * 0.45);
-      // Untuk media yang sedang diputar, beri variasi lebih hidup
-      if (!ch.fake && ch.src && ch.src._video && !ch.src._video.paused) {
-        target *= (0.7 + Math.random() * 0.3);
-      }
-      const lit = Math.round(target * ch._bars.length);
-      ch._bars.forEach((b, i) => {
-        b.className = i < lit ? (i >= 12 ? 'peak' : i >= 10 ? 'warn' : 'on') : '';
-      });
-    });
-    mixerAnim = requestAnimationFrame(tick);
-  };
-  tick();
-}
-
-/* ---------------------------------------------------------
-   PROPERTIES MODAL
---------------------------------------------------------- */
-let propsTarget = null;
-
-function openProps(src) {
-  propsTarget = src;
-  $('#propsTitle').textContent = `Properti — ${src.name}`;
-  const body = $('#propsBody');
-  body.innerHTML = '';
-
-  const field = (label, html) => {
-    const d = document.createElement('div');
-    d.className = 'field';
-    d.innerHTML = `<label>${label}</label>${html}`;
-    body.appendChild(d);
-    return d;
-  };
-
-  const nameInput = field('Nama Sumber', `<input type="text" id="pName" value="${escapeHtml(src.name)}">`).querySelector('#pName');
-
-  if (src.type === 'text') {
-    const t = field('Teks', `<textarea id="pText" rows="3" style="background:#1c1c1c;border:1px solid #444;color:#d4d4d4;border-radius:3px;padding:7px;font-family:inherit;font-size:12px;resize:vertical">${escapeHtml(src.text)}</textarea>`).querySelector('#pText');
-    const fs = field('Ukuran Font', `<input type="number" id="pSize" value="${src.fontSize}" min="8" max="400">`).querySelector('#pSize');
-    const col = field('Warna Teks', `<input type="color" id="pColor" value="${src.color}">`).querySelector('#pColor');
-    const bg  = field('Latar Teks', `<input type="color" id="pBg" value="${src.bg === 'transparent' ? '#000000' : src.bg}">
-      <label style="display:flex;align-items:center;gap:6px;font-weight:400;color:#9a9a9a;margin-top:4px">
-      <input type="checkbox" id="pBgOn" ${src.bg !== 'transparent' ? 'checked' : ''}> Gunakan latar</label>`);
-
-    window._propsApply = () => {
-      src.name = nameInput.value || src.name;
-      src.text = t.value;
-      src.fontSize = +fs.value;
-      src.color = col.value;
-      src.bg = bg.querySelector('#pBgOn').checked ? bg.querySelector('#pBg').value : 'transparent';
-    };
-  } else if (src.type === 'color') {
-    const c = field('Warna', `<input type="color" id="pColor" value="${src.color}">`).querySelector('#pColor');
-    window._propsApply = () => { src.name = nameInput.value || src.name; src.color = c.value; };
-  } else if (src.type === 'image') {
-    const f = field('Berkas Gambar', `<input type="file" id="pFile" accept="image/*" style="color:#aaa;font-size:11px">`).querySelector('#pFile');
-    f.onchange = () => {
-      const file = f.files[0]; if (!file) return;
-      const r = new FileReader();
-      r.onload = () => { src.dataUrl = r.result; src._img = null; };
-      r.readAsDataURL(file);
-    };
-    window._propsApply = () => { src.name = nameInput.value || src.name; };
-  } else if (src.type === 'media') {
-    // --- GANTI BERKAS MP4 ---
-    const f = field('Berkas Media (MP4 / WebM)',
-      `<input type="file" id="pMediaFile" accept="video/mp4,video/webm,video/quicktime,video/*" style="color:#aaa;font-size:11px">
-       <div style="font-size:10px;color:#777;margin-top:4px">Mendukung MP4 (H.264), WebM, dan format lain yang didukung browser.</div>`
-    ).querySelector('#pMediaFile');
-
-    f.onchange = () => {
-      const file = f.files[0]; if (!file) return;
-      if (src._blobUrl) { try { URL.revokeObjectURL(src._blobUrl); } catch(e){} }
-      src._blobUrl = URL.createObjectURL(file);
-      src.name = file.name.replace(/\.[^.]+$/, '');
-      nameInput.value = src.name;
-      src.playing = true;
-      loadMediaSource(src, src._blobUrl);
-      refreshMixer(); renderSourceList();
-      setStatus(`Berkas media diganti: ${file.name}`);
-    };
-
-    const loopChk = field('Pengulangan',
-      `<label style="display:flex;align-items:center;gap:6px;font-weight:400;color:#ccc">
-        <input type="checkbox" id="pLoop" ${src.loop !== false ? 'checked' : ''}> Putar ulang otomatis (loop)
-       </label>`).querySelector('#pLoop');
-
-    const fitSel = field('Mode Tampilan',
-      `<select id="pFit">
-        <option value="cover" ${src.fit === 'cover' ? 'selected' : ''}>Isi Penuh (cover)</option>
-        <option value="contain" ${src.fit === 'contain' ? 'selected' : ''}>Sesuaikan Rasio (contain)</option>
-       </select>`).querySelector('#pFit');
-
-    const ctrl = document.createElement('div');
-    ctrl.className = 'field';
-    ctrl.innerHTML = `<label>Kontrol Pemutaran</label>
-      <div style="display:flex;gap:6px;flex-wrap:wrap">
-        <button class="btn sm" id="pPlay">▶ Putar</button>
-        <button class="btn sm" id="pPause">⏸ Jeda</button>
-        <button class="btn sm" id="pRestart">⟲ Ulang</button>
-      </div>
-      <div id="pStatus" style="font-size:11px;color:#888;margin-top:6px">—</div>`;
-    body.appendChild(ctrl);
-
-    const statusEl = ctrl.querySelector('#pStatus');
-    const updateStatus = () => {
-      if (!src._video) { statusEl.textContent = 'Tidak ada media'; return; }
-      const v = src._video;
-      const cur = fmtSec(v.currentTime), dur = fmtSec(v.duration || 0);
-      statusEl.textContent = `${v.paused ? '⏸ Jeda' : '▶ Diputar'} · ${cur} / ${dur}`;
-    };
-    updateStatus();
-    const intv = setInterval(updateStatus, 500);
-    // Hentikan interval saat modal ditutup (dipasang di onclick tombol close)
-    const clearIntv = () => clearInterval(intv);
-    window._propsCleanup = clearIntv;
-
-    ctrl.querySelector('#pPlay').onclick = () => {
-      src.playing = true;
-      if (src._video) src._video.play().catch(()=>{});
-      renderSourceList(); updateStatus();
-    };
-    ctrl.querySelector('#pPause').onclick = () => {
-      src.playing = false;
-      if (src._video) src._video.pause();
-      renderSourceList(); updateStatus();
-    };
-    ctrl.querySelector('#pRestart').onclick = () => {
-      if (src._video) {
-        src._video.currentTime = 0;
-        src._video.play().catch(()=>{});
-        src.playing = true;
-      }
-      renderSourceList(); updateStatus();
-    };
-
-    window._propsApply = () => {
-      src.name = nameInput.value || src.name;
-      src.loop = loopChk.checked;
-      if (src._video) src._video.loop = src.loop;
-      src.fit = fitSel.value;
-    };
-  } else {
-    window._propsApply = () => { src.name = nameInput.value || src.name; };
-  }
-
-  // posisi & ukuran
-  const grid = document.createElement('div');
-  grid.className = 'grid2';
-  grid.innerHTML = `
-    <div class="field"><label>Posisi X</label><input type="number" id="pX" value="${src.x}"></div>
-    <div class="field"><label>Posisi Y</label><input type="number" id="pY" value="${src.y}"></div>
-    <div class="field"><label>Lebar</label><input type="number" id="pW" value="${src.w}"></div>
-    <div class="field"><label>Tinggi</label><input type="number" id="pH" value="${src.h}"></div>`;
-  body.appendChild(grid);
-
-  const prevApply = window._propsApply;
-  window._propsApply = () => {
-    prevApply();
-    src.x = +grid.querySelector('#pX').value;
-    src.y = +grid.querySelector('#pY').value;
-    src.w = Math.max(10, +grid.querySelector('#pW').value);
-    src.h = Math.max(10, +grid.querySelector('#pH').value);
-  };
-
-  $('#propsOverlay').classList.add('show');
-}
-
-function fmtSec(sec) {
-  if (!isFinite(sec)) return '00:00';
-  const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
-  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-}
-
-$('#propsSave').onclick = () => {
-  if (window._propsApply) window._propsApply();
-  if (window._propsCleanup) { window._propsCleanup(); window._propsCleanup = null; }
-  $('#propsOverlay').classList.remove('show');
-  renderSourceList(); refreshMixer();
-  setStatus('Properti diterapkan');
-};
-
-/* ---------------------------------------------------------
-   TRANSITIONS / STUDIO MODE
---------------------------------------------------------- */
-function toggleStudio() {
-  state.studio = !state.studio;
-  $('#btnStudio').classList.toggle('accent', state.studio);
-  $('#btnStudio').textContent = state.studio ? 'Keluar Mode Studio' : 'Mode Studio';
-  $('#wrapPreview').style.display = state.studio ? 'flex' : 'none';
-  $('#btnTransition').disabled = !state.studio;
-  $('#labelProgram').textContent = state.studio ? 'Program (Live)' : 'Pratinjau';
-  $('#labelProgram').parentElement.classList.toggle('live', state.studio);
-  if (!state.studio) {
-    state.liveSceneId = state.previewSceneId;
-  } else {
-    state.previewSceneId = state.liveSceneId;
-    const other = state.scenes.find(s => s.id !== state.liveSceneId);
-    if (other) state.previewSceneId = other.id;
-  }
-  renderSceneList(); renderSourceList(); refreshMixer();
-  setStatus(state.studio ? 'Mode Studio aktif' : 'Mode Studio nonaktif');
-}
-
-function doTransition() {
-  if (!state.studio) return;
-  const next = previewScene();
-  if (!next) return;
-  if (state.transition === 'Cut') {
-    state.liveSceneId = next.id;
-    state.fade = 0;
-  } else {
-    state.liveSceneId = next.id;
-    state.fade = 1;
-    state.fading = false;
-    let f = 1;
-    const step = () => {
-      f -= 0.06;
-      state.fade = Math.max(0, f);
-      if (f > 0) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }
-  renderSceneList(); refreshMixer();
-  setStatus('Transisi → ' + next.name);
-}
-
-/* ---------------------------------------------------------
-   STREAMING / RECORDING
---------------------------------------------------------- */
-function pad(n) { return String(n).padStart(2, '0'); }
-function fmtTime(ms) {
-  const t = Math.floor(ms / 1000);
-  return `${pad(Math.floor(t / 3600))}:${pad(Math.floor(t / 60) % 60)}:${pad(t % 60)}`;
-}
-function updateTimers() {
-  const now = Date.now();
-  if (state.streaming) $('#streamTimer').textContent = fmtTime(now - state.streamT0);
-  if (state.recording) $('#recTimer').textContent = fmtTime(now - state.recT0);
-}
-
-function toggleStream() {
-  state.streaming = !state.streaming;
-  const btn = $('#btnStream');
-  if (state.streaming) {
-    state.streamT0 = Date.now();
-    btn.innerHTML = '<span class="live-dot on"></span>Hentikan Streaming';
-    btn.classList.remove('accent'); btn.classList.add('danger');
-    setStatus('🔴 Streaming langsung ke server');
-    toast('Streaming dimulai (simulasi)');
-  } else {
-    btn.innerHTML = '<span class="live-dot"></span>Mulai Streaming';
-    btn.classList.add('accent'); btn.classList.remove('danger');
-    $('#streamTimer').textContent = '00:00:00';
-    setStatus('Streaming dihentikan');
-  }
-}
-
-/* --- REKAMAN NYATA (MediaRecorder) --- */
-let recorder = null, chunks = [], recAudioCtx = null;
-
-async function toggleRecord() {
-  if (state.recording) {
-    if (recorder && recorder.state !== 'inactive') recorder.stop();
-    return;
-  }
-  try {
-    const stream = programCanvas.captureStream(30);
-
-    try {
-      recAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const dest = recAudioCtx.createMediaStreamDestination();
-      let has = false;
-      const sc = liveScene();
-      if (sc) {
-        for (const s of sc.sources) {
-          if (s._video && s.hasAudio) {
-            try {
-              if (!s._mediaNode) {
-                s._mediaNode = recAudioCtx.createMediaElementSource(s._video);
-                s._mediaNode.connect(recAudioCtx.destination);
-              }
-              s._mediaNode.connect(dest);
-              has = true;
-            } catch (e) {}
-          }
+        function addScene() {
+            const name = prompt('Scene name:', `Scene ${state.scenes.length + 1}`);
+            if (name && !state.scenes.includes(name)) {
+                state.scenes.push(name);
+                state.activeScene = name;
+                renderScenes();
+            }
         }
-      }
-      if (has) stream.addTrack(dest.stream.getAudioTracks()[0]);
-    } catch (e) {}
 
-    const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-      ? 'video/webm;codecs=vp9'
-      : (MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : '');
+        function removeScene() {
+            if (state.scenes.length <= 1) {
+                alert('Cannot remove the last scene.');
+                return;
+            }
+            const idx = state.scenes.indexOf(state.activeScene);
+            state.scenes.splice(idx, 1);
+            state.activeScene = state.scenes[Math.max(0, idx - 1)];
+            renderScenes();
+        }
 
-    chunks = [];
-    recorder = new MediaRecorder(stream, {
-      ...(mime ? { mimeType: mime } : {}),
-      videoBitsPerSecond: state.settings.bitrate * 1000
-    });
-    recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
-    recorder.onstop = () => {
-      const blob = new Blob(chunks, { type: 'video/webm' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `OBS_Record_${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.webm`;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 4000);
-      chunks = [];
-      if (recAudioCtx) { recAudioCtx.close().catch(() => {}); recAudioCtx = null; }
-      setStatus('Rekaman disimpan');
-      toast('Rekaman diunduh (.webm)');
-    };
-    recorder.start(1000);
+        // ========== SOURCE MANAGEMENT ==========
+        function renderSources() {
+            const list = document.getElementById('source-list');
+            list.innerHTML = '';
+            state.sources.forEach(src => {
+                const div = document.createElement('div');
+                div.className = `source-item ${src === state.activeSource ? 'active' : ''}`;
+                div.dataset.source = src;
+                div.innerHTML = `
+                    <span class="icon"></span> ${src}
+                    <button class="visibility-toggle" title="Toggle Visibility" onclick="event.stopPropagation(); toggleSourceVisibility(this)">👁</button>
+                `;
+                div.onclick = () => {
+                    state.activeSource = src;
+                    renderSources();
+                };
+                list.appendChild(div);
+            });
+        }
 
-    state.recording = true;
-    state.recT0 = Date.now();
-    const btn = $('#btnRecord');
-    btn.textContent = 'Hentikan Rekaman';
-    btn.classList.add('accent'); btn.classList.remove('danger');
-    setStatus('⏺ Merekam kanvas program…');
-    toast('Rekaman dimulai');
-  } catch (err) {
-    toast('Gagal merekam: ' + err.message);
-  }
-}
+        function openAddSourceModal() {
+            document.getElementById('modal-add-source').classList.add('open');
+            document.getElementById('new-source-name').value = '';
+            document.getElementById('new-source-name').focus();
+        }
 
-$('#btnRecord').onclick = async function () {
-  if (state.recording) {
-    if (recorder && recorder.state !== 'inactive') recorder.stop();
-    state.recording = false;
-    $('#btnRecord').textContent = 'Mulai Rekaman';
-    $('#btnRecord').classList.add('danger'); $('#btnRecord').classList.remove('accent');
-    $('#recTimer').textContent = '00:00:00';
-  } else {
-    await toggleRecord();
-  }
-};
+        function addSource() {
+            const name = document.getElementById('new-source-name').value.trim();
+            const type = document.getElementById('new-source-type').value;
+            if (!name) {
+                alert('Please enter a source name.');
+                return;
+            }
+            if (state.sources.includes(name)) {
+                alert('Source already exists.');
+                return;
+            }
+            state.sources.push(name);
+            state.activeSource = name;
+            renderSources();
+            closeModal('modal-add-source');
+        }
 
-/* ---------------------------------------------------------
-   MENU / DROPDOWN
---------------------------------------------------------- */
-$$('.menu-item[data-menu]').forEach(mi => {
-  mi.addEventListener('click', e => {
-    if (e.target.closest('.dropdown')) return;
-    const open = mi.classList.contains('open');
-    $$('.menu-item').forEach(m => m.classList.remove('open'));
-    if (!open) mi.classList.add('open');
-  });
-});
-document.addEventListener('click', e => {
-  if (!e.target.closest('.menu-item')) $$('.menu-item').forEach(m => m.classList.remove('open'));
-});
+        function removeSource() {
+            if (state.sources.length <= 1) {
+                alert('Cannot remove the last source.');
+                return;
+            }
+            const idx = state.sources.indexOf(state.activeSource);
+            state.sources.splice(idx, 1);
+            state.activeSource = state.sources[Math.max(0, idx - 1)];
+            renderSources();
+        }
 
-$$('.dropdown button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    $$('.menu-item').forEach(m => m.classList.remove('open'));
-    handleAction(btn.dataset.act);
-  });
-});
+        function moveSource(direction) {
+            const idx = state.sources.indexOf(state.activeSource);
+            if (direction === 'up' && idx > 0) {
+                [state.sources[idx - 1], state.sources[idx]] = [state.sources[idx], state.sources[idx - 1]];
+            } else if (direction === 'down' && idx < state.sources.length - 1) {
+                [state.sources[idx + 1], state.sources[idx]] = [state.sources[idx], state.sources[idx + 1]];
+            }
+            renderSources();
+        }
 
-function handleAction(act) {
-  switch (act) {
-    case 'new-scene': addScene(newScene()); break;
-    case 'dupe-scene': {
-      const sc = previewScene(); if (!sc) return;
-      const copy = { id: uid(), name: sc.name + ' (copy)', sources: sc.sources.map(s => {
-        const base = JSON.parse(JSON.stringify({ ...s, _video: null, _img: null, _bbox: null, _mediaNode: null, _stream: null }));
-        base.id = uid();
-        return base;
-      })};
-      // muat ulang video media untuk hasil duplikat
-      copy.sources.forEach(s => { if (s.type === 'media' && s._blobUrl) loadMediaSource(s, s._blobUrl); });
-      state.scenes.push(copy);
-      state.liveSceneId = state.previewSceneId = copy.id;
-      renderSceneList(); renderSourceList(); refreshMixer();
-      break;
-    }
-    case 'import-media': {
-      // Import ke sken yang sedang dipilih
-      pendingMediaScene = previewScene();
-      mediaFileInput.value = '';
-      mediaFileInput.click();
-      break;
-    }
-    case 'screenshot': {
-      const a = document.createElement('a');
-      a.href = programCanvas.toDataURL('image/png');
-      a.download = 'obs_screenshot.png';
-      a.click();
-      toast('Screenshot disimpan');
-      break;
-    }
-    case 'reset':
-      if (confirm('Reset semua sken dan sumber?')) { location.reload(); }
-      break;
-    case 'dupe-source': duplicateSource(); break;
-    case 'remove-source': removeSource(); break;
-    case 'center-source': {
-      const s = selectedSource(); if (!s) return;
-      s.x = Math.round((BASE_W - s.w) / 2);
-      s.y = Math.round((BASE_H - s.h) / 2);
-      break;
-    }
-    case 'fill-source': {
-      const s = selectedSource(); if (!s) return;
-      s.x = 0; s.y = 0; s.w = BASE_W; s.h = BASE_H;
-      break;
-    }
-    case 'toggle-studio': toggleStudio(); break;
-    case 'toggle-mixer':
-      $('#mixerPanel').style.display = $('#mixerPanel').style.display === 'none' ? 'flex' : 'none';
-      break;
-    case 'auto-config':
-      showInfo('Wizard Konfigurasi Otomatis',
-        `<p style="line-height:1.7;color:#bbb">Pengaturan optimal terdeteksi:</p>
-         <ul style="margin:10px 0 0 18px;line-height:1.9;color:#ccc">
-           <li>Encoder: <b>x264</b> (software)</li>
-           <li>Bitrate: <b>6000 kbps</b></li>
-           <li>Resolusi Keluaran: <b>1280×720</b></li>
-           <li>FPS: <b>60</b></li>
-           <li>Preset: <b>veryfast</b></li>
-         </ul>`);
-      break;
-    case 'test-stream':
-      showInfo('Uji Kualitas Streaming',
-        `<p style="color:#bbb;line-height:1.8">Server: <b>rtmp://live.example.com/app</b></p>
-         <p style="color:#4caf50;line-height:2;margin-top:10px">✔ Koneksi stabil — 42 ms<br>
-         ✔ Bitrate rata-rata — 5.8 Mbps<br>
-         ✔ Tidak ada frame drop terdeteksi</p>`);
-      break;
-    case 'about':
-      showInfo('Tentang OBS Studio Pro',
-        `<p style="line-height:1.9;color:#bbb">OBS Studio Pro — Web Edition<br>
-         Versi 1.1.0 (build web + MP4)<br><br>
-         Antarmuka studio produksi siaran yang berjalan sepenuhnya di peramban.
-         Mendukung komposisi multi-sken, sumber teks, warna, gambar, <b>berkas media MP4</b>,
-         kamera, tangkapan layar, mixer audio, dan perekaman kanvas.</p>`);
-      break;
-    case 'shortcut':
-      showInfo('Pintasan Keyboard',
-        `<table style="width:100%;color:#ccc;line-height:2;font-size:12px">
-          <tr><td>Panah</td><td style="text-align:right">Geser sumber 2px</td></tr>
-          <tr><td>Shift + Panah</td><td style="text-align:right">Geser sumber 20px</td></tr>
-          <tr><td>Delete</td><td style="text-align:right">Hapus sumber</td></tr>
-          <tr><td>Klik-ganda kanvas</td><td style="text-align:right">Buka properti sumber</td></tr>
-          <tr><td>Klik-ganda sken</td><td style="text-align:right">Ganti nama sken</td></tr>
-        </table>`);
-      break;
-  }
-}
+        function toggleSourceVisibility(btn) {
+            btn.textContent = btn.textContent === '👁' ? '👁‍🗨' : '👁';
+        }
 
-/* ---------------------------------------------------------
-   ADD SOURCE MENU
---------------------------------------------------------- */
-$('#btnAddSource').onclick = e => {
-  e.stopPropagation();
-  const menu = $('#addMenu');
-  const r = e.currentTarget.getBoundingClientRect();
-  menu.style.left = r.left + 'px';
-  menu.style.top = (r.bottom + 4) + 'px';
-  menu.classList.toggle('show');
-};
-document.addEventListener('click', () => $('#addMenu').classList.remove('show'));
+        // ========== STREAMING & RECORDING ==========
+        function toggleStream() {
+            const btn = document.getElementById('btn-stream');
+            const indicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            const timer = document.getElementById('stream-timer');
 
-$$('#addMenu button').forEach(b => {
-  b.onclick = () => {
-    $('#addMenu').classList.remove('show');
-    const type = b.dataset.type;
-    const sc = previewScene(); if (!sc) return;
+            if (!state.streaming) {
+                state.streaming = true;
+                state.streamStartTime = Date.now();
+                btn.textContent = '⏹ Stop Streaming';
+                btn.classList.add('active');
+                indicator.className = 'status-dot';
+                statusText.textContent = 'Live';
+                timer.style.display = 'flex';
+                state.streamInterval = setInterval(updateStreamTimer, 1000);
+                // Simulate preview
+                document.getElementById('preview-placeholder').innerHTML = '🔴 LIVE STREAMING<br><span>Encoding at 6000 Kbps</span>';
+            } else {
+                state.streaming = false;
+                clearInterval(state.streamInterval);
+                btn.textContent = '▶ Start Streaming';
+                btn.classList.remove('active');
+                indicator.className = 'status-dot offline';
+                statusText.textContent = 'Offline';
+                timer.style.display = 'none';
+                document.getElementById('preview-placeholder').innerHTML = 'Preview Disabled<br><span>Click "Start Streaming" or "Start Recording" to enable</span>';
+            }
+        }
 
-    // --- KHUSUS MEDIA MP4: buka file picker ---
-    if (type === 'media') {
-      pendingMediaScene = sc;
-      mediaFileInput.value = '';
-      mediaFileInput.click();
-      return;
-    }
+        function toggleRecord() {
+            const btn = document.getElementById('btn-record');
+            const timer = document.getElementById('record-timer');
 
-    const src = makeSource(type);
-    addSourceTo(sc, src);
-    setStatus(`Sumber "${src.name}" ditambahkan`);
-    if (type === 'image') {
-      setTimeout(() => openProps(src), 50);
-    }
-  };
-});
+            if (!state.recording) {
+                state.recording = true;
+                state.recordStartTime = Date.now();
+                btn.textContent = '⏹ Stop Recording';
+                btn.classList.add('active');
+                timer.style.display = 'flex';
+                state.recordInterval = setInterval(updateRecordTimer, 1000);
+                if (!state.streaming) {
+                    document.getElementById('preview-placeholder').innerHTML = '⏺ RECORDING<br><span>Saving to /Videos/OBS</span>';
+                }
+            } else {
+                state.recording = false;
+                clearInterval(state.recordInterval);
+                btn.textContent = '⏺ Start Recording';
+                btn.classList.remove('active');
+                timer.style.display = 'none';
+                if (!state.streaming) {
+                    document.getElementById('preview-placeholder').innerHTML = 'Preview Disabled<br><span>Click "Start Streaming" or "Start Recording" to enable</span>';
+                }
+            }
+        }
 
-/* ---------------------------------------------------------
-   BUTTON BINDINGS
---------------------------------------------------------- */
-$('#btnAddScene').onclick = () => addScene(newScene());
-$('#btnDupeScene').onclick = () => handleAction('dupe-scene');
-$('#btnDelScene').onclick = deleteScene;
-$('#btnDelSource').onclick = removeSource;
-$('#btnSourceProps').onclick = () => {
-  const s = selectedSource();
-  if (s) openProps(s); else toast('Pilih sumber terlebih dahulu');
-};
-$('#btnStudio').onclick = toggleStudio;
-$('#btnTransition').onclick = doTransition;
-$('#btnStream').onclick = toggleStream;
-$('#btnSettings').onclick = () => $('#settingsOverlay').classList.add('show');
+        function updateStreamTimer() {
+            if (!state.streamStartTime) return;
+            const elapsed = Math.floor((Date.now() - state.streamStartTime) / 1000);
+            document.getElementById('live-time').textContent = formatTime(elapsed);
+        }
 
-$('#settingsSave').onclick = () => {
-  state.settings.bitrate = +$('#setBitrate').value || 6000;
-  $('#settingsOverlay').classList.remove('show');
-  toast('Pengaturan disimpan');
-  setStatus('Pengaturan diperbarui — bitrate ' + state.settings.bitrate + ' kbps');
-};
+        function updateRecordTimer() {
+            if (!state.recordStartTime) return;
+            const elapsed = Math.floor((Date.now() - state.recordStartTime) / 1000);
+            document.getElementById('rec-time').textContent = formatTime(elapsed);
+        }
 
-$('#selTransition').onchange = e => { state.transition = e.target.value; };
-$('#transDur').onchange = e => { state.transDur = +e.target.value; };
+        function formatTime(seconds) {
+            const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+            const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+            const s = String(seconds % 60).padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
 
-$$('[data-close]').forEach(b => {
-  b.onclick = () => {
-    if (window._propsCleanup) { window._propsCleanup(); window._propsCleanup = null; }
-    b.closest('.overlay').classList.remove('show');
-  };
-});
-$$('.overlay').forEach(o => {
-  o.addEventListener('mousedown', e => {
-    if (e.target === o) {
-      if (window._propsCleanup) { window._propsCleanup(); window._propsCleanup = null; }
-      o.classList.remove('show');
-    }
-  });
-});
+        // ========== STUDIO MODE ==========
+        function toggleStudioMode() {
+            state.studioMode = !state.studioMode;
+            const container = document.getElementById('preview-container');
+            const placeholder = document.getElementById('preview-placeholder');
+            const pane1 = document.getElementById('studio-preview-pane');
+            const pane2 = document.getElementById('studio-program-pane');
+            const btn = document.getElementById('btn-studio');
 
-/* ---------------------------------------------------------
-   HELPERS
---------------------------------------------------------- */
-let toastTimer = null;
-function toast(msg) {
-  const t = $('#toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
-}
-function setStatus(msg) { $('#statusMsg').textContent = msg; }
+            if (state.studioMode) {
+                placeholder.classList.add('hidden');
+                pane1.classList.remove('hidden');
+                pane2.classList.remove('hidden');
+                container.style.flexDirection = 'row';
+                btn.classList.add('active');
+                btn.textContent = '🎬 Studio Mode ON';
+            } else {
+                placeholder.classList.remove('hidden');
+                pane1.classList.add('hidden');
+                pane2.classList.add('hidden');
+                container.style.flexDirection = 'column';
+                btn.classList.remove('active');
+                btn.textContent = '🎬 Studio Mode';
+            }
+        }
 
-function showInfo(title, html) {
-  $('#infoTitle').textContent = title;
-  $('#infoBody').innerHTML = html;
-  $('#infoOverlay').classList.add('show');
-}
+        // ========== AUDIO ==========
+        function toggleMute(btn) {
+            btn.textContent = btn.textContent === '🔊' ? '🔇' : '🔊';
+            btn.classList.toggle('muted');
+        }
 
-/* ---------------------------------------------------------
-   INIT
---------------------------------------------------------- */
-function init() {
-  const s1 = newScene('Sken Utama');
+        // ========== MODAL ==========
+        function openSettingsModal() {
+            document.getElementById('modal-settings').classList.add('open');
+        }
 
-  s1.sources.push(makeSource('color', { name: 'Latar Belakang', color: '#0f2033' }));
-  s1.sources.push(makeSource('color', { name: 'Aksen', color: '#1b4a7a', x: 0, y: 500, w: 1280, h: 220 }));
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+        }
 
-  const title = makeSource('text', {
-    name: 'Judul Siaran',
-    x: 80, y: 90, fontSize: 92, color: '#ffffff',
-    text: 'SELAMAT DATANG'
-  });
-  s1.sources.push(title);
+        function saveSettings() {
+            const theme = document.getElementById('setting-theme').value;
+            document.documentElement.style.setProperty('--accent', theme === 'light' ? '#0078d4' : '#ff4444');
+            closeModal('modal-settings');
+        }
 
-  s1.sources.push(makeSource('text', {
-    name: 'Sub Judul',
-    x: 84, y: 220, fontSize: 38, color: '#7fc4ff', weight: 500,
-    text: 'OBS Studio Pro — Web Edition\nTambahkan sumber MP4 lewat tombol + Sumber'
-  }));
+        function exitApp() {
+            if (confirm('Are you sure you want to exit OBS Pro?')) {
+                window.close();
+                // Fallback: show a message
+                document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#666;font-size:24px;">OBS Pro Closed</div>';
+            }
+        }
 
-  s1.sources.push(makeSource('text', {
-    name: 'Lower Third',
-    x: 80, y: 545, fontSize: 46, color: '#ffffff', weight: 700,
-    text: '● LIVE  |  Studio Jakarta'
-  }));
+        // ========== SIMULATE CPU/FPS ==========
+        setInterval(() => {
+            const cpu = Math.floor(Math.random() * 30) + 5;
+            const fps = Math.floor(Math.random() * 5) + 58;
+            document.getElementById('cpu-usage').textContent = cpu + '%';
+            document.getElementById('fps-counter').textContent = fps;
+        }, 2000);
 
-  state.scenes.push(s1);
-  state.liveSceneId = state.previewSceneId = s1.id;
-  state.selectedId = title.id;
+        // ========== INIT ==========
+        renderScenes();
+        renderSources();
 
-  renderSceneList();
-  renderSourceList();
-  refreshMixer();
+        // Close modal on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('open');
+                }
+            });
+        });
 
-  bindCanvas(programCanvas);
-  bindCanvas(previewCanvas);
-
-  requestAnimationFrame(loop);
-  setStatus('Siap — klik + Sumber → "Berkas Media (MP4)" untuk impor video');
-}
-
-init();
-</script>
+        // Keyboard shortcut: Escape to close modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+                document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            }
+        });
+    </script>
 </body>
 </html>
