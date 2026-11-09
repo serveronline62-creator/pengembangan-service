@@ -119,28 +119,6 @@
       will-change: width, height, left, top;
     }
 
-    .pan-reset {
-      position: absolute;
-      right: 10px;
-      bottom: calc(12px + var(--ticker-offset));
-      width: 34px; height: 34px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(0,0,0,0.55);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 7;
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      transition: transform 0.15s, background 0.2s, opacity 0.2s;
-    }
-    .pan-reset svg { width: 16px; height: 16px; }
-    .pan-reset:active { transform: scale(0.9); }
-    .pan-reset:hover { background: rgba(0,0,0,0.75); }
-
     .pan-hint {
       position: absolute;
       left: 50%;
@@ -361,7 +339,6 @@
       pointer-events: none;
     }
     .badge.live { background: rgba(239,68,68,0.85); }
-    .badge.live.screen { background: rgba(16,185,129,0.85); }
     .badge.live .dot {
       width: 6px; height: 6px;
       border-radius: 50%;
@@ -369,6 +346,7 @@
       animation: pulseDot 1.5s ease-in-out infinite;
     }
     .badge.upload { background: rgba(99,102,241,0.85); }
+    .badge.upload.screen { background: rgba(16,185,129,0.85); }
 
     @keyframes pulseDot {
       0%, 100% { opacity: 1; transform: scale(1); }
@@ -428,7 +406,7 @@
       fill: none;
       stroke-width: 1.5;
     }
-    .placeholder.hidden { opacity: 0; }
+    .placeholder.hidden { opacity: 0; visibility: hidden; }
 
     .video-progress {
       position: absolute;
@@ -523,10 +501,7 @@
     }
     .pill.icon-only { padding: 8px; width: 34px; justify-content: center; }
 
-    .split-row {
-      gap: 6px;
-      padding: 0 2px;
-    }
+    .split-row { gap: 6px; padding: 0 2px; }
     .split-label {
       font-size: 9px;
       font-weight: 800;
@@ -555,7 +530,6 @@
       color: #c7c9ff;
     }
 
-    /* ====== EXPAND BUTTONS ====== */
     .expand-row { gap: 6px; padding: 0 2px; }
     .expand-btn {
       flex: 1 1 0;
@@ -600,7 +574,6 @@
     }
     .expand-btn.has-value .expand-dot { display: block; }
 
-    /* ====== SWAP QUICK BUTTON ====== */
     .expand-btn.swap-quick {
       flex: 0 0 42px;
       padding: 9px 6px;
@@ -613,7 +586,6 @@
     }
     .expand-btn.swap-quick svg { width: 14px; height: 14px; }
 
-    /* ====== SWAP IN PANEL ====== */
     .swap-full-btn {
       padding: 10px;
       border-radius: 10px;
@@ -651,7 +623,6 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ====== TICKER ====== */
     .ticker-row { gap: 6px; }
     .ticker-input {
       flex: 1 1 0;
@@ -718,16 +689,8 @@
       font-family: -apple-system, system-ui, sans-serif;
     }
 
-    .ticker-speed-row {
-      padding-top: 6px;
-      gap: 8px;
-    }
-    .ticker-speed-icon {
-      font-size: 15px;
-      flex: 0 0 auto;
-      user-select: none;
-      line-height: 1;
-    }
+    .ticker-speed-row { padding-top: 6px; gap: 8px; }
+    .ticker-speed-icon { font-size: 15px; flex: 0 0 auto; user-select: none; line-height: 1; }
     .ticker-speed-range {
       flex: 1 1 0;
       min-width: 0;
@@ -749,26 +712,13 @@
       border: none;
       box-shadow: 0 0 8px rgba(99,102,241,0.7);
       margin-top: -5px;
-      transition: transform 0.15s;
     }
-    .ticker-speed-range::-webkit-slider-thumb:active { transform: scale(1.2); }
     .ticker-speed-range::-moz-range-thumb {
       width: 16px; height: 16px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
       cursor: pointer;
       border: none;
-      box-shadow: 0 0 8px rgba(99,102,241,0.7);
-    }
-    .ticker-speed-range::-webkit-slider-runnable-track {
-      height: 6px;
-      border-radius: 3px;
-      background: rgba(255,255,255,0.12);
-    }
-    .ticker-speed-range::-moz-range-track {
-      height: 6px;
-      border-radius: 3px;
-      background: rgba(255,255,255,0.12);
     }
     .ticker-speed-value {
       flex: 0 0 auto;
@@ -901,11 +851,7 @@
       color: var(--muted);
       text-align: center;
     }
-    .modal-actions {
-      display: flex;
-      gap: 8px;
-      flex-direction: column;
-    }
+    .modal-actions { display: flex; gap: 8px; flex-direction: column; }
     .modal-actions .modal-btn {
       padding: 14px;
       border-radius: 14px;
@@ -926,16 +872,9 @@
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
       box-shadow: 0 4px 16px rgba(99,102,241,0.4);
     }
-    .modal-btn.secondary {
-      background: var(--surface);
-      border: 1px solid var(--border);
-    }
+    .modal-btn.secondary { background: var(--surface); border: 1px solid var(--border); }
 
-    .bg-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
+    .bg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .bg-option {
       aspect-ratio: 16 / 10;
       border-radius: 12px;
@@ -1031,9 +970,6 @@
 
     .hidden { display: none !important; }
 
-    /* ============================================================
-       FLOATING LIVE MODE
-       ============================================================ */
     .screen-live.floating {
       position: absolute !important;
       flex: none !important;
@@ -1053,31 +989,15 @@
       box-shadow: 0 16px 50px rgba(0,0,0,0.85), 0 0 0 2px rgba(99,102,241,0.65);
     }
     .screen-live.floating video,
-    .screen-live.floating .live-canvas {
-      border-radius: 16px;
-    }
+    .screen-live.floating .live-canvas { border-radius: 16px; }
     .screen-live.floating .badge.live {
-      top: 6px;
-      left: 6px;
-      padding: 3px 7px;
-      font-size: 8px;
-      border-radius: 999px;
+      top: 6px; left: 6px; padding: 3px 7px; font-size: 8px; border-radius: 999px;
     }
-    .screen-live.floating .badge.live .dot {
-      width: 5px; height: 5px;
-    }
-    .screen-live.floating .placeholder {
-      font-size: 10px;
-      padding: 8px;
-      gap: 4px;
-    }
-    .screen-live.floating .placeholder svg {
-      width: 24px; height: 24px;
-    }
+    .screen-live.floating .badge.live .dot { width: 5px; height: 5px; }
+    .screen-live.floating .placeholder { font-size: 10px; padding: 8px; gap: 4px; }
+    .screen-live.floating .placeholder svg { width: 24px; height: 24px; }
     .screen-live.floating .pan-hint,
-    .screen-live.floating .screen-tools {
-      display: none !important;
-    }
+    .screen-live.floating .screen-tools { display: none !important; }
 
     .float-pin-btn {
       position: absolute;
@@ -1098,16 +1018,9 @@
       -webkit-backdrop-filter: blur(10px);
       transition: transform 0.15s, background 0.2s;
     }
-    .float-pin-btn svg {
-      width: 12px;
-      height: 12px;
-    }
-    .float-pin-btn:active {
-      transform: scale(0.9);
-    }
-    .screen-live.floating .float-pin-btn {
-      display: flex;
-    }
+    .float-pin-btn svg { width: 12px; height: 12px; }
+    .float-pin-btn:active { transform: scale(0.9); }
+    .screen-live.floating .float-pin-btn { display: flex; }
 
     .float-resize {
       position: absolute;
@@ -1131,9 +1044,7 @@
       border-bottom: 2px solid rgba(255,255,255,0.75);
       border-radius: 0 0 3px 0;
     }
-    .screen-live.floating .float-resize {
-      display: block;
-    }
+    .screen-live.floating .float-resize { display: block; }
 
     @media (max-height: 700px) {
       .control-panel { padding: 8px 12px calc(8px + var(--safe-bottom)); gap: 8px; }
@@ -1153,7 +1064,7 @@
     <div class="video-area" id="videoArea">
 
       <div class="screen screen-live" id="liveScreen">
-        <span class="badge live" id="liveBadge">
+        <span class="badge live" id="liveBadge" style="display:none">
           <span class="dot"></span>
           <span id="liveBadgeText">LIVE</span>
         </span>
@@ -1196,7 +1107,6 @@
           </button>
         </div>
 
-        <!-- Floating mode UI -->
         <button class="float-pin-btn" id="btnFloatPin" type="button" title="Kembalikan ke split">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"/>
@@ -1211,22 +1121,22 @@
       </div>
 
       <div class="screen screen-upload" id="uploadScreen">
-        <span class="badge upload">
+        <span class="badge upload" id="uploadBadge">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="17 8 12 3 7 8"/>
             <line x1="12" y1="3" x2="12" y2="15"/>
           </svg>
-          UPLOAD
+          <span id="uploadBadgeText">UPLOAD</span>
         </span>
-        <video id="uploadVideo" playsinline preload="metadata"></video>
+        <video id="uploadVideo" playsinline preload="metadata" autoplay></video>
         <div class="placeholder" id="uploadPlaceholder">
           <svg viewBox="0 0 24 24">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="17 8 12 3 7 8"/>
             <line x1="12" y1="3" x2="12" y2="15"/>
           </svg>
-          <span>Upload video dari galeri HP<br>lalu geser / cubit untuk atur</span>
+          <span>Upload video dari galeri HP<br>atau klik "Layar" untuk rekam layar</span>
         </div>
 
         <div class="pan-hint" id="uploadHint">✋ Geser · cubit untuk zoom</div>
@@ -1270,7 +1180,7 @@
         </div>
       </div>
 
-    </div><!-- /video-area -->
+    </div>
 
     <div class="rec-badge" id="recBadge">
       <span class="rec-dot"></span>
@@ -1587,9 +1497,9 @@ const BG_GRADIENTS = {
    ============================================================ */
 const state = {
   stream: null, facingMode: 'user',
-  sourceType: 'camera',            // 'camera' | 'screen'
-  _screenTrack: null,              // track layar aktif (untuk deteksi berhenti)
-  _tempScreenSource: null,         // AudioNode sementara untuk audio layar
+  screenOnUpload: false,
+  _prevUpload: null,
+  _screenTrack: null,
   micStream: null, micEnabled: false,
   uploadReady: false, isRecording: false,
   audioCtx: null, micSource: null, uploadSource: null,
@@ -1604,24 +1514,14 @@ const state = {
     upload: { zoom: 1, panX: 0.5, panY: 0.5 }
   },
   previewBlob: null, previewUrl: null, previewMime: '',
-  bg: {
-    mode: 'off',
-    image: null
-  },
+  bg: { mode: 'off', image: null },
   ticker: {
-    text: '',
-    size: 24,
-    enabled: false,
-    speed: 100,
-    color: '#ffffff',
-    startTime: Date.now()
+    text: '', size: 24, enabled: false, speed: 100,
+    color: '#ffffff', startTime: Date.now()
   },
   floating: {
     enabled: false,
-    x: 0.62,
-    y: 0.06,
-    w: 0.32,
-    aspect: 9 / 16,
+    x: 0.62, y: 0.06, w: 0.32, aspect: 9 / 16,
     _px: 0, _py: 0, _pw: 0, _ph: 0
   }
 };
@@ -1668,6 +1568,8 @@ const bgImageInput      = $('bgImageInput');
 const bgInfoEl          = $('bgInfo');
 const liveBadge         = $('liveBadge');
 const liveBadgeText     = $('liveBadgeText');
+const uploadBadge       = $('uploadBadge');
+const uploadBadgeText   = $('uploadBadgeText');
 
 const btnPlayPause      = $('btnPlayPause');
 const btnBack           = $('btnBack');
@@ -1721,7 +1623,7 @@ const liveCanvas = $('liveCanvas');
 const liveCanvasCtx = liveCanvas.getContext('2d', { alpha: true, desynchronized: true });
 
 /* ============================================================
-   CONTROLLER TIAP LAYAR
+   CONTROLLER
    ============================================================ */
 const VIEW_CTRL = [
   {
@@ -1732,7 +1634,7 @@ const VIEW_CTRL = [
   {
     key: 'upload', screen: uploadScreen, video: uploadVideo,
     tools: $('uploadTools'), hint: $('uploadHint'),
-    isReady: () => state.uploadReady && uploadVideo.videoWidth > 0
+    isReady: () => (state.uploadReady || state.screenOnUpload) && uploadVideo.videoWidth > 0
   }
 ];
 const ctrlByKey = Object.fromEntries(VIEW_CTRL.map(c => [c.key, c]));
@@ -1753,18 +1655,13 @@ function updateDividerOrientation() {
 }
 
 function setAspectMode(mode) {
-  if (state.isRecording) {
-    showToast('Stop rekaman dulu untuk ganti rasio', 'error');
-    return;
-  }
+  if (state.isRecording) { showToast('Stop rekaman dulu untuk ganti rasio', 'error'); return; }
   state.aspectMode = mode;
   phoneFrame.classList.remove('mode-9-16', 'mode-16-9', 'mode-asli');
   phoneFrame.classList.add('mode-' + mode.replace(':', '-'));
-
   document.querySelectorAll('[data-aspect]').forEach(b => {
     b.classList.toggle('active', b.dataset.aspect === mode);
   });
-
   requestAnimationFrame(() => {
     updateDividerOrientation();
     applyQuality(state.quality);
@@ -1782,7 +1679,7 @@ function setAspectMode(mode) {
 }
 
 /* ============================================================
-   UPDATE LABEL TOMBOL EXPAND
+   LABELS
    ============================================================ */
 function updateExpandLabels() {
   if (expandSplitLabel) {
@@ -1814,9 +1711,7 @@ function updateSwapBtns() {
       ? 'Kembalikan: LIVE di atas, UPLOAD di bawah'
       : 'Tukar: UPLOAD di atas, LIVE di bawah';
   }
-  if (btnSwapFull) {
-    btnSwapFull.classList.toggle('active', state.swapped);
-  }
+  if (btnSwapFull) btnSwapFull.classList.toggle('active', state.swapped);
   if (swapFullText) {
     swapFullText.textContent = state.swapped
       ? 'Kembalikan Posisi Semula'
@@ -1830,13 +1725,11 @@ function updateFloatUI() {
       ? 'Kembalikan ke Split'
       : 'Aktifkan Mode Mengambang';
   }
-  if (btnToggleFloat) {
-    btnToggleFloat.classList.toggle('active', state.floating.enabled);
-  }
+  if (btnToggleFloat) btnToggleFloat.classList.toggle('active', state.floating.enabled);
 }
 
 /* ============================================================
-   ACCORDION HANDLER
+   ACCORDION
    ============================================================ */
 function closeAllExpand() {
   document.querySelectorAll('.expand-panel').forEach(p => p.classList.remove('open'));
@@ -1854,9 +1747,7 @@ document.querySelectorAll('.expand-btn').forEach(btn => {
     if (!wasOpen) {
       panel.classList.add('open');
       btn.classList.add('open');
-      if (key === 'ticker') {
-        setTimeout(() => tickerInput.focus(), 60);
-      }
+      if (key === 'ticker') setTimeout(() => tickerInput.focus(), 60);
     }
   });
 });
@@ -1869,42 +1760,26 @@ document.querySelectorAll('.expand-panel[data-panel-for="aspect"] [data-aspect]'
 });
 
 /* ============================================================
-   SWAP LIVE ↔ UPLOAD
+   SWAP
    ============================================================ */
 function swapScreens() {
-  if (state.isRecording) {
-    showToast('Stop rekaman dulu untuk tukar posisi', 'error');
-    return;
-  }
-  if (state.floating.enabled) {
-    showToast('Nonaktifkan mode mengambang dulu', 'error');
-    return;
-  }
-
+  if (state.isRecording) { showToast('Stop rekaman dulu untuk tukar posisi', 'error'); return; }
+  if (state.floating.enabled) { showToast('Nonaktifkan mode mengambang dulu', 'error'); return; }
   state.swapped = !state.swapped;
-
   const firstScreen = state.swapped ? uploadScreen : liveScreen;
   const secondScreen = state.swapped ? liveScreen : uploadScreen;
   firstScreen.style.order = '1';
   divider.style.order = '2';
   secondScreen.style.order = '3';
-
   const r = Math.min(MAX_SPLIT, Math.max(MIN_SPLIT, state.splitRatio));
   firstScreen.style.flex = `${r} 1 0`;
   secondScreen.style.flex = `${1 - r} 1 0`;
-
-  updateSplitPct();
-  updateSplitPresets();
-  updateExpandLabels();
+  updateSplitPct(); updateSplitPresets(); updateExpandLabels();
   requestAnimationFrame(applyAllViews);
-
   showToast(state.swapped
     ? '🔄 Ditukar: UPLOAD di atas, LIVE di bawah'
-    : '🔄 Dikembalikan: LIVE di atas, UPLOAD di bawah',
-    'success'
-  );
+    : '🔄 Dikembalikan: LIVE di atas, UPLOAD di bawah', 'success');
 }
-
 if (btnSwapScreens) btnSwapScreens.addEventListener('click', swapScreens);
 if (btnSwapFull) btnSwapFull.addEventListener('click', swapScreens);
 
@@ -1912,13 +1787,9 @@ if (btnSwapFull) btnSwapFull.addEventListener('click', swapScreens);
    FLOATING LIVE
    ============================================================ */
 function toggleFloating(force) {
-  if (state.isRecording) {
-    showToast('Stop rekaman dulu untuk ubah mode mengambang', 'error');
-    return;
-  }
+  if (state.isRecording) { showToast('Stop rekaman dulu untuk ubah mode mengambang', 'error'); return; }
   const next = typeof force === 'boolean' ? force : !state.floating.enabled;
   state.floating.enabled = next;
-
   if (next) {
     if (state.swapped) {
       state.swapped = false;
@@ -1931,21 +1802,15 @@ function toggleFloating(force) {
       state.floating.aspect = liveVideo.videoWidth / liveVideo.videoHeight;
     }
   }
-
   applyFloatingLayout();
   updateExpandLabels();
   updateFloatingSizePresets();
-
-  if (next) {
-    showToast('📌 Live mengambang — geser bebas, tarik sudut untuk ukuran', 'success');
-  } else {
-    showToast('Live kembali ke mode split');
-  }
+  if (next) showToast('📌 Live mengambang — geser bebas, tarik sudut untuk ukuran', 'success');
+  else showToast('Live kembali ke mode split');
 }
 
 function applyFloatingLayout() {
   const f = state.floating;
-
   if (!f.enabled) {
     liveScreen.classList.remove('floating');
     liveScreen.style.position = '';
@@ -1961,19 +1826,14 @@ function applyFloatingLayout() {
     });
     return;
   }
-
   liveScreen.classList.add('floating');
   divider.style.display = 'none';
-
   uploadScreen.style.order = '1';
   uploadScreen.style.flex = '1 1 0';
-
   liveScreen.style.order = '2';
   liveScreen.style.flex = 'none';
   liveScreen.style.position = 'absolute';
-
   updateFloatingPosition();
-
   requestAnimationFrame(() => {
     applyView(ctrlByKey.live);
     applyView(ctrlByKey.upload);
@@ -1983,48 +1843,30 @@ function applyFloatingLayout() {
 function updateFloatingPosition() {
   const f = state.floating;
   if (!f.enabled) return;
-
   const aw = videoArea.clientWidth;
   const ah = videoArea.clientHeight;
   if (!aw || !ah) return;
-
   if (liveVideo.videoWidth && liveVideo.videoHeight) {
     f.aspect = liveVideo.videoWidth / liveVideo.videoHeight;
   }
-
   let w = f.w * aw;
   let h = w / f.aspect;
-
-  if (h > ah * 0.92) {
-    h = ah * 0.92;
-    w = h * f.aspect;
-  }
-  if (w > aw * 0.85) {
-    w = aw * 0.85;
-    h = w / f.aspect;
-  }
-
+  if (h > ah * 0.92) { h = ah * 0.92; w = h * f.aspect; }
+  if (w > aw * 0.85) { w = aw * 0.85; h = w / f.aspect; }
   const maxX = Math.max(0, aw - w);
   const maxY = Math.max(0, ah - h);
   let x = f.x * aw;
   let y = f.y * ah;
   x = Math.max(0, Math.min(maxX, x));
   y = Math.max(0, Math.min(maxY, y));
-
-  f._px = x;
-  f._py = y;
-  f._pw = w;
-  f._ph = h;
-
+  f._px = x; f._py = y; f._pw = w; f._ph = h;
   liveScreen.style.left = x + 'px';
   liveScreen.style.top = y + 'px';
   liveScreen.style.width = w + 'px';
   liveScreen.style.height = h + 'px';
-
   applyView(ctrlByKey.live);
 }
 
-/* Drag & resize handler untuk floating */
 let floatDrag = null;
 let floatResizeState = null;
 
@@ -2032,42 +1874,28 @@ liveScreen.addEventListener('pointerdown', (e) => {
   if (!state.floating.enabled) return;
   if (state.isRecording) return;
   if (e.button !== undefined && e.button !== 0 && e.pointerType === 'mouse') return;
-
   if (e.target.closest('#btnFloatPin')) return;
-
   const aw = videoArea.clientWidth;
   const ah = videoArea.clientHeight;
 
   if (e.target.closest('#floatResize') || e.target.closest('.float-resize')) {
     const f = state.floating;
     floatResizeState = {
-      pointerId: e.pointerId,
-      startX: e.clientX,
-      startY: e.clientY,
-      startPX: f._px,
-      startPY: f._py,
-      startPW: f._pw,
-      startPH: f._ph,
-      aspect: f.aspect
+      pointerId: e.pointerId, startX: e.clientX, startY: e.clientY,
+      startPX: f._px, startPY: f._py, startPW: f._pw, startPH: f._ph, aspect: f.aspect
     };
     try { liveScreen.setPointerCapture(e.pointerId); } catch(_) {}
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     return;
   }
-
   const f = state.floating;
   floatDrag = {
-    pointerId: e.pointerId,
-    startX: e.clientX,
-    startY: e.clientY,
-    startPX: f._px,
-    startPY: f._py
+    pointerId: e.pointerId, startX: e.clientX, startY: e.clientY,
+    startPX: f._px, startPY: f._py
   };
   try { liveScreen.setPointerCapture(e.pointerId); } catch(_) {}
   liveScreen.classList.add('grabbing');
-  e.preventDefault();
-  e.stopPropagation();
+  e.preventDefault(); e.stopPropagation();
 });
 
 liveScreen.addEventListener('pointermove', (e) => {
@@ -2082,59 +1910,38 @@ liveScreen.addEventListener('pointermove', (e) => {
     let y = floatDrag.startPY + dy;
     x = Math.max(0, Math.min(aw - f._pw, x));
     y = Math.max(0, Math.min(ah - f._ph, y));
-    f._px = x;
-    f._py = y;
-    f.x = x / aw;
-    f.y = y / ah;
+    f._px = x; f._py = y;
+    f.x = x / aw; f.y = y / ah;
     liveScreen.style.left = x + 'px';
     liveScreen.style.top = y + 'px';
     e.preventDefault();
     return;
   }
-
   if (floatResizeState && e.pointerId === floatResizeState.pointerId) {
     const dx = e.clientX - floatResizeState.startX;
     const dy = e.clientY - floatResizeState.startY;
-
-    let deltaW;
-    if (Math.abs(dx) >= Math.abs(dy)) deltaW = dx;
-    else deltaW = dy * floatResizeState.aspect;
-
+    let deltaW = Math.abs(dx) >= Math.abs(dy) ? dx : dy * floatResizeState.aspect;
     let newW = floatResizeState.startPW + deltaW;
     const minW = Math.min(80, aw * 0.2);
     const maxW = aw * 0.8;
     newW = Math.max(minW, Math.min(maxW, newW));
     let newH = newW / floatResizeState.aspect;
-
     if (floatResizeState.startPY + newH > ah) {
       newH = ah - floatResizeState.startPY;
       newW = newH * floatResizeState.aspect;
     }
-    if (newW < minW) {
-      newW = minW;
-      newH = newW / floatResizeState.aspect;
-    }
-
+    if (newW < minW) { newW = minW; newH = newW / floatResizeState.aspect; }
     let x = floatResizeState.startPX;
     let y = floatResizeState.startPY;
     if (x + newW > aw) x = aw - newW;
     if (y + newH > ah) y = ah - newH;
-    x = Math.max(0, x);
-    y = Math.max(0, y);
-
-    f._px = x;
-    f._py = y;
-    f._pw = newW;
-    f._ph = newH;
-    f.w = newW / aw;
-    f.x = x / aw;
-    f.y = y / ah;
-
+    x = Math.max(0, x); y = Math.max(0, y);
+    f._px = x; f._py = y; f._pw = newW; f._ph = newH;
+    f.w = newW / aw; f.x = x / aw; f.y = y / ah;
     liveScreen.style.left = x + 'px';
     liveScreen.style.top = y + 'px';
     liveScreen.style.width = newW + 'px';
     liveScreen.style.height = newH + 'px';
-
     applyView(ctrlByKey.live);
     e.preventDefault();
   }
@@ -2153,16 +1960,11 @@ function endFloatDrag(e) {
     updateFloatingSizePresets();
   }
 }
-
 liveScreen.addEventListener('pointerup', endFloatDrag);
 liveScreen.addEventListener('pointercancel', endFloatDrag);
 liveScreen.addEventListener('lostpointercapture', endFloatDrag);
 
-btnFloatPin.addEventListener('click', (e) => {
-  e.stopPropagation();
-  toggleFloating(false);
-});
-
+btnFloatPin.addEventListener('click', (e) => { e.stopPropagation(); toggleFloating(false); });
 btnToggleFloat.addEventListener('click', () => toggleFloating());
 
 document.querySelectorAll('[data-float-size]').forEach(b => {
@@ -2179,8 +1981,7 @@ document.querySelectorAll('[data-float-size]').forEach(b => {
 function updateFloatingSizePresets() {
   document.querySelectorAll('[data-float-size]').forEach(b => {
     const v = parseFloat(b.dataset.floatSize);
-    const match = Math.abs(v - state.floating.w) < 0.04;
-    b.classList.toggle('active', match);
+    b.classList.toggle('active', Math.abs(v - state.floating.w) < 0.04);
   });
 }
 
@@ -2190,11 +1991,9 @@ document.querySelectorAll('[data-float-pos]').forEach(b => {
     const aw = videoArea.clientWidth;
     const ah = videoArea.clientHeight;
     if (!aw || !ah) return;
-
     const pw = f._pw || (f.w * aw);
     const ph = f._ph || (pw / f.aspect);
     const margin = Math.min(aw, ah) * 0.03;
-
     let x, y;
     switch (b.dataset.floatPos) {
       case 'tl': x = margin; y = margin; break;
@@ -2203,15 +2002,10 @@ document.querySelectorAll('[data-float-pos]').forEach(b => {
       case 'br': x = aw - pw - margin; y = ah - ph - margin; break;
       case 'center': default: x = (aw - pw) / 2; y = (ah - ph) / 2; break;
     }
-
     x = Math.max(0, Math.min(aw - pw, x));
     y = Math.max(0, Math.min(ah - ph, y));
-
-    f.x = x / aw;
-    f.y = y / ah;
-    f._px = x;
-    f._py = y;
-
+    f.x = x / aw; f.y = y / ah;
+    f._px = x; f._py = y;
     if (state.floating.enabled) {
       liveScreen.style.left = x + 'px';
       liveScreen.style.top = y + 'px';
@@ -2238,38 +2032,30 @@ function applyView(ctrl) {
   const vs = state.views[ctrl.key];
   const info = getFitInfo(ctrl.video, ctrl.screen);
   if (!info) return;
-
   const { vw, vh, cw, ch, s0 } = info;
   const z = clamp(vs.zoom, MIN_ZOOM, MAX_ZOOM);
   const W = vw * s0 * z;
   const H = vh * s0 * z;
   const left = -vs.panX * (W - cw);
   const top  = -vs.panY * (H - ch);
-
   ctrl.video.style.width  = W.toFixed(2) + 'px';
   ctrl.video.style.height = H.toFixed(2) + 'px';
   ctrl.video.style.left   = left.toFixed(2) + 'px';
   ctrl.video.style.top    = top.toFixed(2) + 'px';
-
   if (ctrl.key === 'live') {
     liveCanvas.style.width  = W.toFixed(2) + 'px';
     liveCanvas.style.height = H.toFixed(2) + 'px';
     liveCanvas.style.left   = left.toFixed(2) + 'px';
     liveCanvas.style.top    = top.toFixed(2) + 'px';
   }
-
   if (ctrl.zoomLabel) ctrl.zoomLabel.textContent = z.toFixed(1) + '×';
 }
 
-function applyAllViews() {
-  VIEW_CTRL.forEach(applyView);
-}
+function applyAllViews() { VIEW_CTRL.forEach(applyView); }
 
 function resetView(ctrl, silent = false) {
   const vs = state.views[ctrl.key];
-  vs.zoom = 1;
-  vs.panX = 0.5;
-  vs.panY = 0.5;
+  vs.zoom = 1; vs.panX = 0.5; vs.panY = 0.5;
   applyView(ctrl);
   updateGridActive(ctrl);
   if (!silent) showToast('↺ Tampilan direset ke tengah');
@@ -2285,14 +2071,12 @@ function updateGridActive(ctrl) {
     const px = parseFloat(b.dataset.px);
     const py = parseFloat(b.dataset.py);
     b.classList.toggle('active',
-      Math.abs(px - vs.panX) < 0.02 && Math.abs(py - vs.panY) < 0.02
-    );
+      Math.abs(px - vs.panX) < 0.02 && Math.abs(py - vs.panY) < 0.02);
   });
 }
 
 function initTools(ctrl) {
   if (!ctrl.tools) return;
-
   const panel  = ctrl.tools.querySelector('[data-panel]');
   const grid   = ctrl.tools.querySelector('[data-grid]');
   const toggle = ctrl.tools.querySelector('[data-toggle]');
@@ -2302,14 +2086,12 @@ function initTools(ctrl) {
     [0, 0.5, 1].forEach(px => {
       const b = document.createElement('button');
       b.type = 'button';
-      b.dataset.px = px;
-      b.dataset.py = py;
+      b.dataset.px = px; b.dataset.py = py;
       b.title = `Posisi ${Math.round(px * 100)}% / ${Math.round(py * 100)}%`;
       b.addEventListener('click', (e) => {
         e.stopPropagation();
         const vs = state.views[ctrl.key];
-        vs.panX = px;
-        vs.panY = py;
+        vs.panX = px; vs.panY = py;
         applyView(ctrl);
         updateGridActive(ctrl);
       });
@@ -2373,28 +2155,20 @@ function setupGestures(ctrl) {
     if (state.floating.enabled) return;
     if (!ctrl.isReady()) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
-
     pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
     try { el.setPointerCapture(e.pointerId); } catch (_) {}
-
     if (pts.size === 1) {
       const vs = state.views[ctrl.key];
       gesture = {
-        type: 'pan',
-        startX: e.clientX, startY: e.clientY,
+        type: 'pan', startX: e.clientX, startY: e.clientY,
         baseX: vs.panX, baseY: vs.panY,
         time: Date.now(), moved: false
       };
     } else if (pts.size === 2) {
       const arr = [...pts.values()];
       const d = Math.hypot(arr[0].x - arr[1].x, arr[0].y - arr[1].y);
-      gesture = {
-        type: 'pinch',
-        startDist: Math.max(1, d),
-        baseZoom: state.views[ctrl.key].zoom
-      };
+      gesture = { type: 'pinch', startDist: Math.max(1, d), baseZoom: state.views[ctrl.key].zoom };
     }
-
     el.classList.add('grabbing');
     hideHint(ctrl);
     e.preventDefault();
@@ -2403,34 +2177,27 @@ function setupGestures(ctrl) {
   el.addEventListener('pointermove', (e) => {
     if (!pts.has(e.pointerId) || !gesture) return;
     pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
     const vs = state.views[ctrl.key];
-
     if (gesture.type === 'pan' && pts.size === 1) {
       const dx = e.clientX - gesture.startX;
       const dy = e.clientY - gesture.startY;
       if (Math.abs(dx) > 3 || Math.abs(dy) > 3) gesture.moved = true;
-
       const info = getFitInfo(el, ctrl.screen);
       if (!info) return;
       const W = info.vw * info.s0 * vs.zoom;
       const H = info.vh * info.s0 * vs.zoom;
       const maxX = W - info.cw;
       const maxY = H - info.ch;
-
       if (maxX > 0.5) vs.panX = clamp01(gesture.baseX - dx / maxX);
       if (maxY > 0.5) vs.panY = clamp01(gesture.baseY - dy / maxY);
-
       applyView(ctrl);
       updateGridActive(ctrl);
-
     } else if (gesture.type === 'pinch' && pts.size === 2) {
       const arr = [...pts.values()];
       const d = Math.hypot(arr[0].x - arr[1].x, arr[0].y - arr[1].y);
       vs.zoom = clamp(gesture.baseZoom * (d / gesture.startDist), MIN_ZOOM, MAX_ZOOM);
       applyView(ctrl);
     }
-
     e.preventDefault();
   });
 
@@ -2439,23 +2206,13 @@ function setupGestures(ctrl) {
     const wasPan = gesture && gesture.type === 'pan';
     const moved  = gesture && gesture.moved;
     const time   = gesture && gesture.time;
-
     pts.delete(e.pointerId);
     try { el.releasePointerCapture(e.pointerId); } catch (_) {}
-
-    if (pts.size === 0) {
-      gesture = null;
-      el.classList.remove('grabbing');
-    }
-
+    if (pts.size === 0) { gesture = null; el.classList.remove('grabbing'); }
     if (wasPan && !moved && Date.now() - time < 300) {
       const now = Date.now();
-      if (now - lastTap < 320) {
-        resetView(ctrl);
-        lastTap = 0;
-      } else {
-        lastTap = now;
-      }
+      if (now - lastTap < 320) { resetView(ctrl); lastTap = 0; }
+      else lastTap = now;
     }
   };
 
@@ -2510,9 +2267,7 @@ async function loadSelfieSegmentation() {
         document.head.appendChild(s);
       });
     }
-    if (typeof SelfieSegmentation === 'undefined') {
-      throw new Error('SelfieSegmentation tidak tersedia');
-    }
+    if (typeof SelfieSegmentation === 'undefined') throw new Error('SelfieSegmentation tidak tersedia');
     selfieSeg = new SelfieSegmentation({
       locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/${file}`
     });
@@ -2527,8 +2282,7 @@ async function loadSelfieSegmentation() {
 }
 
 function onSegResults(results) {
-  const w = liveCanvas.width;
-  const h = liveCanvas.height;
+  const w = liveCanvas.width, h = liveCanvas.height;
   if (!w || !h) return;
   const ctx = liveCanvasCtx;
   ctx.save();
@@ -2544,16 +2298,11 @@ function onSegResults(results) {
 let _blurCanvas = null;
 function drawBgToCtx(ctx, w, h) {
   const bg = state.bg;
-  if (bg.mode === 'off') {
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, w, h);
-    return;
-  }
+  if (bg.mode === 'off') { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, w, h); return; }
   if (bg.mode === 'blur') {
     if (!_blurCanvas) _blurCanvas = document.createElement('canvas');
     if (_blurCanvas.width !== w || _blurCanvas.height !== h) {
-      _blurCanvas.width = w;
-      _blurCanvas.height = h;
+      _blurCanvas.width = w; _blurCanvas.height = h;
     }
     const bx = _blurCanvas.getContext('2d');
     bx.filter = 'blur(22px)';
@@ -2572,14 +2321,11 @@ function drawBgToCtx(ctx, w, h) {
   if (BG_GRADIENTS[bg.mode]) {
     const [c1, c2] = BG_GRADIENTS[bg.mode];
     const g = ctx.createLinearGradient(0, 0, w, h);
-    g.addColorStop(0, c1);
-    g.addColorStop(1, c2);
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, w, h);
+    g.addColorStop(0, c1); g.addColorStop(1, c2);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
     return;
   }
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, w, h);
 }
 
 function startSegLoop() {
@@ -2595,42 +2341,29 @@ function startSegLoop() {
   tick();
 }
 
-function stopSegLoop() {
-  segLoopRunning = false;
-}
+function stopSegLoop() { segLoopRunning = false; }
 
 async function setBgMode(mode) {
   state.bg.mode = mode;
   updateBgBtnState();
-
   if (mode === 'off') {
     stopSegLoop();
     liveCanvas.style.display = 'none';
     showToast('Background dinonaktifkan');
     return;
   }
-
   if (!state.stream || !liveVideo.videoWidth) {
     showToast('Aktifkan kamera dulu', 'error');
     state.bg.mode = 'off';
     updateBgBtnState();
     return;
   }
-
-  if (state.sourceType === 'screen') {
-    showToast('Background hanya untuk kamera, bukan rekam layar', 'error');
-    state.bg.mode = 'off';
-    updateBgBtnState();
-    return;
-  }
-
   liveCanvas.style.display = 'block';
   if (liveCanvas.width !== liveVideo.videoWidth) {
     liveCanvas.width = liveVideo.videoWidth;
     liveCanvas.height = liveVideo.videoHeight;
   }
   applyView(ctrlByKey.live);
-
   if (!segReady) {
     showLoader('Memuat model background...');
     const ok = await loadSelfieSegmentation();
@@ -2643,7 +2376,6 @@ async function setBgMode(mode) {
       return;
     }
   }
-
   startSegLoop();
   showToast('✨ Background aktif', 'success');
 }
@@ -2684,10 +2416,7 @@ bgImageInput.addEventListener('change', (e) => {
   if (!file) return;
   if (!file.type.startsWith('image/')) { showToast('File harus berupa gambar', 'error'); return; }
   const img = new Image();
-  img.onload = () => {
-    state.bg.image = img;
-    setBgMode('image');
-  };
+  img.onload = () => { state.bg.image = img; setBgMode('image'); };
   img.onerror = () => showToast('Gagal memuat gambar', 'error');
   img.src = URL.createObjectURL(file);
 });
@@ -2702,11 +2431,9 @@ function applyQuality(q) {
   const p = QUALITY_PRESETS[q];
   state.quality = q;
   qualityLabel.textContent = p.label;
-
   const mode = state.aspectMode;
   const aw = videoArea.clientWidth || 1;
   const ah = videoArea.clientHeight || 1;
-
   if (mode === '9:16') {
     canvas.width = p.w;
     canvas.height = Math.round((p.w * 16 / 9) / 2) * 2;
@@ -2726,28 +2453,22 @@ function applyQuality(q) {
 }
 
 /* ============================================================
-   SPLIT SCREEN
+   SPLIT
    ============================================================ */
 function applySplitToLayout() {
   if (state.floating.enabled) {
-    updateSplitPct();
-    updateSplitPresets();
-    updateExpandLabels();
+    updateSplitPct(); updateSplitPresets(); updateExpandLabels();
     return;
   }
   const r = Math.min(MAX_SPLIT, Math.max(MIN_SPLIT, state.splitRatio));
   state.splitRatio = r;
-
   const firstScreen  = state.swapped ? uploadScreen : liveScreen;
   const secondScreen = state.swapped ? liveScreen : uploadScreen;
-
   firstScreen.style.order  = '1';
   divider.style.order      = '2';
   secondScreen.style.order = '3';
-
   firstScreen.style.flex   = `${r} 1 0`;
   secondScreen.style.flex  = `${1 - r} 1 0`;
-
   updateSplitPct();
   updateSplitPresets();
   updateExpandLabels();
@@ -2756,8 +2477,7 @@ function applySplitToLayout() {
 
 function updateSplitPct() {
   const first = Math.round(state.splitRatio * 100);
-  const second = 100 - first;
-  splitPct.textContent = `${first}% / ${second}%`;
+  splitPct.textContent = `${first}% / ${100 - first}%`;
 }
 
 function updateSplitPresets() {
@@ -2776,12 +2496,8 @@ function onDivDown(e) {
   const total = landscape ? videoArea.clientWidth : videoArea.clientHeight;
   if (total <= 0) return;
   splitDrag = {
-    pointerId: e.pointerId,
-    startX: e.clientX,
-    startY: e.clientY,
-    startSplit: state.splitRatio,
-    total,
-    landscape
+    pointerId: e.pointerId, startX: e.clientX, startY: e.clientY,
+    startSplit: state.splitRatio, total, landscape
   };
   try { divider.setPointerCapture(e.pointerId); } catch (_) {}
   divider.classList.add('dragging');
@@ -2823,9 +2539,7 @@ divider.addEventListener('pointerup', () => {
     applySplitToLayout();
     showToast('⚖️ Split direset 50% / 50%');
     divLastTap = 0;
-  } else {
-    divLastTap = now;
-  }
+  } else divLastTap = now;
 });
 
 document.querySelectorAll('[data-split]').forEach(b => {
@@ -2842,7 +2556,7 @@ document.querySelectorAll('[data-aspect]').forEach(b => {
 });
 
 /* ============================================================
-   DRAW KE CANVAS REKAMAN
+   DRAW KE CANVAS
    ============================================================ */
 function roundRectPath(c, x, y, w, h, r) {
   r = Math.min(r, w / 2, h / 2);
@@ -2857,57 +2571,42 @@ function roundRectPath(c, x, y, w, h, r) {
 
 function drawVideoCover(source, viewState, dx, dy, dw, dh) {
   if (dw <= 0 || dh <= 0) return;
-
   const vw = source.videoWidth || source.width || 0;
   const vh = source.videoHeight || source.height || 0;
-  if (!vw || !vh) {
-    ctx.fillStyle = '#0d0d0f';
-    ctx.fillRect(dx, dy, dw, dh);
-    return;
-  }
-
+  if (!vw || !vh) { ctx.fillStyle = '#0d0d0f'; ctx.fillRect(dx, dy, dw, dh); return; }
   const s0 = Math.max(dw / vw, dh / vh);
   const z  = clamp(viewState.zoom, MIN_ZOOM, MAX_ZOOM);
   const sw = dw / (s0 * z);
   const sh = dh / (s0 * z);
   const sx = viewState.panX * (vw - sw);
   const sy = viewState.panY * (vh - sh);
-
   try { ctx.drawImage(source, sx, sy, sw, sh, dx, dy, dw, dh); } catch (e) {}
 }
 
 function drawTickerOnCanvas(W, H) {
   if (!state.ticker.enabled || !state.ticker.text) return;
-
   const refDim = Math.min(W, H);
   const fontSize = Math.max(8, Math.round(state.ticker.size * (refDim / 720)));
   const barPad = Math.round(fontSize * 0.4);
   const barH = fontSize + barPad * 2;
   const barY = H - barH;
-
   ctx.fillStyle = 'rgba(0,0,0,0.7)';
   ctx.fillRect(0, barY, W, barH);
-
   ctx.save();
   ctx.font = `800 ${fontSize}px -apple-system, system-ui, sans-serif`;
   ctx.fillStyle = state.ticker.color;
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'left';
-
   const textW = ctx.measureText(state.ticker.text).width;
   if (textW <= 0) { ctx.restore(); return; }
-
   const gap = fontSize * 2;
   const tG = textW + gap;
   const speed = state.ticker.speed * (refDim / 720);
   const elapsed = (Date.now() - state.ticker.startTime) / 1000;
   const x0 = -((elapsed * speed) % tG);
-
   let x = x0;
   while (x < W) {
-    if (x + textW > 0) {
-      ctx.fillText(state.ticker.text, x, barY + barH / 2);
-    }
+    if (x + textW > 0) ctx.fillText(state.ticker.text, x, barY + barH / 2);
     x += tG;
   }
   ctx.restore();
@@ -2917,7 +2616,6 @@ function drawSplitLayout(W, H) {
   const landscape = isLandscapeMode();
   const liveSource = (state.bg.mode !== 'off' && liveCanvas.width > 0)
     ? liveCanvas : liveVideo;
-
   const firstSource = state.swapped ? uploadVideo  : liveSource;
   const firstView   = state.swapped ? state.views.upload : state.views.live;
   const secondSource= state.swapped ? liveSource   : uploadVideo;
@@ -2940,28 +2638,17 @@ function drawSplitLayout(W, H) {
 
 function drawFloatingLayout(W, H) {
   drawVideoCover(uploadVideo, state.views.upload, 0, 0, W, H);
-
   const f = state.floating;
   const aw = videoArea.clientWidth || 1;
   const ah = videoArea.clientHeight || 1;
-
   const liveSource = (state.bg.mode !== 'off' && liveCanvas.width > 0)
     ? liveCanvas : liveVideo;
-
   const fx = (f._px / aw) * W;
   const fy = (f._py / ah) * H;
   let fw = (f._pw / aw) * W;
   let fh = fw / f.aspect;
-
-  if (fy + fh > H) {
-    fh = H - fy;
-    fw = fh * f.aspect;
-  }
-  if (fx + fw > W) {
-    fw = W - fx;
-    fh = fw / f.aspect;
-  }
-
+  if (fy + fh > H) { fh = H - fy; fw = fh * f.aspect; }
+  if (fx + fw > W) { fw = W - fx; fh = fw / f.aspect; }
   if (fw > 4 && fh > 4) {
     const radius = Math.min(fw, fh) * 0.08;
     ctx.save();
@@ -2969,7 +2656,6 @@ function drawFloatingLayout(W, H) {
     ctx.clip();
     drawVideoCover(liveSource, state.views.live, fx, fy, fw, fh);
     ctx.restore();
-
     ctx.strokeStyle = 'rgba(255,255,255,0.55)';
     ctx.lineWidth = Math.max(2, Math.round(W / 400));
     roundRectPath(ctx, fx, fy, fw, fh, radius);
@@ -2981,16 +2667,10 @@ function startDrawLoop() {
   if (state.drawRAF) return;
   const tick = () => {
     const W = canvas.width, H = canvas.height;
-
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, W, H);
-
-    if (state.floating.enabled) {
-      drawFloatingLayout(W, H);
-    } else {
-      drawSplitLayout(W, H);
-    }
-
+    if (state.floating.enabled) drawFloatingLayout(W, H);
+    else drawSplitLayout(W, H);
     drawTickerOnCanvas(W, H);
     state.drawRAF = requestAnimationFrame(tick);
   };
@@ -3014,31 +2694,24 @@ function updateTickerDOM() {
     return;
   }
   tickerOverlay.classList.add('show');
-
   const aw = videoArea.clientWidth || 1;
   const ah = videoArea.clientHeight || 1;
   const refDim = Math.min(aw, ah);
   const fontSize = Math.max(8, Math.round(state.ticker.size * (refDim / 720)));
   const barH = fontSize + Math.round(fontSize * 0.8);
-
   tickerOverlay.style.height = barH + 'px';
   tickerOverlay.style.fontSize = fontSize + 'px';
   document.documentElement.style.setProperty('--ticker-offset', barH + 'px');
-
   const items = tickerTrack.querySelectorAll('.ticker-item');
   items.forEach(el => el.textContent = state.ticker.text);
-
   if (!items.length) return;
-
   const textW = items[0].offsetWidth;
   if (textW <= 0) return;
-
   const gap = fontSize * 2;
   const tG = textW + gap;
   const speed = state.ticker.speed * (refDim / 720);
   const elapsed = (Date.now() - state.ticker.startTime) / 1000;
   const x0 = -((elapsed * speed) % tG);
-
   const needed = Math.ceil(aw / tG) + 2;
   while (tickerTrack.children.length < needed) {
     const el = document.createElement('span');
@@ -3046,7 +2719,6 @@ function updateTickerDOM() {
     el.textContent = state.ticker.text;
     tickerTrack.appendChild(el);
   }
-
   const allItems = tickerTrack.querySelectorAll('.ticker-item');
   for (let i = 0; i < allItems.length; i++) {
     allItems[i].style.transform = `translate(${x0 + i * tG}px, -50%)`;
@@ -3055,10 +2727,7 @@ function updateTickerDOM() {
 
 function startTickerDOMLoop() {
   if (tickerRAFId) return;
-  const tick = () => {
-    updateTickerDOM();
-    tickerRAFId = requestAnimationFrame(tick);
-  };
+  const tick = () => { updateTickerDOM(); tickerRAFId = requestAnimationFrame(tick); };
   tick();
 }
 
@@ -3073,22 +2742,16 @@ function setTickerEnabled(on) {
   tickerToggle.classList.toggle('active', on);
   tickerToggle.innerHTML = on ? ICON_TICKER_OFF : ICON_TICKER_ON;
   updateTickerDOM();
-  if (on) {
-    startTickerDOMLoop();
-    showToast('📝 Ticker aktif', 'success');
-  } else {
-    stopTickerDOMLoop();
-    showToast('Ticker dimatikan');
-  }
+  if (on) { startTickerDOMLoop(); showToast('📝 Ticker aktif', 'success'); }
+  else { stopTickerDOMLoop(); showToast('Ticker dimatikan'); }
   updateExpandLabels();
 }
 
 tickerInput.addEventListener('input', (e) => {
   state.ticker.text = e.target.value.trim();
   state.ticker.startTime = Date.now();
-  if (state.ticker.text && !state.ticker.enabled) {
-    setTickerEnabled(true);
-  } else {
+  if (state.ticker.text && !state.ticker.enabled) setTickerEnabled(true);
+  else {
     updateTickerDOM();
     if (state.ticker.enabled) startTickerDOMLoop();
     updateExpandLabels();
@@ -3145,6 +2808,18 @@ function showLoader(text = 'Memproses...') {
 function hideLoader() { loader.classList.remove('show'); }
 
 /* ============================================================
+   BADGE HELPERS
+   ============================================================ */
+function setUploadBadge(text, isScreen) {
+  if (uploadBadgeText) uploadBadgeText.textContent = text;
+  if (uploadBadge) uploadBadge.classList.toggle('screen', !!isScreen);
+}
+
+function updateLiveBadgeVisibility() {
+  if (liveBadge) liveBadge.style.display = state.stream ? '' : 'none';
+}
+
+/* ============================================================
    PLAYBACK
    ============================================================ */
 function updatePlayPauseIcon() {
@@ -3158,6 +2833,7 @@ function updateProgressBar() {
 }
 
 async function togglePlayPause() {
+  if (state.screenOnUpload) { showToast('Mode rekam layar aktif — playback tidak tersedia', 'error'); return; }
   if (!state.uploadReady) { showToast('Upload video dulu', 'error'); return; }
   ensureAudioCtx();
   if (uploadVideo.paused) {
@@ -3165,12 +2841,11 @@ async function togglePlayPause() {
     uploadVideo.muted = false;
     try { await uploadVideo.play(); }
     catch (err) { showToast('Gagal play: ' + err.message, 'error'); }
-  } else {
-    uploadVideo.pause();
-  }
+  } else uploadVideo.pause();
 }
 
 function seekBack() {
+  if (state.screenOnUpload) { showToast('Mode rekam layar aktif', 'error'); return; }
   if (!state.uploadReady) return;
   uploadVideo.currentTime = Math.max(0, uploadVideo.currentTime - SEEK_STEP);
   updateProgressBar();
@@ -3178,6 +2853,7 @@ function seekBack() {
 }
 
 function seekNext() {
+  if (state.screenOnUpload) { showToast('Mode rekam layar aktif', 'error'); return; }
   if (!state.uploadReady) return;
   const dur = uploadVideo.duration || 0;
   uploadVideo.currentTime = Math.min(dur, uploadVideo.currentTime + SEEK_STEP);
@@ -3186,6 +2862,7 @@ function seekNext() {
 }
 
 function stopVideo() {
+  if (state.screenOnUpload) { showToast('Mode rekam layar aktif', 'error'); return; }
   if (!state.uploadReady) return;
   uploadVideo.pause();
   uploadVideo.currentTime = 0;
@@ -3204,6 +2881,7 @@ uploadVideo.addEventListener('timeupdate', updateProgressBar);
 uploadVideo.addEventListener('loadedmetadata', updateProgressBar);
 
 uploadVideo.addEventListener('ended', () => {
+  if (state.screenOnUpload) return;
   updatePlayPauseIcon();
   updateProgressBar();
   if (AUTO_STOP_ON_UPLOAD_END && state.isRecording) {
@@ -3221,6 +2899,7 @@ uploadVideo.addEventListener('ended', () => {
 });
 
 videoProgress.addEventListener('click', (e) => {
+  if (state.screenOnUpload) return;
   if (!state.uploadReady) return;
   const rect = videoProgress.getBoundingClientRect();
   const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
@@ -3236,32 +2915,21 @@ videoProgress.addEventListener('click', (e) => {
 async function startCamera(silent = false) {
   try {
     if (!navigator.mediaDevices?.getUserMedia) throw new Error('Browser tidak mendukung kamera.');
-
-    // Ambil stream baru DULU (agar jika user cancel, stream lama tetap jalan)
     const camStream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: state.facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
       audio: false
     });
-
-    // Berhasil → hentikan stream lama
     if (state.stream) state.stream.getTracks().forEach(t => t.stop());
-    state._screenTrack = null;
-    state._tempScreenSource = null;
-    state.sourceType = 'camera';
-
     state.stream = camStream;
     liveVideo.srcObject = state.stream;
     livePlaceholder.classList.add('hidden');
     btnSwitchCam.classList.remove('hidden');
     btnStartCam.classList.add('active');
-    btnScreen.classList.remove('active');
-    setLiveBadge('LIVE', false);
-
+    updateLiveBadgeVisibility();
     const c = ctrlByKey.live;
     if (c.tools) c.tools.classList.remove('hidden');
     resetView(c, true);
     showHint(c);
-
     liveVideo.addEventListener('loadedmetadata', () => {
       if (liveVideo.videoWidth) {
         liveCanvas.width = liveVideo.videoWidth;
@@ -3270,12 +2938,10 @@ async function startCamera(silent = false) {
         if (state.floating.enabled) updateFloatingPosition();
       }
     }, { once: true });
-
     if (state.bg.mode !== 'off' && segReady) {
       liveCanvas.style.display = 'block';
       startSegLoop();
     }
-
     if (!silent) showToast('Kamera aktif', 'success');
     return true;
   } catch (err) {
@@ -3285,7 +2951,7 @@ async function startCamera(silent = false) {
 }
 
 /* ============================================================
-   REKAM LAYAR (SCREEN CAPTURE)
+   REKAM LAYAR — FIXED: play() agar tampil
    ============================================================ */
 async function startScreenCapture(silent = false) {
   try {
@@ -3294,7 +2960,6 @@ async function startScreenCapture(silent = false) {
       return false;
     }
 
-    // Coba ambil dengan audio (tab audio). Fallback ke video-only bila gagal.
     let screenStream = null;
     try {
       screenStream = await navigator.mediaDevices.getDisplayMedia({
@@ -3302,62 +2967,101 @@ async function startScreenCapture(silent = false) {
         audio: true
       });
     } catch (eAudio) {
-      if (eAudio.name === 'NotAllowedError') throw eAudio; // user cancel
-      // Coba tanpa audio
+      if (eAudio.name === 'NotAllowedError') throw eAudio;
       screenStream = await navigator.mediaDevices.getDisplayMedia({
         video: { frameRate: 30 },
         audio: false
       });
     }
 
-    // Berhasil → hentikan stream lama
-    if (state.stream) state.stream.getTracks().forEach(t => t.stop());
-    state._tempScreenSource = null;
+    if (!state.screenOnUpload) {
+      state._prevUpload = {
+        src: uploadVideo.src || null,
+        ready: state.uploadReady,
+        paused: uploadVideo.paused,
+        time: uploadVideo.currentTime || 0
+      };
+      if (state.uploadReady) {
+        try { uploadVideo.pause(); } catch(e) {}
+      }
+    }
 
-    state.stream = screenStream;
-    state.sourceType = 'screen';
+    if (state._screenTrack) {
+      state._screenTrack.removeEventListener('ended', onScreenShareEnded);
+      try { state._screenTrack.stop(); } catch(e) {}
+      state._screenTrack = null;
+    }
+
     state._screenTrack = screenStream.getVideoTracks()[0] || null;
+    state.screenOnUpload = true;
 
-    liveVideo.srcObject = screenStream;
-    livePlaceholder.classList.add('hidden');
-    btnStartCam.classList.remove('active');
-    btnScreen.classList.add('active');
-    btnSwitchCam.classList.add('hidden');
-    setLiveBadge('SCREEN', true);
+    /* ===== FIX: pasang stream layar & PASTIKAN tampil ===== */
+    try { uploadVideo.pause(); } catch(e) {}
+    try { uploadVideo.srcObject = null; } catch(e) {}
+    if (uploadVideo.hasAttribute('src')) {
+      uploadVideo.removeAttribute('src');
+    }
+    try { uploadVideo.srcObject = screenStream; } catch(e) {}
 
-    // Jika user menutup dialog "Stop sharing" dari browser UI
+    // Paksa play() — jika tidak, browser tidak menampilkan frame apa pun
+    uploadVideo.muted = false;
+    const playPromise = uploadVideo.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch((err) => {
+        console.warn('Screen play() gagal, retry muted:', err);
+        uploadVideo.muted = true;
+        uploadVideo.play().catch(() => {
+          console.error('Screen play() tetap gagal');
+        });
+      });
+    }
+
+    uploadPlaceholder.classList.add('hidden');
+    setUploadBadge('SCREEN', true);
+    state.uploadReady = false;
+
+    // Auto-adjust split jika upload terlalu kecil
+    if (state.splitRatio >= 0.95) {
+      state.splitRatio = 0.5;
+      applySplitToLayout();
+    }
+    // Force applyView setelah split
+    requestAnimationFrame(applyAllViews);
+
+    // Listener ended
     if (state._screenTrack) {
       state._screenTrack.addEventListener('ended', onScreenShareEnded);
     }
 
-    // Siapkan tampilan LIVE
-    const c = ctrlByKey.live;
+    // Audio routing
+    ensureAudioCtx();
+    if (state.audioCtx && !state.uploadSource) {
+      try {
+        state.uploadSource = state.audioCtx.createMediaElementSource(uploadVideo);
+        state.uploadSource.connect(state.audioCtx.destination);
+      } catch (e) { console.warn('Audio routing screen gagal:', e); }
+    }
+
+    // Tools upload
+    const c = ctrlByKey.upload;
     if (c.tools) c.tools.classList.remove('hidden');
     resetView(c, true);
     showHint(c);
 
-    // Background replacement tidak relevan untuk layar → matikan
-    if (state.bg.mode !== 'off') {
-      setBgMode('off');
-    }
-
-    liveVideo.addEventListener('loadedmetadata', () => {
-      if (liveVideo.videoWidth) {
-        liveCanvas.width = liveVideo.videoWidth;
-        liveCanvas.height = liveVideo.videoHeight;
-        state.floating.aspect = liveVideo.videoWidth / liveVideo.videoHeight;
-        if (state.floating.enabled) updateFloatingPosition();
-      }
-    }, { once: true });
+    // Pastikan applyView dipanggil lagi setelah metadata
+    const applyAfterMeta = () => {
+      applyView(ctrlByKey.upload);
+      updateProgressBar();
+    };
+    uploadVideo.addEventListener('loadedmetadata', applyAfterMeta, { once: true });
+    if (uploadVideo.videoWidth > 0) applyAfterMeta();
 
     const hasAudio = screenStream.getAudioTracks().length > 0;
     if (!silent) {
-      showToast(
-        hasAudio
-          ? '🎬 Rekam layar aktif (dengan audio tab)'
-          : '🎬 Rekam layar aktif — tekan Mulai Rekam',
-        'success'
-      );
+      showToast(hasAudio
+        ? '🎬 Rekam layar aktif di UPLOAD (dengan audio tab)'
+        : '🎬 Rekam layar aktif di UPLOAD',
+        'success');
     }
     return true;
 
@@ -3374,41 +3078,50 @@ async function startScreenCapture(silent = false) {
 }
 
 function onScreenShareEnded() {
-  // Pastikan track yang berakhir memang track aktif sekarang
-  if (state.sourceType !== 'screen') return;
-  if (state._screenTrack && !state.stream?.getVideoTracks().includes(state._screenTrack)) return;
-
+  if (!state.screenOnUpload) return;
   state._screenTrack = null;
-  state.stream = null;
-  state.sourceType = 'camera';
-  liveVideo.srcObject = null;
-  livePlaceholder.classList.remove('hidden');
-  btnScreen.classList.remove('active');
-  btnStartCam.classList.remove('active');
-  btnSwitchCam.classList.add('hidden');
-  setLiveBadge('LIVE', false);
+  state.screenOnUpload = false;
 
-  const c = ctrlByKey.live;
-  if (c.tools) c.tools.classList.add('hidden');
+  try { uploadVideo.pause(); } catch(e) {}
+  try { uploadVideo.srcObject = null; } catch(e) {}
 
-  // Hentikan audio tab sementara
-  if (state._tempScreenSource) {
-    try { state._tempScreenSource.disconnect(); } catch (e) {}
-    state._tempScreenSource = null;
-  }
+  const prev = state._prevUpload;
+  state._prevUpload = null;
 
-  // Jika sedang merekam & tidak ada sumber lain → hentikan
-  if (state.isRecording && !state.uploadReady) {
-    stopRecording();
-    showToast('⏹ Berbagi layar berhenti — rekaman dihentikan', 'error');
+  if (prev && prev.src) {
+    uploadVideo.src = prev.src;
+    uploadVideo.load();
+    state.uploadReady = prev.ready;
+    setUploadBadge('UPLOAD', false);
+    uploadPlaceholder.classList.toggle('hidden', !!prev.ready);
+
+    uploadVideo.addEventListener('loadedmetadata', () => {
+      try {
+        if (prev.time > 0) uploadVideo.currentTime = prev.time;
+        if (!prev.paused) uploadVideo.play().catch(() => {
+          uploadVideo.muted = true;
+          uploadVideo.play().catch(() => {});
+        });
+      } catch(e) {}
+      applyView(ctrlByKey.upload);
+    }, { once: true });
+
+    const c = ctrlByKey.upload;
+    if (c.tools) c.tools.classList.toggle('hidden', !prev.ready);
+    showToast('⏹ Berbagi layar berhenti — video upload dikembalikan');
   } else {
+    state.uploadReady = false;
+    setUploadBadge('UPLOAD', false);
+    uploadPlaceholder.classList.remove('hidden');
+    const c = ctrlByKey.upload;
+    if (c.tools) c.tools.classList.add('hidden');
     showToast('⏹ Berbagi layar dihentikan');
   }
-}
 
-function setLiveBadge(text, isScreen) {
-  liveBadgeText.textContent = text;
-  liveBadge.classList.toggle('screen', !!isScreen);
+  if (state.isRecording && !state.uploadReady && !state.stream) {
+    stopRecording();
+    showToast('⏹ Rekaman dihentikan karena tidak ada sumber', 'error');
+  }
 }
 
 function waitForVideoDim(video, timeoutMs = 1500) {
@@ -3450,7 +3163,7 @@ async function toggleMic() {
 }
 
 /* ============================================================
-   AUDIO CONTEXT
+   AUDIO
    ============================================================ */
 function ensureAudioCtx() {
   if (!state.audioCtx) {
@@ -3476,11 +3189,17 @@ function ensureAudioCtx() {
    UPLOAD VIDEO
    ============================================================ */
 btnUpload.addEventListener('click', () => {
+  if (state.screenOnUpload) { showToast('Hentikan rekam layar dulu sebelum upload', 'error'); return; }
   fileInput.value = '';
   fileInput.click();
 });
 
 fileInput.addEventListener('change', async (e) => {
+  if (state.screenOnUpload) {
+    showToast('Hentikan rekam layar dulu sebelum upload', 'error');
+    e.target.value = '';
+    return;
+  }
   const file = e.target.files[0];
   if (!file) return;
   if (!file.type.startsWith('video/')) { showToast('File harus berupa video', 'error'); return; }
@@ -3488,6 +3207,7 @@ fileInput.addEventListener('change', async (e) => {
   showLoader('Memuat video...');
   try {
     const url = URL.createObjectURL(file);
+    try { uploadVideo.srcObject = null; } catch(e) {}
     uploadVideo.src = url;
     uploadVideo.load();
 
@@ -3501,6 +3221,7 @@ fileInput.addEventListener('change', async (e) => {
 
     uploadPlaceholder.classList.add('hidden');
     state.uploadReady = true;
+    setUploadBadge('UPLOAD', false);
 
     const c = ctrlByKey.upload;
     resetView(c, true);
@@ -3540,11 +3261,11 @@ fileInput.addEventListener('change', async (e) => {
 async function startRecording() {
   if (state.isRecording) return;
 
-  if (!state.stream) {
+  if (!state.stream && !state.screenOnUpload) {
     await startCamera(true);
   }
 
-  if (!state.stream && !state.uploadReady) {
+  if (!state.stream && !state.uploadReady && !state.screenOnUpload) {
     showToast('Aktifkan kamera / rekam layar / upload video dulu', 'error');
     return;
   }
@@ -3554,7 +3275,7 @@ async function startRecording() {
 
   ensureAudioCtx();
 
-  if (state.uploadReady && uploadVideo.paused) {
+  if (state.uploadReady && !state.screenOnUpload && uploadVideo.paused) {
     if (uploadVideo.ended) uploadVideo.currentTime = 0;
     try {
       uploadVideo.muted = false;
@@ -3566,7 +3287,7 @@ async function startRecording() {
   }
 
   if (state.stream) await waitForVideoDim(liveVideo, 1500);
-  if (state.uploadReady) await waitForVideoDim(uploadVideo, 1500);
+  if (state.uploadReady || state.screenOnUpload) await waitForVideoDim(uploadVideo, 1500);
 
   if (state.bg.mode !== 'off' && liveVideo.videoWidth) {
     if (liveCanvas.width !== liveVideo.videoWidth) {
@@ -3581,28 +3302,11 @@ async function startRecording() {
   const videoStream = canvas.captureStream(30);
   const tracks = [...videoStream.getVideoTracks()];
 
-  // Gabungkan audio: mic + upload + audio tab (jika rekam layar)
   if (state.audioCtx) {
     const recDest = state.audioCtx.createMediaStreamDestination();
     let hasAudio = false;
     if (state.micSource)    { state.micSource.connect(recDest);    hasAudio = true; }
     if (state.uploadSource) { state.uploadSource.connect(recDest); hasAudio = true; }
-
-    // Audio dari tab layar (bila browser mendukung audio pada getDisplayMedia)
-    if (state.sourceType === 'screen' && state.stream) {
-      const screenAudioTracks = state.stream.getAudioTracks();
-      if (screenAudioTracks.length > 0) {
-        try {
-          const screenAudioStream = new MediaStream(screenAudioTracks);
-          state._tempScreenSource = state.audioCtx.createMediaStreamSource(screenAudioStream);
-          state._tempScreenSource.connect(recDest);
-          hasAudio = true;
-        } catch (e) {
-          console.warn('Screen audio routing gagal:', e);
-        }
-      }
-    }
-
     if (hasAudio) {
       tracks.push(...recDest.stream.getAudioTracks());
       state.recDest = recDest;
@@ -3646,10 +3350,6 @@ async function startRecording() {
         } catch(e) {}
         state.recDest = null;
       }
-      if (state._tempScreenSource) {
-        try { state._tempScreenSource.disconnect(); } catch(e) {}
-        state._tempScreenSource = null;
-      }
       const baseType = mimeType.split(';')[0];
       const blob = new Blob(state.recordedChunks, { type: baseType });
       state.recordedChunks = [];
@@ -3671,8 +3371,7 @@ async function startRecording() {
 
     RECORD_LOCKED_BTNS.forEach(b => b.disabled = true);
     RECORD_ACTIVE_BTNS.forEach(b => b.disabled = false);
-
-    showToast('🔴 Merekam — background, posisi & ticker terjaga', 'success');
+    showToast('🔴 Merekam', 'success');
   } catch (err) {
     showToast('Rekam gagal: ' + err.message, 'error');
   }
@@ -3689,7 +3388,6 @@ function stopRecording() {
   recBadge.classList.remove('show');
   btnRecord.classList.remove('recording');
   recText.textContent = 'Mulai Rekam';
-
   RECORD_LOCKED_BTNS.forEach(b => b.disabled = false);
   RECORD_ACTIVE_BTNS.forEach(b => b.disabled = false);
 }
@@ -3702,7 +3400,7 @@ function updateRecTimer() {
 }
 
 /* ============================================================
-   PREVIEW / SIMPAN
+   PREVIEW
    ============================================================ */
 function showPreview(blob) {
   if (state.previewUrl) URL.revokeObjectURL(state.previewUrl);
@@ -3729,7 +3427,6 @@ async function saveToGallery() {
   const ext = baseType.includes('mp4') ? 'mp4' : 'webm';
   const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
   const file = new File([state.previewBlob], `split-${stamp}.${ext}`, { type: baseType });
-
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
       await navigator.share({ files: [file], title: 'Split Screen Video' });
@@ -3797,11 +3494,8 @@ function handleResize() {
   clearTimeout(resizeTimeout);
   resizeTimeout = setTimeout(() => {
     if (state.aspectMode === 'asli') updateDividerOrientation();
-    if (state.floating.enabled) {
-      updateFloatingPosition();
-    } else {
-      applySplitToLayout();
-    }
+    if (state.floating.enabled) updateFloatingPosition();
+    else applySplitToLayout();
     applyQuality(state.quality);
     applyAllViews();
     updateTickerDOM();
@@ -3826,11 +3520,12 @@ if (window.ResizeObserver) {
 function cleanup() {
   if (state.stream) state.stream.getTracks().forEach(t => t.stop());
   if (state.micStream) state.micStream.getTracks().forEach(t => t.stop());
-  if (state._tempScreenSource) {
-    try { state._tempScreenSource.disconnect(); } catch(e) {}
-    state._tempScreenSource = null;
+  if (state._screenTrack) {
+    try { state._screenTrack.removeEventListener('ended', onScreenShareEnded); } catch(e) {}
+    try { state._screenTrack.stop(); } catch(e) {}
+    state._screenTrack = null;
   }
-  state._screenTrack = null;
+  state.screenOnUpload = false;
   if (state.isRecording) stopRecording();
   stopSegLoop();
   stopTickerDOMLoop();
@@ -3850,10 +3545,11 @@ requestAnimationFrame(() => {
   updateTickerDOM();
   updateExpandLabels();
   updateFloatingSizePresets();
+  updateLiveBadgeVisibility();
 });
 updatePlayPauseIcon();
 updateBgBtnState();
-console.log('%c📱 Split Screen Recorder v2 — rekam layar + kamera + upload siap!',
+console.log('%c📱 Split Screen Recorder v3.1 — rekam layar FIXED',
   'color:#6366f1;font-weight:bold;font-size:14px');
 </script>
 
